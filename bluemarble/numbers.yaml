@@ -1,0 +1,22 @@
+# numbers.yaml: the lengths of the two NASA images this package names, in
+# bytes, as the files came. The source is in sources.yaml.
+
+numbers:
+  - name: july-size
+    value: 1617810
+    unit: bytes
+    says: the length of the Blue Marble July 2004 image, 5400 by 2700 pixels, as served
+    kind: measured
+    source:
+      key: visible-earth-july
+      where: the file as fetched, its length counted with wc -c
+      text: "1617810 world.200407.3x5400x2700.jpg"
+  - name: night-size
+    value: 779638
+    unit: bytes
+    says: the length of the Black Marble 2016 image, a tenth of a degree a pixel, as served
+    kind: measured
+    source:
+      key: visible-earth-night
+      where: the file as fetched, its length counted with wc -c
+      text: "779638 BlackMarble_2016_01deg.jpg"

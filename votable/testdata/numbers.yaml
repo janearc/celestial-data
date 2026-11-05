@@ -1,0 +1,9 @@
+# numbers.yaml: the numbers the reader's tests are held to, by name.
+
+numbers:
+  - name: patience
+    value: 5
+    unit: seconds
+    says: how long a test waits for Read before it calls the read endless; a read here takes well under a millisecond
+    kind: picked
+    by: celestial-data's votable tests, 2026-11-02

@@ -1,0 +1,36 @@
+# asked.yaml: the circle the recorded replies asked about, on the night
+# of 2026-11-01. It is centred on Sgr A*, at the position the Sgr A* page
+# used, and is a tenth of a degree across each way. Below it are the
+# waits the live checks give a real archive.
+
+numbers:
+  - name: asked-ra
+    value: 266.4168371
+    unit: degrees
+    says: the right ascension the recorded queries were centred on, Sgr A*'s as the Sgr A* page used it
+    kind: picked
+    by: celestial-data's replay tests, 2026-11-01
+  - name: asked-dec
+    value: -29.0078106
+    unit: degrees
+    says: the declination the recorded queries were centred on, Sgr A*'s as the Sgr A* page used it
+    kind: picked
+    by: celestial-data's replay tests, 2026-11-01
+  - name: asked-radius
+    value: 0.1
+    unit: degrees
+    says: the radius the recorded queries asked within, wide enough to hold the deep observations of Sgr A* and the stars round it
+    kind: picked
+    by: celestial-data's replay tests, 2026-11-01
+  - name: live-wait
+    value: 30
+    unit: seconds
+    says: how long a live check gives an archive to connect and begin its answer; HEASARC's TAP service took several seconds to begin on 2026-11-01
+    kind: picked
+    by: celestial-data's replay tests, 2026-11-02
+  - name: live-whole
+    value: 120
+    unit: seconds
+    says: how long a live check gives a whole question; live checks ask for listings, tables and lengths, never for a whole file
+    kind: picked
+    by: celestial-data's replay tests, 2026-11-02

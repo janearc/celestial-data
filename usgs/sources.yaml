@@ -1,0 +1,15 @@
+# sources.yaml: where the numbers in numbers.yaml were read. The no-data
+# value was read from the lines of a spectrum file in the archive, as
+# fetched. The length is that of the archive as fetched. Its sha256 is
+# d232645740869a82aafcad5839448c50b1dc72965ce042d1374f29b7a798a91c.
+# The library is a US Geological Survey data release, in the public domain.
+
+sources:
+  - key: usgs-splib07-release
+    title: "USGS Spectral Library Version 7 Data, Kokaly and others, 2017"
+    from: https://doi.org/10.5066/F7RR1WDJ
+    fetched: 2026-11-02
+  - key: usgs-splib07-archive
+    title: "USGS Spectral Library Version 7, the ASCII archive of the measured spectra"
+    from: https://www.sciencebase.gov/catalog/file/get/586e8c88e4b0f5ce109fccae?name=ASCIIdata_splib07a.zip
+    fetched: 2026-11-02

@@ -1,0 +1,29 @@
+# vim: set filetype=game:
+# game: celestial-data, which finds and fetches what the archives hold
+#
+# name says which project this is. the builder's config has a block for
+# it that says where its road is; this file never names a remote.
+name celestial-data
+
+# lint rules, copied from the builder's so both of us lint alike.
+lint width 80
+lint rows 25
+lint comments
+lint print
+lint exclaim
+lint shout
+lint words hyperscaler enterprise-grade blazing-fast load-bearing
+lint paragraph 4
+
+lint allow README.md words paragraph rows
+
+sweep allow chroma/chroma.go author
+sweep allow chroma/chroma_test.go author
+
+# the replies the archives gave, recorded for the tests: their words are
+# the archives', not ours.
+exclude testdata
+
+# the mock of the one door to the network, generated from the interface
+# it stands in for. mockgen is pinned in go.mod as a tool.
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/web.go -package mocks github.com/janearc/celestial-data/web Web

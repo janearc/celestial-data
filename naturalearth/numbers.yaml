@@ -1,0 +1,13 @@
+# numbers.yaml: the one number the naturalearth package reads from the
+# file itself. The source is in sources.yaml.
+
+numbers:
+  - name: land-size
+    value: 1636166
+    unit: bytes
+    says: the length of the 1:50m land file, ne_50m_land.geojson, as the project's repository served it
+    kind: measured
+    source:
+      key: naturalearth-land
+      where: the length of the file as fetched
+      text: "1636166 bytes"

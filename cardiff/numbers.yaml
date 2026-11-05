@@ -1,0 +1,77 @@
+# numbers.yaml: the cards that place the l000 tile, read from its column
+# density map's primary header. Each tile is taken to be this size. The
+# source is in sources.yaml.
+
+numbers:
+  - name: l000-cdelt1
+    value: -0.001667
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CDELT1
+      text: "CDELT1  =            -0.001667 / coordinate increment along axis"
+  - name: l000-cdelt2
+    value: 0.001667
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CDELT2
+      text: "CDELT2  =             0.001667 / coordinate increment along axis"
+  - name: l000-crpix1
+    value: 762.508789000
+    unit: pixels
+    says: the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CRPIX1
+      text: "CRPIX1  =        762.508789000 / coordinate system reference pixel"
+  - name: l000-crpix2
+    value: 789.038330000
+    unit: pixels
+    says: the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CRPIX2
+      text: "CRPIX2  =        789.038330000 / coordinate system reference pixel"
+  - name: l000-crval1
+    value: -0.0894740000000
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CRVAL1
+      text: "CRVAL1  =     -0.0894740000000 / coordinate value at reference pixel"
+  - name: l000-crval2
+    value: 0.154103000000
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card CRVAL2
+      text: "CRVAL2  =       0.154103000000 / coordinate value at reference pixel"
+  - name: l000-naxis1
+    value: 1440
+    unit: pixels
+    says: the count of pixels along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card NAXIS1
+      text: "NAXIS1  =                 1440 / length of data axis 1"
+  - name: l000-naxis2
+    value: 1440
+    unit: pixels
+    says: the count of pixels along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: ppmap-l000
+      where: the primary header, card NAXIS2
+      text: "NAXIS2  =                 1440 / length of data axis 2"

@@ -1,0 +1,9 @@
+# sources.yaml: where the numbers in numbers.yaml were read. The header
+# was read from the file as fetched, with head -c 57600 and fold -w 80;
+# no sha256 is held, since only the header was read again.
+
+sources:
+  - key: hpsgc-palpha
+    title: "HST/NICMOS Paschen-alpha survey of the Galactic Centre, the Paschen-alpha mosaic"
+    from: https://archive.stsci.edu/pub/hlsp/hpsgc/hlsp_hpsgc_hst_nicmos-nic3_gc_palpha_v1_img.fits
+    fetched: 2026-11-01

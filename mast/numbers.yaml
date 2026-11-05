@@ -1,0 +1,77 @@
+# numbers.yaml: the cards that place the Paschen-alpha mosaic, read from
+# its own primary header. The survey's other mosaics and catalogues
+# cover the same field. The source is in sources.yaml.
+
+numbers:
+  - name: palpha-cdelt1
+    value: -2.81756348046E-05
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CDELT1
+      text: "CDELT1  =   -2.81756348046E-05 /"
+  - name: palpha-cdelt2
+    value: 2.81756348046E-05
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CDELT2
+      text: "CDELT2  =    2.81756348046E-05 /"
+  - name: palpha-crpix1
+    value: 11700.5
+    unit: pixels
+    says: the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CRPIX1
+      text: "CRPIX1  =              11700.5 /"
+  - name: palpha-crpix2
+    value: 4500.50
+    unit: pixels
+    says: the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CRPIX2
+      text: "CRPIX2  =              4500.50 /"
+  - name: palpha-crval1
+    value: 359.941970000
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CRVAL1
+      text: "CRVAL1  =        359.941970000 /"
+  - name: palpha-crval2
+    value: -0.00513722188771
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card CRVAL2
+      text: "CRVAL2  =    -0.00513722188771 /"
+  - name: palpha-naxis1
+    value: 23400
+    unit: pixels
+    says: the count of pixels along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card NAXIS1
+      text: "NAXIS1  =                23400 / Axis length"
+  - name: palpha-naxis2
+    value: 9000
+    unit: pixels
+    says: the count of pixels along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: hpsgc-palpha
+      where: the primary header, card NAXIS2
+      text: "NAXIS2  =                 9000 / Axis length"

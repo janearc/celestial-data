@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.4">
+ <RESOURCE type="results">
+  <INFO name="QUERY_STATUS" value="ERROR">Error[s] detected in query preprocessing: column &quot;instrument&quot; does not exist. Query: SELECT TOP 5 obsid, name, exposure, ra, dec, instrument FROM chanmaster WHERE CONTAINS(POINT(&apos;ICRS&apos;,ra,dec),CIRCLE(&apos;ICRS&apos;,266.4168,-29.0078,0.1))=1 ORDER BY exposure DESC</INFO>
+ </RESOURCE>
+</VOTABLE>

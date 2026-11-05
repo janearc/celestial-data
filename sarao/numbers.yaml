@@ -1,0 +1,77 @@
+# numbers.yaml: the cards that place the 1.28 GHz total intensity
+# mosaic, read from its own primary header. The spectral index mosaics
+# cover the same field or less. The source is in sources.yaml.
+
+numbers:
+  - name: stokesi-cdelt1
+    value: -0.000305556
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CDELT1
+      text: "CDELT1  =         -0.000305556"
+  - name: stokesi-cdelt2
+    value: 0.000305556
+    unit: degrees
+    says: the change in the coordinate from one pixel to the next along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CDELT2
+      text: "CDELT2  =          0.000305556"
+  - name: stokesi-crpix1
+    value: 5072.5
+    unit: pixels
+    says: the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CRPIX1
+      text: "CRPIX1  =               5072.5"
+  - name: stokesi-crpix2
+    value: 5265.5
+    unit: pixels
+    says: the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CRPIX2
+      text: "CRPIX2  =               5265.5"
+  - name: stokesi-crval1
+    value: 266.366790598
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CRVAL1
+      text: "CRVAL1  =        266.366790598"
+  - name: stokesi-crval2
+    value: -29.2213778092
+    unit: degrees
+    says: the coordinate at the reference pixel along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card CRVAL2
+      text: "CRVAL2  =       -29.2213778092"
+  - name: stokesi-naxis1
+    value: 10121
+    unit: pixels
+    says: the count of pixels along axis 1, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card NAXIS1
+      text: "NAXIS1  =                10121"
+  - name: stokesi-naxis2
+    value: 10527
+    unit: pixels
+    says: the count of pixels along axis 2, in the mosaic's header
+    kind: measured
+    source:
+      key: meerkat-stokesi
+      where: the primary header, card NAXIS2
+      text: "NAXIS2  =                10527"

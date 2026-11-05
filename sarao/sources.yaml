@@ -1,0 +1,9 @@
+# sources.yaml: where the numbers in numbers.yaml were read. The header
+# was read from the file as fetched, with head -c 57600 and fold -w 80;
+# no sha256 is held, since only the header was read again.
+
+sources:
+  - key: meerkat-stokesi
+    title: "MeerKAT Galactic Centre mosaic, 1.284 GHz total intensity"
+    from: https://archive-gw-1.kat.ac.za/public/repository/10.48479/fyst-hj47/data/MeerKAT_Galactic_Centre_1284MHz-StokesI.fits
+    fetched: 2026-11-01

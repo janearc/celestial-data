@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!-- made by hand for the tests: a reply shaped as chanmaster answers -->
+<VOTABLE version="1.4"><RESOURCE type="results"><INFO name="QUERY_STATUS" value="OK"/><TABLE><FIELD name="obsid" datatype="int"/><FIELD name="name" datatype="char" arraysize="*"/><FIELD name="exposure" datatype="double"/><FIELD name="detector" datatype="char" arraysize="*"/><FIELD name="grating" datatype="char" arraysize="*"/><DATA><TABLEDATA><TR><TD>0</TD><TD>SGR A*</TD><TD>168900</TD><TD>ACIS-I</TD><TD>NONE</TD></TR></TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>

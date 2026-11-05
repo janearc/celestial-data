@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.4">
+ <RESOURCE type="results">
+  <INFO name="QUERY_STATUS" value="OK">No errors detected in query preprocessing</INFO>
+  <TABLE>
+   <DESCRIPTION>Query result for:&#xA;SELECT TOP 5 obsid, name, exposure, ra, dec, detector, grating, status FROM chanmaster WHERE CONTAINS(POINT(&apos;ICRS&apos;, ra, dec), CIRCLE(&apos;ICRS&apos;, 266.4168371, -29.0078106, 0.1)) = 1 AND status = &apos;archived&apos; ORDER BY exposure DESC</DESCRIPTION>
+   <FIELD datatype="int" ucd="meta.id;obs" name="obsid" width="5" ID="DataLinkID">
+    <DESCRIPTION>Observation Identifier</DESCRIPTION>
+    <VALUES null="-2147483648"/>
+   </FIELD>
+   <FIELD datatype="char" arraysize="*" ucd="meta.id;meta.main" name="name">
+    <DESCRIPTION>Target Designation</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="s" datatype="double" ucd="time.duration;obs.exposure" precision="F0" name="exposure">
+    <DESCRIPTION>Actual Exposure Time If Observed, Otherwise the Approved Exposure (s)</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="deg" datatype="double" ucd="pos.eq.ra;meta.main" precision="F5" name="ra">
+    <DESCRIPTION>Right Ascension</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="deg" datatype="double" ucd="pos.eq.dec;meta.main" precision="F5" name="dec">
+    <DESCRIPTION>Declination</DESCRIPTION>
+   </FIELD>
+   <FIELD datatype="char" arraysize="*" ucd="instr;instr.det" name="detector">
+    <DESCRIPTION>Detector</DESCRIPTION>
+   </FIELD>
+   <FIELD datatype="char" arraysize="*" ucd="instr;instr.det" name="grating">
+    <DESCRIPTION>Grating Setting</DESCRIPTION>
+   </FIELD>
+   <FIELD datatype="char" arraysize="*" ucd="meta.code.status;obs" name="status">
+    <DESCRIPTION>Status of Observation</DESCRIPTION>
+   </FIELD>
+   <DATA>
+    <BINARY>
+     <STREAM encoding="base64">
+AAA2EgAAAAZTZ3IgQSpBB2iAAAAAAEBwpqquKXOXwD0B/9YOlO4AAAAGQUNJUy1T
+AAAABEhFVEcAAAAIYXJjaGl2ZWQAADYZAAAABlNnciBBKkEF0aAAAAAAQHCm
+qq4pc5fAPQH/1g6U7gAAAAZBQ0lTLVMAAAAESEVURwAAAAhhcmNoaXZlZAAA
+Ng8AAAAGU2dyIEEqQQWD0AAAAABAcKaqrilzl8A9Af/WDpTuAAAABkFDSVMt
+UwAAAARIRVRHAAAACGFyY2hpdmVkAAANQAAAAAZTR1IgQSpBBJ4gAAAAAEBw
+pqquKXOXwD0B/d69kBkAAAAGQUNJUy1JAAAABE5PTkUAAAAIYXJjaGl2ZWQA
+ADYQAAAABlNnciBBKkED1sAAAAAAQHCmqq4pc5fAPQH/1g6U7gAAAAZBQ0lT
+LVMAAAAESEVURwAAAAhhcmNoaXZlZA==
+     </STREAM>
+    </BINARY>
+   </DATA>
+  </TABLE>
+ </RESOURCE>
+ <RESOURCE utype="adhoc:service" type="meta">
+  <PARAM datatype="char" arraysize="*" name="standardID" value="ivo://ivoa.net/std/DataLink#links-1.1"/>
+  <PARAM datatype="char" arraysize="*" name="accessURL" value="https://heasarc.gsfc.nasa.gov/xamin/vo/datalink/chanmaster?datalink_key&amp;"/>
+  <GROUP name="inputParams">
+   <PARAM ref="DataLinkID" datatype="char" arraysize="*" name="id" value=""/>
+  </GROUP>
+ </RESOURCE>
+</VOTABLE>

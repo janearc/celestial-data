@@ -1,0 +1,22 @@
+# numbers.yaml: the two numbers the usgs package reads from the library
+# itself, not from our own choosing. The sources are in sources.yaml.
+
+numbers:
+  - name: no-data
+    value: -1.23e+34
+    unit: reflectance
+    says: the value the library's ASCII files write where a channel holds no measurement
+    kind: measured
+    source:
+      key: usgs-splib07-release
+      where: a spectrum file of the ASCII archive, the lines of an unmeasured channel
+      text: "-1.2300000e+034"
+  - name: archive-size
+    value: 21812828
+    unit: bytes
+    says: the length of the library's ASCII archive, ASCIIdata_splib07a.zip, as ScienceBase served it
+    kind: measured
+    source:
+      key: usgs-splib07-archive
+      where: the length of the file as fetched
+      text: "21812828 bytes"

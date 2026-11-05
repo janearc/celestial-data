@@ -1,0 +1,21 @@
+# numbers.yaml: the numbers this package's tests are held to, by name.
+
+numbers:
+  - name: patient-wait
+    value: 5
+    unit: seconds
+    says: how long the tests give a local server to connect and to begin its answer, far past the milliseconds one takes
+    kind: picked
+    by: celestial-data's web tests, 2026-11-02
+  - name: slow-server
+    value: 0.2
+    unit: seconds
+    says: how long the slow server waits before it answers, four times the hasty wait so the client always gives up first
+    kind: picked
+    by: celestial-data's web tests, 2026-11-02
+  - name: hasty-wait
+    value: 0.05
+    unit: seconds
+    says: how long the hasty client waits for a server to begin its answer, a quarter of the slow server's delay
+    kind: picked
+    by: celestial-data's web tests, 2026-11-02

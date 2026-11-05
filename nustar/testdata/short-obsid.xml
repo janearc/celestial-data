@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!-- made by hand for the tests: a reply shaped as numaster answers, holding what numaster should never send -->
+<VOTABLE version="1.4"><RESOURCE type="results"><INFO name="QUERY_STATUS" value="OK"/><TABLE><FIELD name="obsid" datatype="char" arraysize="*"/><FIELD name="name" datatype="char" arraysize="*"/><FIELD name="exposure_a" datatype="double"/><DATA><TABLEDATA><TR><TD>3000100200</TD><TD>SgrAstar</TD><TD>100</TD></TR></TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>

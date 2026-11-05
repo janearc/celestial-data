@@ -1,0 +1,9 @@
+# sources.yaml: where the numbers in numbers.yaml were read. The header
+# was read from the file as fetched, with head -c 57600 and fold -w 80;
+# no sha256 is held, since only the header was read again.
+
+sources:
+  - key: ppmap-l000
+    title: "Hi-GAL PPMAP results, the l000 tile's column density map"
+    from: http://www.astro.cardiff.ac.uk/research/ViaLactea/PPMAP_Results/l000_results/l000_cdens.fits
+    fetched: 2026-11-01

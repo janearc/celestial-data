@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.4">
+ <RESOURCE type="results">
+  <INFO name="QUERY_STATUS" value="OK">No errors detected in query preprocessing</INFO>
+  <TABLE>
+   <DESCRIPTION>Query result for:&#xA;SELECT TOP 5 obsid, name, exposure_a, ra, dec FROM numaster WHERE CONTAINS(POINT(&apos;ICRS&apos;,ra,dec),CIRCLE(&apos;ICRS&apos;,266.4168,-29.0078,0.1))=1 ORDER BY exposure_a DESC</DESCRIPTION>
+   <FIELD datatype="char" arraysize="*" ucd="meta.id;obs" name="obsid" ID="DataLinkID">
+    <DESCRIPTION>Unique Observation/Sequence Number</DESCRIPTION>
+   </FIELD>
+   <FIELD datatype="char" arraysize="*" ucd="meta.id;meta.main" name="name">
+    <DESCRIPTION>Designation of the Pointed Source</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="s" datatype="double" ucd="time.duration;obs.exposure" precision="F0" name="exposure_a">
+    <DESCRIPTION>FPMA Effective Exposure on Source (s)</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="deg" datatype="double" ucd="pos.eq.ra;meta.main" precision="F4" name="ra">
+    <DESCRIPTION>Right Ascension (Pointing Position)</DESCRIPTION>
+   </FIELD>
+   <FIELD unit="deg" datatype="double" ucd="pos.eq.dec;meta.main" precision="F4" name="dec">
+    <DESCRIPTION>Declination (Pointing Position)</DESCRIPTION>
+   </FIELD>
+   <DATA>
+    <BINARY>
+     <STREAM encoding="base64">
+AAAACzMwMDAxMDAyMDAxAAAACFNnckFzdGFyQQMjpVqFh5RAcKY1qFh5PsA9CowV
+TJhfAAAACzMwNTAyMDA1MDA0AAAACFNnckFzdGFyQQKtu9hE0BRAcKchLXcx
+kMA8+tq59Vm0AAAACzkwNTAxMzMwMDAyAAAACFNnckFzdGFyQPmAOUP+XJJA
+cKarNnoPkcA9Cw8nuy/sAAAACzMwNTAyMDE0MDAyAAAACFNnckFzdGFyQPif
+2Jkwvg5AcKZsi0OVgcA9CkP+XJHRAAAACzgxMTAxMzMzMDAyAAAADk1BWElf
+SjE3NDRtMjk0QPdz3Te0ojRAcKX3ztkWh8A9DtKIznA7
+     </STREAM>
+    </BINARY>
+   </DATA>
+  </TABLE>
+ </RESOURCE>
+ <RESOURCE utype="adhoc:service" type="meta">
+  <PARAM datatype="char" arraysize="*" name="standardID" value="ivo://ivoa.net/std/DataLink#links-1.1"/>
+  <PARAM datatype="char" arraysize="*" name="accessURL" value="https://heasarc.gsfc.nasa.gov/xamin/vo/datalink/numaster?datalink_key&amp;"/>
+  <GROUP name="inputParams">
+   <PARAM ref="DataLinkID" datatype="char" arraysize="*" name="id" value=""/>
+  </GROUP>
+ </RESOURCE>
+</VOTABLE>

@@ -1,0 +1,53 @@
+# numbers.yaml: the numbers celestial-data picks for a call that does not give
+# them, by name. A flag of the same name takes a number's place, except
+# for the numbers of a named set, which no flag takes the place of.
+
+numbers:
+  - name: most
+    value: 5
+    unit: observations
+    says: how many observations nustar and chandra find a search, the longest first; five held the deep looks at Sgr A* on the night of the page
+    kind: picked
+    by: celestial-data's command, 2026-11-02
+  - name: pixels
+    value: 1024
+    unit: pixels
+    says: how many pixels a side a hips cutout is drawn at; at a tenth of a degree's radius that is under an arcsecond a pixel
+    kind: picked
+    by: celestial-data's command, 2026-11-02
+  - name: grissom-radius
+    value: 0.1
+    unit: degrees
+    says: how far round Sgr A* the grissom set asks the archives; it reaches the one Glimpse tile that holds the centre. No flag takes its place
+    kind: picked
+    by: celestial-data's command, for the Sgr A* page of 2026-11-01; celestial-data's README asks the same circle
+  - name: grissom-sky-width
+    value: 3600
+    unit: pixels
+    says: how many pixels across the Mellinger, H-alpha and 408 MHz whole-sky maps of the grissom set are drawn by SkyView. No flag takes its place
+    kind: picked
+    by: celestial-data's command, 2026-11-02, as the maps fetched for the grissom viewer were
+  - name: grissom-iris-width
+    value: 1800
+    unit: pixels
+    says: how many pixels across the IRIS 100 micron whole-sky map of the grissom set is drawn by SkyView. No flag takes its place
+    kind: picked
+    by: celestial-data's command, 2026-11-02, as the map fetched for the grissom viewer was
+  - name: wait
+    value: 30
+    unit: seconds
+    says: how long an archive is given to connect and begin its answer; HEASARC took several seconds to begin on 2026-11-01, and the Chandra archive seventeen to answer a HEAD
+    kind: picked
+    by: celestial-data's command, 2026-11-02
+  - name: job-every
+    value: 30
+    unit: seconds
+    says: how long fetch waits between asking after a job, such as the gaia archive's; the end of a job is seen within half a minute, and two hours of asking is 240 asks
+    kind: picked
+    by: celestial-data's command, 2026-11-05
+  - name: job-asks
+    value: 300
+    unit: asks
+    says: how many times fetch asks after a job before giving up on it; at job-every that is two and a half hours, past the gaia archive's two hours for a signed-in user's job, by its quota page read 2026-11-05
+    kind: picked
+    by: celestial-data's command, 2026-11-05
