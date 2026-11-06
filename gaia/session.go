@@ -11,15 +11,18 @@ import (
 // sessionCookie is the cookie the archive knows a signed-in user by.
 const sessionCookie = "JSESSIONID"
 
-// onlyItsOwner is the mode of a saved session: read and written by the
-// user who saved it, and by no one else.
+// onlyItsOwner is the mode of a saved session. Defined: read and written
+// by the user who saved it, and by no one else.
 const onlyItsOwner = 0o600
+
+// isTheSession is whether a cookie is the archive's session.
+func isTheSession(cookie *http.Cookie) bool {
+	return cookie.Name == sessionCookie
+}
 
 // signedIn is whether cookies hold the archive's session.
 func signedIn(cookies []*http.Cookie) bool {
-	return slices.ContainsFunc(cookies, func(cookie *http.Cookie) bool {
-		return cookie.Name == sessionCookie
-	})
+	return slices.ContainsFunc(cookies, isTheSession)
 }
 
 // Save writes a session's cookies to path, readable by its owner alone,

@@ -51,3 +51,15 @@ numbers:
     says: how many times fetch asks after a job before giving up on it; at job-every that is two and a half hours, past the gaia archive's two hours for a signed-in user's job, by its quota page read 2026-11-05
     kind: picked
     by: celestial-data's command, 2026-11-05
+  - name: arxiv-pace
+    value: 3
+    unit: seconds
+    says: how long papers lets pass from the start of one request to arXiv to the start of the next, for its API and its PDFs alike, one at a time, and from one run to the next, for this user on this machine, through the gate's record; arXiv's own least, which the arxiv package will not go under. No flag takes its place
+    kind: picked
+    by: celestial-data's command papers fetched gently
+  - name: arxiv-most
+    value: 20
+    unit: ids
+    says: how many ids papers asks arXiv's API about in one query; fewer queries are gentler, and twenty keeps the address short. No flag takes its place
+    kind: picked
+    by: celestial-data's command, 2026-11-06

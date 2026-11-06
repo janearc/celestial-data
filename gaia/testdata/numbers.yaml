@@ -1,0 +1,27 @@
+# numbers.yaml: the numbers the gaia package's tests are held to, by name.
+
+numbers:
+  - name: sgr-a-ascension
+    value: 266.4168371
+    unit: degrees
+    says: the right ascension the tests put their circle on; the README examples' digits, near Sgr A*, whose place celestial's ledger has measured
+    kind: picked
+    by: picked with the tests, 2026-11-05
+  - name: sgr-a-declination
+    value: -29.0078106
+    unit: degrees
+    says: the declination the tests put their circle on; the README examples' digits, near Sgr A*, whose place celestial's ledger has measured
+    kind: picked
+    by: picked with the tests, 2026-11-05
+  - name: small-circle
+    value: 0.1
+    unit: degrees
+    says: the radius of the tests' circle round Sgr A*; any radius under the whole sky's would do
+    kind: picked
+    by: picked with the tests, 2026-11-05
+  - name: past-json
+    value: 10000
+    unit: year
+    says: a year json cannot write a time in, the first past 9999, for the cookie Save must refuse
+    kind: picked
+    by: picked with the tests, 2026-11-05

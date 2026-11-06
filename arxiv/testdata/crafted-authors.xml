@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- crafted for the tests, in the shape of two-papers.xml: arXiv's
+     answer for four made-up papers, with no author, one, a nameless
+     one beside another, and three -->
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/crafted</id>
+  <title>arXiv Query: crafted</title>
+  <updated>2026-11-06T17:15:28Z</updated>
+  <opensearch:itemsPerPage>4</opensearch:itemsPerPage>
+  <opensearch:totalResults>4</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2001.00001v1</id>
+    <title>No one
+      wrote this</title>
+    <published>2020-01-01T00:00:00Z</published>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2001.00002v1</id>
+    <title>One wrote this</title>
+    <published>2020-01-02T00:00:00Z</published>
+    <author><name>Jo Bovy</name></author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2001.00003v1</id>
+    <title>A nameless one and another</title>
+    <published>2020-01-03T00:00:00Z</published>
+    <author><name> </name></author>
+    <author><name>Jo Bovy</name></author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2001.00004v1</id>
+    <title>Three wrote this</title>
+    <published>2020-01-04T00:00:00Z</published>
+    <author><name>R. Abuter</name></author>
+    <author><name>A. Amorim</name></author>
+    <author><name>M. Bauböck</name></author>
+  </entry>
+</feed>

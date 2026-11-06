@@ -1,0 +1,1 @@
+https://koa.ipac.caltech.edu/TAP/sync?FORMAT=votable&LANG=ADQL&QUERY=SELECT+TOP+2+koaid%2C+filehand%2C+targname%2C+object%2C+utdatetime%2C+exptime%2C+deckname%2C+progpi+FROM+koa_hires+WHERE+CONTAINS%28POINT%28%27ICRS%27%2C+ra%2C+dec%29%2C+CIRCLE%28%27ICRS%27%2C+148.49225%2C+57.68342%2C+0.01%29%29+%3D+1+AND+koaimtyp+%3D+%27object%27&REQUEST=doQuery

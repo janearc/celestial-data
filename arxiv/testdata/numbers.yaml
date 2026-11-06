@@ -1,0 +1,55 @@
+# numbers.yaml: the numbers the arxiv package's tests are held to, by
+# name. The sources are in ../sources.yaml.
+
+numbers:
+  - name: arxivs-least
+    value: 3
+    unit: seconds
+    says: the least time from the start of one request to arXiv to the start of the next, read from arXiv's terms by these tests, apart from the package's own reading, so the gate is held to arXiv and not to itself
+    kind: measured
+    source:
+      key: arxiv-api-terms
+      where: Limitations, Rate limits
+      text: "When using the legacy APIs (including OAI-PMH, RSS, and the arXiv API), make no more than one request every three seconds, and limit requests to a single connection at a time."
+  - name: step
+    value: 1
+    unit: seconds
+    says: how long after a request began the next comes in the pacing tests, a third of the pace, so the next waits out the two seconds left
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06
+  - name: watch
+    value: 0.05
+    unit: seconds
+    says: how long a test watches for a request that must not go through while the gate is held; far past the microseconds one takes when it may
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06
+  - name: patient-wait
+    value: 5
+    unit: seconds
+    says: how long the tests give a local server to connect and begin its answer, far past the milliseconds one takes
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06
+  - name: slow-api
+    value: 0.2
+    unit: seconds
+    says: how long the slow API waits before it answers, twenty times the hasty wait, so the searcher always gives up first
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06
+  - name: hasty-wait
+    value: 0.01
+    unit: seconds
+    says: how long the hasty searcher waits for the API to begin its answer
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06
+  - name: rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long the gate leaves arXiv alone after it asked us to stop without saying how long; the package's own pick, typed here so the test holds the gate to it and not to itself
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06, as in arxiv/numbers.yaml
+  - name: asked-wait
+    value: 30
+    unit: seconds
+    says: the Retry-After the tests' answers that ask us to stop give, as seconds
+    kind: picked
+    by: celestial-data's arxiv tests, 2026-11-06

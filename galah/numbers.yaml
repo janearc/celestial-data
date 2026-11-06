@@ -1,0 +1,13 @@
+# numbers.yaml: the one number the galah package reads from the file
+# itself. The source is in sources.yaml.
+
+numbers:
+  - name: allstar-size
+    value: 757998720
+    unit: bytes
+    says: the length of DR4's allstar, galah_dr4_allstar_240705.fits, as Data Central served it
+    kind: measured
+    source:
+      key: galah-allstar
+      where: the Content-Length the server answered for the file
+      text: "content-length: 757998720"

@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -70,6 +71,9 @@ func serve(answer http.ResponseWriter, asked *http.Request) {
 		io.WriteString(answer, photons)
 	case "/choices":
 		answer.WriteHeader(http.StatusMultipleChoices)
+	case "/busy":
+		answer.Header().Set("Retry-After", busyFor)
+		answer.WriteHeader(http.StatusTooManyRequests)
 	case "/agent":
 		io.WriteString(answer, asked.UserAgent())
 	case "/submit", "/sign", "/cookie", "/lost":
@@ -163,6 +167,40 @@ func TestAFailedAnswerIsAnError(t *testing.T) {
 
 // nothingCame is the length beside an error. It's defined by Web.
 const nothingCame = 0
+
+// busyFor is the Retry-After /busy answers with, as a server writes it.
+const busyFor = "120"
+
+// A server that asks us to wait is refused as a Status that says so:
+// its code, and the wait as the server wrote it, for GET and HEAD alike.
+// Its message is the one a refusal always had: the method, the address
+// and the status.
+func TestARefusalSaysItsCodeAndTheWaitAsked(t *testing.T) {
+	url := archive(t).URL + "/busy"
+	_, _, got := patient(t).Get(url)
+	_, headed := patient(t).Head(url)
+	for method, err := range map[string]error{http.MethodGet: got,
+		http.MethodHead: headed} {
+		var status *web.Status
+		if !errors.As(err, &status) ||
+			status.Code() != http.StatusTooManyRequests ||
+			status.RetryAfter() != busyFor ||
+			err.Error() != method+" "+url+": 429 Too Many Requests" {
+			t.Errorf("%s: %v", method, err)
+		}
+	}
+}
+
+// Anti-test: a refusal that asks no wait has none, and its code is its
+// own.
+func TestARefusalThatAsksNoWaitHasNone(t *testing.T) {
+	_, _, err := patient(t).Get(archive(t).URL + "/missing")
+	var status *web.Status
+	if !errors.As(err, &status) || status.RetryAfter() != "" ||
+		status.Code() != http.StatusNotFound {
+		t.Errorf("%v", err)
+	}
+}
 
 // Counts of seconds are that many seconds, parts of one too.
 func TestSecondsAreSeconds(t *testing.T) {

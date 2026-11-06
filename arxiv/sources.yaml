@@ -1,0 +1,14 @@
+# sources.yaml: where the numbers in numbers.yaml, and the rules the
+# package keeps, were read. Each is a page arXiv publishes, cited by its
+# address and the day it was read.
+
+sources:
+  - key: arxiv-api-terms
+    title: "Terms of Use for arXiv APIs"
+    from: https://info.arxiv.org/help/api/tou.html
+    read: 2026-11-06
+
+  - key: arxiv-bulk-data
+    title: "arXiv Bulk Data Access"
+    from: https://info.arxiv.org/help/bulk_data.html
+    read: 2026-11-06

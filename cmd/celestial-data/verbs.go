@@ -11,17 +11,22 @@ import (
 	"strings"
 
 	"github.com/janearc/celestial-data"
+	"github.com/janearc/celestial-data/apogee"
 	"github.com/janearc/celestial-data/bluemarble"
 	"github.com/janearc/celestial-data/cardiff"
 	"github.com/janearc/celestial-data/cds"
 	"github.com/janearc/celestial-data/chandra"
 	"github.com/janearc/celestial-data/chroma"
 	"github.com/janearc/celestial-data/gaia"
+	"github.com/janearc/celestial-data/galah"
 	"github.com/janearc/celestial-data/irsa"
+	"github.com/janearc/celestial-data/keck"
+	"github.com/janearc/celestial-data/lamost"
 	"github.com/janearc/celestial-data/mast"
 	"github.com/janearc/celestial-data/naturalearth"
 	"github.com/janearc/celestial-data/nustar"
 	"github.com/janearc/celestial-data/sarao"
+	"github.com/janearc/celestial-data/sdssv"
 	"github.com/janearc/celestial-data/tap"
 	"github.com/janearc/celestial-data/usgs"
 	"github.com/janearc/celestial-data/web"
@@ -106,6 +111,11 @@ var holdsByName = map[string]string{
 	"naturalearth": "Natural Earth's land outlines at 1:50m, as GeoJSON",
 	"chroma":       "the colourways in janearc/chroma, listed by GitHub",
 	"gaia":         "Gaia DR3's stars with a radial velocity, as a job",
+	"apogee":       "APOGEE DR17's allStar: each star's parameters and abundances",
+	"galah":        "GALAH DR4's allstar: each star's parameters and abundances",
+	"sdssv":        "SDSS-V DR19's BOSS spectra, as SkyServer lists them",
+	"lamost":       "LAMOST DR10's low and medium resolution spectra, by TAP",
+	"keck":         "the Keck Observatory Archive's HIRES frames and spectra",
 }
 
 // holdsOf is the line on what an archive holds, by its name.
@@ -207,6 +217,16 @@ func known(get web.Web, with *settings) ([]celestialdata.Archive, error) {
 	asked.keep(colours, err)
 	stars, err := gaia.New(gaiaColumns, gaiaWhere)
 	asked.keep(stars, err)
+	allStar, err := apogee.New()
+	asked.keep(allStar, err)
+	survey, err := galah.New()
+	asked.keep(survey, err)
+	boss, err := sdssv.New(get, with.most)
+	asked.keep(boss, err)
+	fibres, err := lamost.New(get, with.most)
+	asked.keep(fibres, err)
+	echelle, err := keck.New(get, with.most)
+	asked.keep(echelle, err)
 	if err := errors.Join(asked.refused...); err != nil {
 		return nil, err
 	}

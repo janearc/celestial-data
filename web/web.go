@@ -150,10 +150,35 @@ func (client Client) ask(method, url string) (*http.Response, error) {
 	if answer.StatusCode < http.StatusOK ||
 		answer.StatusCode >= http.StatusMultipleChoices {
 		answer.Body.Close()
-		return nil, fmt.Errorf("%s %s: %s", method, url, answer.Status)
+		return nil, &Status{method: method, url: url,
+			status: answer.Status, code: answer.StatusCode,
+			retryAfter: answer.Header.Get("Retry-After")}
 	}
 	return answer, nil
 }
+
+// Status is an answer that was not a success, as Get and Head refuse
+// it: the request's method and address, the status as the server wrote
+// it and its code, and its Retry-After header as written, or none. A
+// caller that must stop when a server asks it to wait reads Code.
+type Status struct {
+	method, url, status string
+	code                int
+	retryAfter          string
+}
+
+// Error is the method, the address and the status.
+func (status *Status) Error() string {
+	return fmt.Sprintf("%s %s: %s", status.method, status.url,
+		status.status)
+}
+
+// Code is the status's code, as 429 for Too Many Requests.
+func (status *Status) Code() int { return status.code }
+
+// RetryAfter is how long the server asked us to wait, as its Retry-After
+// header wrote it: seconds or a date. It is empty when it asked none.
+func (status *Status) RetryAfter() string { return status.retryAfter }
 
 // Seconds is a count of seconds as a wait New takes. The waits celestial-data
 // picks are kept in numbers files as seconds.

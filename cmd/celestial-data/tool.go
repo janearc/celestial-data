@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/janearc/celestial-data"
+	"github.com/janearc/celestial-data/arxiv"
 	"github.com/janearc/celestial-data/gaia"
 	"github.com/janearc/celestial-data/web"
 	"github.com/janearc/puzzlemouth/pzm"
@@ -32,6 +33,11 @@ const limitless time.Duration = 0
 //
 // signed and keys are the web that keeps a session and where gaia-login
 // reads a login. A test gives them; run gives the network and op.
+//
+// search, clock and record are what papers asks arXiv's API through,
+// the clock its gate keeps and where the gate's record is kept between
+// runs. A test gives them; run gives the library's client, the wall's
+// clock and the user's cache folder.
 type command struct {
 	get    web.Web
 	picked *celestialdata.Measured
@@ -39,6 +45,9 @@ type command struct {
 	sets   map[string]maker
 	signed session
 	keys   secrets
+	search arxiv.Searcher
+	clock  arxiv.Clock
+	record string
 }
 
 // run runs celestial-data with its words, input and output given. Its archives
@@ -110,14 +119,23 @@ var (
 	asking = verb.NewFacts(verb.WritesNothing, verb.LeavesAlone,
 		verb.Outside, verb.NoOne, verb.Light)
 	// fetching is a verb that brings files home and replaces none.
-	fetching = verb.NewFacts(verb.WritesTo("the folder --into names"),
-		verb.LeavesAlone, verb.Outside, verb.NoOne, verb.Light)
+	fetching = bringing("the folder --into names")
 	// fetchingSet is a verb that brings a set's files home and replaces
 	// none.
-	fetchingSet = verb.NewFacts(verb.WritesTo("the folder --into or "+
-		"the set's _DATA names"), verb.LeavesAlone, verb.Outside,
-		verb.NoOne, verb.Light)
+	fetchingSet = bringing("the folder --into or the set's _DATA names")
+	// fetchingPapers is a verb that brings papers home, replaces none,
+	// and keeps the gate's record in the user's cache folder.
+	fetchingPapers = bringing("the folder --into names, and the " +
+		"gate's record in the user's cache folder")
 )
+
+// bringing is the facts of a verb that brings files home from the
+// archives into a place, and replaces none.
+func bringing(place string) verb.Facts {
+	where := verb.WritesTo(place)
+	return verb.NewFacts(where, verb.LeavesAlone, verb.Outside,
+		verb.NoOne, verb.Light)
+}
 
 // declared is celestial-data and its verbs, as pzm takes them. Each verb's
 // example is the function Example_ and its name in this package's tests.
@@ -144,6 +162,12 @@ func (tool command) declared() *pzm.Tool {
 	declared.Verb("fetch-set", verb.NoShort, "brings the files of a "+
 		"named set home", fetchSetPage, "Example_fetchSet", fetchingSet,
 		tool.setVerb, into)
+	declared.Verb("papers", verb.NoShort, "brings papers home from "+
+		"arXiv, gently", papersPage, "Example_papers", fetchingPapers,
+		tool.papersVerb, pzm.Value("into", verb.NoShort, "the folder "+
+			"to bring papers into"), pzm.Value("list", verb.NoShort,
+			"a file of ids, one a line; what follows a # is not "+
+				"read"))
 	declared.Verb("gaia-login", verb.NoShort, "signs in to the gaia "+
 		"archive with a login from op", loginPage, "Example_gaiaLogin",
 		signingIn, tool.loginVerb,

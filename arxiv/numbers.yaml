@@ -1,0 +1,19 @@
+# numbers.yaml: what arXiv asks of a program that fetches from it, read
+# from its own pages. The sources are in sources.yaml.
+
+numbers:
+  - name: least-pace
+    value: 3
+    unit: seconds
+    says: the least time from the start of one request to arXiv to the start of the next, one request at a time, for all of a caller's machines together. The terms set it for the arXiv API; this package holds every request to arXiv to it for one user on one machine, the PDFs too, and from one run to the next through the gate's record, which is gentler than its terms ask for the PDFs. Other machines it cannot see
+    kind: measured
+    source:
+      key: arxiv-api-terms
+      where: Limitations, Rate limits
+      text: "When using the legacy APIs (including OAI-PMH, RSS, and the arXiv API), make no more than one request every three seconds, and limit requests to a single connection at a time."
+  - name: rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long the gate leaves arXiv alone after arXiv asked it to stop without a Retry-After saying how long; arXiv's pages give no number for this
+    kind: picked
+    by: celestial-data's arxiv package, papers should be fetched gently

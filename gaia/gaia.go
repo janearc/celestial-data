@@ -3,6 +3,10 @@
 // job runs under the session SignIn starts, so the archive knows whose
 // it is.
 //
+// It reads what a job answered, too: a Catalogue is the product on
+// disk, and a Source one of its rows as celestial's types, for
+// celestial's galactocentric frame and orbit's solver to take.
+//
 // The archive's account of its service, read 2026-11-05:
 // https://www.cosmos.esa.int/web/gaia-users/archive/programmatic-access
 package gaia

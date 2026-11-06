@@ -63,6 +63,11 @@ func Example_archives() {
 	// naturalearth  Natural Earth's land outlines at 1:50m, as GeoJSON
 	// chroma        the colourways in janearc/chroma, listed by GitHub
 	// gaia          Gaia DR3's stars with a radial velocity, as a job
+	// apogee        APOGEE DR17's allStar: each star's parameters and abundances
+	// galah         GALAH DR4's allstar: each star's parameters and abundances
+	// sdssv         SDSS-V DR19's BOSS spectra, as SkyServer lists them
+	// lamost        LAMOST DR10's low and medium resolution spectra, by TAP
+	// keck          the Keck Observatory Archive's HIRES frames and spectra
 }
 
 // The catalogue asks nothing until its rows are fetched, so the example

@@ -1,0 +1,16 @@
+# sources.yaml: where the numbers in numbers.yaml, and the columns and
+# bits the reader is held to, were read.
+
+sources:
+  - key: apogee-allstar
+    title: "APOGEE DR17 allStar, synspec_rev1"
+    from: https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/allStar-dr17-synspec_rev1.fits
+    fetched: 2026-11-06
+  - key: apogee-datamodel
+    title: "SDSS data model: allStar"
+    from: https://data.sdss.org/datamodel/files/APOGEE_ASPCAP/APRED_VERS/ASPCAP_VERS/allStar.html
+    fetched: 2026-11-06
+  - key: apogee-bitmasks
+    title: "SDSS DR17: APOGEE bitmasks"
+    from: https://www.sdss4.org/dr17/irspec/apogee-bitmasks/
+    fetched: 2026-11-06

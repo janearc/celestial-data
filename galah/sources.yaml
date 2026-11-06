@@ -1,0 +1,20 @@
+# sources.yaml: where the number in numbers.yaml, and the columns and
+# flags the reader is held to, were read.
+
+sources:
+  - key: galah-allstar
+    title: "GALAH DR4 allstar, 2024-07-05"
+    from: https://cloud.datacentral.org.au/teamdata/GALAH/public/GALAH_DR4/catalogs/galah_dr4_allstar_240705.fits
+    fetched: 2026-11-06
+  - key: galah-catalogues
+    title: "GALAH DR4: the catalogues"
+    from: https://www.galah-survey.org/dr4/the_catalogues/
+    fetched: 2026-11-06
+  - key: galah-schema
+    title: "GALAH DR4: table schema"
+    from: https://www.galah-survey.org/dr4/table_schema/
+    fetched: 2026-11-06
+  - key: galah-flags
+    title: "GALAH DR4: flags"
+    from: https://www.galah-survey.org/dr4/flags/
+    fetched: 2026-11-06

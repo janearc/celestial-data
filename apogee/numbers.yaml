@@ -1,0 +1,13 @@
+# numbers.yaml: the one number the apogee package reads from the file
+# itself. The source is in sources.yaml.
+
+numbers:
+  - name: allstar-size
+    value: 3970621440
+    unit: bytes
+    says: the length of DR17's allStar, allStar-dr17-synspec_rev1.fits, as the Science Archive Server served it
+    kind: measured
+    source:
+      key: apogee-allstar
+      where: the Content-Length the server answered for the file
+      text: "content-length: 3970621440"

@@ -17,13 +17,21 @@ lint paragraph 4
 
 lint allow README.md words paragraph rows
 
+# so shouty oof
+lint abbreviations APOGEE ASPCAP ASPCAPFLAG ELEMFLAG EXTRATARG FIELD GALAH
+lint abbreviations GLIMPSE HEASARC HERMES HIRES LAMOST MAKEE MARCS MODIS
+lint abbreviations NICMOS PPMAP SARAO STARFLAG TARGET TFORM TNULL TUNIT VESTA
+lint abbreviations VIIRS VSCATTER
+
 sweep allow chroma/chroma.go author
 sweep allow chroma/chroma_test.go author
 
-# the replies the archives gave, recorded for the tests: their words are
-# the archives', not ours.
+# test data is scrungy, quit complaining ok
 exclude testdata
+exclude lamost/testdata
 
-# the mock of the one door to the network, generated from the interface
-# it stands in for. mockgen is pinned in go.mod as a tool.
+# mocks
 run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/web.go -package mocks github.com/janearc/celestial-data/web Web
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/normal.go -package mocks github.com/janearc/celestial-data/gaia Normal
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/searcher.go -package mocks github.com/janearc/celestial-data/arxiv Searcher
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/clock.go -package mocks github.com/janearc/celestial-data/arxiv Clock

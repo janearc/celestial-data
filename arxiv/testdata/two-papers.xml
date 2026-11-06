@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/FKnGsxrS9XgdXyffDvV6Qwb0LYI</id>
+  <title>arXiv Query: search_query=&amp;id_list=1809.03507,astro-ph/0602086&amp;start=0&amp;max_results=2</title>
+  <updated>2026-11-06T17:15:23Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=2&amp;id_list=1809.03507,astro-ph/0602086" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>2</opensearch:itemsPerPage>
+  <opensearch:totalResults>2</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/astro-ph/0602086v1</id>
+    <title>The IAU Resolutions on Astronomical Reference Systems, Time Scales, and Earth Rotation Models</title>
+    <updated>2006-02-03T20:43:57Z</updated>
+    <link href="https://arxiv.org/abs/astro-ph/0602086v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/astro-ph/0602086v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>  Recent resolutions passed by the International Astronomical Union (IAU) on astronomical reference systems, time scales, and Earth rotation models are the most significant set of international agreements in positional astronomy in several decades. These resolutions, the result of over ten years of international research and study, provide a coherent set of foundational standards for the treatment of astrometric data and the modeling of dynamics in the solar system. This circular explains these resolutions and provides a complete set of practical formulas for their implementation. The six main chapters cover relativity, time scales, the fundamental celestial reference system, ephemerides of solar system bodies, precession and nutation, and modeling the Earth's rotation.</summary>
+    <category term="astro-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2006-02-03T20:43:57Z</published>
+    <arxiv:comment>118 pages, 6 figures. Includes 6 main chapters plus table of contents, introductory material, references, and appendices. Available in hardback print edition and as a high-quality PDF file; see http://aa.usno.navy.mil/publications/docs/Circular_179.html</arxiv:comment>
+    <arxiv:primary_category term="astro-ph"/>
+    <arxiv:journal_ref>Kaplan, G. H., 2005, U.S. Naval Observatory Circular No. 179 (Washington: USNO)</arxiv:journal_ref>
+    <author>
+      <name>George H. Kaplan</name>
+      <arxiv:affiliation>U.S. Naval Observatory</arxiv:affiliation>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1809.03507v2</id>
+    <title>Vertical waves in the solar neighbourhood in Gaia DR2</title>
+    <updated>2018-11-07T18:46:49Z</updated>
+    <link href="https://arxiv.org/abs/1809.03507v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1809.03507v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The vertical structure and dynamics of stars in our local Galactic neighbourhood contains much information about the local distribution of visible and dark matter and of perturbations to the Milky Way disc. We use data on the positions and velocities of stars in the solar neighbourhood from \gaia\ DR2 and large spectroscopic surveys to investigate the vertical number counts and mean-velocity trend as a function of distance from the local Galactic mid-plane. We perform a detailed measurement of the wave-like North-South asymmetry in the vertical number counts, which reveals a number of deficits at heights $\approx 0.4\,\mathrm{kpc}$, $\approx 0.9\,\mathrm{kpc}$, and $\approx 1.5\,\mathrm{kpc}$, and peaks at $\approx 0.2\,\mathrm{kpc}$, $\approx 0.7\,\mathrm{kpc}$, and $\approx 1.1\,\mathrm{kpc}$. We find that the asymmetry pattern is independent of colour. The mean vertical velocity is almost constant to $&lt;1\,\mathrm{km\,s}^{-1}$ within a few 100 pc from the mid-plane and then displays a North-South symmetric dip at $\approx0.5\,\mathrm{kpc}$ with an amplitude of $\approx 2\,\mathrm{km\,s}^{-1}$ that is a plausible velocity counterpart to the main number-count dip at a similar height. Thus, with \gaia\ DR2 we confirm at high fidelity that the local Galactic disc is undergoing a wave-like oscillation and a dynamically-consistent observational picture of the perturbed local vertical structure emerges for the first time. We also present the most precise and accurate determination of the Sun's height above the local Galactic mid-plane, correcting for any asymmetry in the vertical density: $z_\odot = 20.8 \pm 0.3\,\mathrm{pc}$.</summary>
+    <category term="astro-ph.GA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2018-09-10T18:00:03Z</published>
+    <arxiv:comment>Code available at https://github.com/morganb-phys/VWaves-GaiaDR2</arxiv:comment>
+    <arxiv:primary_category term="astro-ph.GA"/>
+    <arxiv:journal_ref>Bennett, M., &amp; Bovy, J. 2019, MNRAS, 482, 1417</arxiv:journal_ref>
+    <author>
+      <name>Morgan Bennett</name>
+    </author>
+    <author>
+      <name>Jo Bovy</name>
+    </author>
+    <arxiv:doi>10.1093/mnras/sty2813</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1093/mnras/sty2813" title="doi"/>
+  </entry>
+</feed>
