@@ -39,6 +39,16 @@ type Client struct {
 	agent string
 }
 
+// Patient makes a Client whose server gets wait to connect and to begin
+// its answer, and whose whole request has no limit, so a large file on a
+// slow link is never cut off.
+func Patient(wait time.Duration, agent string) Client {
+	return New(wait, noLimit, agent)
+}
+
+// noLimit is no limit on a whole request. It's defined by New.
+const noLimit time.Duration = 0
+
 // New makes a Client. The server gets wait to connect and to begin its
 // answer. The whole request gets whole, up to its last byte. Zero is no
 // limit. That suits a large file on a slow link.

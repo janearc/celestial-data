@@ -123,7 +123,10 @@ func TestAJobNotDoneAfterEveryAskIsGivenUpOn(t *testing.T) {
 }
 
 func TestAJobThatCannotBeAskedAfterIsAnError(t *testing.T) {
-	for _, reply := range []string{"<uws:job/>", "<uws:job", "ask"} {
+	// each is refused for its own reason: no phase, a description cut
+	// off, and no answer at all
+	for reply, says := range map[string]string{"<uws:job/>": "says no phase",
+		"<uws:job": "XML syntax error", "ask": "gone"} {
 		jobs, under := jobsOver(t)
 		under.EXPECT().Post(async, submitted()).Return(job, nil)
 		if reply == "ask" {
@@ -133,8 +136,8 @@ func TestAJobThatCannotBeAskedAfterIsAnError(t *testing.T) {
 			under.EXPECT().Get(job).Return(body(reply), int64(-1), nil)
 		}
 		if _, _, err := jobs.Get(tap.URL(async, query,
-			"fits")); err == nil {
-			t.Errorf("%q was taken as a job", reply)
+			"fits")); err == nil || !strings.Contains(err.Error(), says) {
+			t.Errorf("%q gave %v, not %q", reply, err, says)
 		}
 	}
 }
@@ -191,6 +194,10 @@ func TestNewJobsRefusesWhatCannotRunAJob(t *testing.T) {
 	}
 	if _, err := tap.NewJobs(nil, time.Second, 1, io.Discard); err == nil {
 		t.Error("jobs over no web were taken")
+	}
+	// one ask is enough to make jobs with
+	if _, err := tap.NewJobs(under, time.Second, 1, io.Discard); err != nil {
+		t.Errorf("jobs of one ask were refused: %v", err)
 	}
 	if _, err := tap.NewJobs(under, time.Second, 1, nil); err == nil {
 		t.Error("jobs that tell no one were taken")

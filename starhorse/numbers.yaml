@@ -1,0 +1,13 @@
+# numbers.yaml: the one number the starhorse package reads from the file
+# itself. The source is in sources.yaml.
+
+numbers:
+  - name: starhorse-size
+    value: 248604480
+    unit: bytes
+    says: the length of StarHorse's APOGEE DR17 results, APOGEE_DR17_EDR3_StarHorse_v2.fits, as AIP's server answered
+    kind: measured
+    source:
+      key: starhorse-results
+      where: the Content-Length the server answered for the file
+      text: "Content-Length: 248604480"

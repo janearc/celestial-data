@@ -1,0 +1,18 @@
+# sources.yaml: where the number in numbers.yaml, and the byte columns
+# the reader is held to, were read.
+
+sources:
+  - key: bsc5-catalogue
+    title: "The Yale Bright Star Catalogue, 5th revised ed. (Hoffleit and Warren 1991), ASCII"
+    from: http://tdc-www.harvard.edu/catalogs/ybsc5.gz
+    fetched: 2026-11-10
+    sha256: 3dc44b1e90be8fbe5bcc7656032560f51275f985c7e3f783c9028e1838ec7bed
+  - key: bsc5-readme
+    title: "ybsc5.readme: the byte-by-byte description of the catalogue, by Wayne H. Warren Jr., 1991 June 28"
+    from: http://tdc-www.harvard.edu/catalogs/ybsc5.readme
+    fetched: 2026-11-10
+    sha256: 6d2409d4cd36895fee43186fa1cd53fa4c8a512bb52e3dc864aef1c72543716e
+  - key: bsc5-page
+    title: "Yale Bright Star Catalog, the Telescope Data Center's page"
+    from: http://tdc-www.harvard.edu/catalogs/bsc5.html
+    fetched: 2026-11-10

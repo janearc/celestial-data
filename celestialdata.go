@@ -109,6 +109,38 @@ func finite(number float64) bool {
 type Product struct {
 	archive, id, name, url, about string
 	size                          int64
+	check                         Checker
+}
+
+// Checker is a check of a fetched file. It is an interface, not a
+// function, so that products stay comparable: a Checker should be a
+// value that can be compared. One that holds a slice or a map compiles,
+// and then == between two products that hold it panics.
+type Checker interface {
+	// Check says nothing for a file that is as it should be, or why
+	// not. path is the file's, before it has the product's name.
+	Check(path string) error
+}
+
+// Checked is the product held to a check of its file: once Fetch has
+// all the bytes, in a file of their own, it gives the check that file's
+// path, and keeps the file only when the check says nothing.
+//
+// It is for an archive that says no length, whose file can still be
+// told whole by what is in it, or whose file must be the one it found.
+//
+// It changes the product it is given and gives the same one back, so
+// it is for a product the adapter has just made. A product another has
+// found, such as one from a Fixed archive's Find, is that archive's
+// too: checking it checks it for every later caller.
+//
+// It gives the product back, or none for none, so a product an
+// adapter's Product refused is handed on with its refusal.
+func (product *Product) Checked(check Checker) *Product {
+	if product != nil {
+		product.check = check
+	}
+	return product
 }
 
 // newProduct is a file an archive holds; adapters make one through their
@@ -273,7 +305,12 @@ func fill(get web.Web, product *Product, file *os.File, part string) error {
 			product.url, got, product.size)
 	}
 	if strings.HasSuffix(product.name, ".gz") {
-		return whole(part)
+		if err := whole(part); err != nil {
+			return err
+		}
+	}
+	if product.check != nil {
+		return product.check.Check(part)
 	}
 	return nil
 }

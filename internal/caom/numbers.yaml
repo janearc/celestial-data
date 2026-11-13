@@ -1,0 +1,9 @@
+# numbers.yaml: the number internal/caom picks. Its reason is in says.
+
+numbers:
+  - name: most-asks
+    value: 10
+    unit: asks
+    says: how many times a question is asked while MAST answers EXECUTING; MAST answered every question asked on 2026-11-06 the first time, and one asked this often is stuck
+    kind: picked
+    by: celestial-data's tess adapter, 2026-11-06; moved to internal/caom with k2

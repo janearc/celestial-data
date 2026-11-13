@@ -1,0 +1,16 @@
+# sources.yaml: where the number in numbers.yaml, and the columns and
+# flags the reader is held to, were read.
+
+sources:
+  - key: starhorse-results
+    title: "StarHorse for APOGEE DR17 and Gaia EDR3, v2"
+    from: https://s3.data.aip.de:9000/shaqueiroz2023/APOGEE_DR17_EDR3_StarHorse_v2.fits
+    fetched: 2026-11-06
+  - key: starhorse-page
+    title: "2023 StarHorse results for spectroscopic surveys + Gaia DR3 (AIP)"
+    from: https://data.aip.de/projects/aqueiroz2023.html
+    fetched: 2026-11-06
+  - key: starhorse-paper
+    title: "Queiroz et al. 2023, StarHorse results for spectroscopic surveys + Gaia DR3"
+    from: https://arxiv.org/abs/2303.09926
+    fetched: 2026-11-06

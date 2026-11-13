@@ -67,14 +67,16 @@ func (pacing paced) Head(address string) (int64, error) {
 
 // halted says a refusal of 403, 429 or 503 as arXiv asking us to stop,
 // with the request refused and the wait asked, and has the gate keep
-// that wait. Any other error, or none, is given as it is.
+// that wait. Any other error, or none, is given as it is. A wait whose
+// record will not write is said beside the halt.
 func (pacing paced) halted(err error) error {
 	var status *web.Status
 	if !errors.As(err, &status) || !stopping(status.Code()) {
 		return err
 	}
-	pacing.gate.stopUntil(status.RetryAfter())
-	return &halt{status: status.Error(), retryAfter: status.RetryAfter()}
+	noted := pacing.gate.stopUntil(status.RetryAfter())
+	stop := &halt{status: status.Error(), retryAfter: status.RetryAfter()}
+	return errors.Join(stop, noted)
 }
 
 // stopping is whether a status's code is arXiv asking us to stop.

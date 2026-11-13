@@ -1,0 +1,16 @@
+# sources.yaml: where the number in numbers.yaml, and the survey names,
+# the address and the header cards the reader is held to, were read.
+
+sources:
+  - key: dss-form
+    title: "The STScI Digitized Sky Survey: the form"
+    from: https://archive.stsci.edu/cgi-bin/dss_form
+    fetched: 2026-11-06
+  - key: dss-help
+    title: "The STScI Digitized Sky Survey: search help"
+    from: https://archive.stsci.edu/dss/dss_help.html
+    fetched: 2026-11-06
+  - key: dss-acknowledging
+    title: "The STScI Digitized Sky Survey: acknowledging DSS"
+    from: https://archive.stsci.edu/dss/acknowledging.html
+    fetched: 2026-11-06

@@ -57,6 +57,144 @@ grissom
   from SkyView into `sky/`. every colourway the chroma archive lists
   into `colourways/`.
 
+## dasch
+
+dasch brings the light curves of Harvard's plate archive (DASCH DR7)
+home, as CSV, for the APASS sources in a circle.
+
+```sh
+$ celestial-data fetch --archive dasch --ra 287.50086 --dec -22.23481 \
+    --radius 0.0014 --into ~/sky
+```
+
+DR7 gives a light curve only to a POST of JSON, at the public tier of
+Harvard's Starglass API, which asks for no key. `find` asks it once, for
+the APASS sources in the circle, and names a light curve for each, the
+nearest first, at most `--most` of them. `fetch` asks once more for each
+light curve it keeps. a light curve's address holds the question; it is
+no address a plain GET opens, and it is only `fetch` that answers it.
+
+the file is every measure DASCH has of the source, flagged or not: a
+line a plate, the first line the names of the columns. a plate that
+covers the place and saw nothing has a line too, with only its date,
+plate and limiting magnitude. the measures are the lines that have a
+`ref_number`. nothing is dropped here: choosing is the reader's.
+
+a disagreement, said so it is not read as settled: DASCH's web APIs
+page, kept on 2026-11-09, says the raw API names its columns in camel
+case (`refNumber`, `dateJd`), not the snake case of its column pages.
+the API's own answers of 2026-11-08 were in snake case: the light curve
+kept as it came begins `date_jd,series,plate_number`, and that day's
+catalogue query passed a reader that took only `ref_number` and its
+neighbours. the page and the answers disagree; the readers take either
+spelling, and refuse a first line that names one column both ways.
+
+what DASCH's own column page says, read in its kept copy on 2026-11-09
+(dasch/sources.yaml has its address and hash):
+
+- the magnitude to take is `magcal_magdep` ("Use this value"), with
+  `magcal_local_rms` as its uncertainty.
+- daschlab's `time` is the HJD midpoint of the exposure, and DASCH has
+  not yet said its time scale. the page describes daschlab's column;
+  that the API's `date_jd` is the same is not said there.
+- `aflags`, `a2flags`, `bflags` and `b2flags` are "not yet documented
+  here", pointing to DASCH's Legacy Data Guide, not yet read. firang read
+  "unflagged" as `aflags` of zero, which reproduced its count; no reading
+  should rest on the bits until the guide is read.
+
+`dasch-pages` brings those pages home, asked by name: DR7's web APIs,
+data products and light curve columns, the pages this adapter was read
+from. the copies are kept in `cited-sources/`, which `.game` omits and
+excludes: in version control, never in a release.
+
+the circle is asked as a box of at most 3600 arcseconds; a wider one is
+refused. find says, in each light curve's description, which of the
+circle's sources it is and how many there are, so those past `--most`
+are not left out unsaid. a source listed twice, or at a place that is
+not on the sky, is an error in the answer, not a source to skip.
+
+the questions are paced: one a second at most, from the start of one to
+the start of the next, picked, as Starglass gives its public tier no
+number. a 429, Starglass asking us to stop, stops the fetch: nothing
+more is sent until the time its Retry-After gives, or five minutes when
+it gives none, and fetch says how many light curves were not asked
+for. nothing is retried, and no redirect is followed.
+
+an answer is held to 32 MiB, and a light curve to its shape: a first
+line of columns beginning `date_jd`, and as many fields on every line.
+a 200 that holds anything else is refused, not kept.
+
+## usno
+
+usno brings home the pages of the US Naval Observatory's Astronomical
+Applications Department that celestial derives formulas from. today
+that is one: its approximate solar coordinates.
+
+```sh
+$ celestial-data fetch --archive usno --ra 0 --dec 0 --radius 0.1 \
+    --into ~/sources
+```
+
+the page is kept whole as html, to be read and cited, not parsed. it is
+asked only by name, and the circle is not used. a work of the US
+government is not under copyright in the US, so the page can be kept
+and derived from. its length is not known until it is served.
+
+nothing here checks that what came is the page: a 200 that holds a
+maintenance notice would be kept as `sun-approx.html`. the page is
+checked where it is cited instead. celestial keeps the copy it derives
+from in `cited-sources/usno-sun-approx.html`, with its sha256, its size
+and the time it was fetched in `research/sources.yaml`, and its `.game`
+extract step greps the copy for the accuracy line and the four formulas,
+so a page that is not the page fails there. the page can change under
+the same address: a new fetch is a new copy, with its own hash, and the
+fetch's own record is a `FETCHED.md` beside it.
+
+## soniakeys
+
+soniakeys brings home test files of Sonia Keys's Go implementation of
+Meeus's Astronomical Algorithms (github.com/soniakeys/meeus, MIT), at
+the one commit celestial cites, bfbd9ac. today that is one: her solar
+coordinates test, which transcribes the book's example 25.a.
+
+```sh
+$ celestial-data fetch --archive soniakeys --ra 0 --dec 0 --radius 0.1 \
+    --into ~/sources
+```
+
+they are kept to check celestial's work against, never to derive it
+from: none of her code, formulas or constants is used, so as not to take
+on her licence, and a transcription is not the book. each is kept as a
+`.txt`, as celestial's cited-sources keeps her other test files. asked
+only by name; the circle is not used.
+
+## horizons
+
+horizons asks JPL's Horizons system where the sun, the earth and the
+moon stand as seen from the James Webb Space Telescope at one moment:
+20:53 on 2027-05-22, when the star gaia dr3 4081136684118965760 reaches
+the edge of where webb may point. a picture of webb then needs it: the
+telescope's pointing says which way it faces and not where on its orbit
+about L2 it is.
+
+```sh
+$ celestial-data fetch --archive horizons --ra 0 --dec 0 --radius 0.1 \
+    --into ~/sources
+```
+
+three files of text, each as Horizons sends it, one line of a body's
+place and speed at the moment and one a minute after: kilometres and
+kilometres a second, against the ICRF's equator, with webb at the
+middle. asked only by name; the circle is not used. no key and no
+login; Horizons takes an address to write to if something goes wrong,
+and none is sent.
+
+what the answers are not: webb's place then is a prediction, since it
+holds its orbit by a burn every few weeks, each planned nearer its
+time. the vectors are geometric, with no light time. the moment is on
+Horizons' clock for vectors, barycentric dynamical time, 69 seconds
+from UTC, in which nothing seen from webb moves an arcsecond.
+
 ## papers
 
 papers brings papers home from arXiv by their ids.
@@ -109,10 +247,14 @@ it is gentle with arXiv, as arXiv asks of programs:
 - it asks `export.arxiv.org`, the host arXiv sets aside for programs.
 - a 403, a 429 or a 503 is arXiv asking us to stop. the run stops at
   once, says arXiv's Retry-After and which papers were not fetched,
-  and asks nothing more. nothing is retried. the wait is kept in the
-  record, and a run before it has passed asks nothing and says when it
-  will have: the Retry-After's seconds or date, or five minutes
-  (`rest-unsaid`) when arXiv said none. any other failure of the API
+  and asks nothing more. nothing is retried. the wait is written to the
+  record as soon as arXiv asks it, so a run killed before it ends still
+  leaves it, and a run before it has passed asks nothing and says when
+  it will have: the Retry-After's seconds or date, or five minutes
+  (`rest-unsaid`) when arXiv said none. a date already past, from a
+  server whose clock is behind ours, is no wait: the next run asks at
+  the pace. a wait that cannot be written is said beside the stop.
+  any other failure of the API
   stops the run too, before any PDF is asked for: an API that fails is
   not asked for more. a version arXiv does not have is said as not on
   arXiv, and the rest of its query are still found.
@@ -128,6 +270,37 @@ redirect inside one request is followed as part of it, not paced on
 its own. a download has no time limit, for a large file on a slow
 link: one that stalls holds the run until it is stopped with
 control-c.
+
+that library is under the MIT licence, by its LICENSE.md. a binary
+built with it carries it, so the library's copyright and licence notice
+must travel with any binary that is shipped.
+
+## ads
+
+`ads` searches NASA's Astrophysics Data System, with the words its own
+search box takes: `author:`, `year:`, `full:"words"` and the rest.
+
+```sh
+$ celestial-data-secrets ads-login
+$ celestial-data ads 'full:"4081136684118965760"'
+```
+
+it says how many papers match and the newest of them, twenty unless
+`--most` says otherwise, each by bibcode, year, first author and
+title, and how many searches ADS allows today. a run sends one
+request, and follows no redirect: a redirect is said as the status it
+is, so the token goes to ADS's host alone. when ADS asks us to stop,
+the run says until when.
+
+the token is read from `ads-token`, beside the secrets' config, where
+`celestial-data-secrets ads-login` kept it, readable by its owner
+alone, so a search asks no one. `ADS_SESSION` names another file for
+both, when set. `ads-login` asks op for it once; see
+[secrets](#secrets). a link, a pipe or a folder in the token's place
+is refused, and so is a file anyone else can read; a file its owner
+alone reads, `-r--------`, is read. a token kept again is written to a
+new file and put in the old one's place, so a write that fails leaves
+the old token as it was.
 
 ## the archives
 
@@ -189,15 +362,16 @@ gaia
 
   ```sh
   $ export GAIA_SESSION=~/gaia/session
-  $ celestial-data gaia-login --op op://Personal/gaia
+  $ celestial-data-secrets gaia-login
   $ celestial-data fetch --archive gaia --ra 0 --dec 0 --radius 180 \
       --into ~/sky
   ```
 
-  `gaia-login` reads the login's username and password with op, which
-  asks the person at the keyboard to allow it, so a person runs it. the
-  session it keeps is readable by its owner alone, and fetch sends it
-  when `GAIA_SESSION` names it.
+  `celestial-data-secrets gaia-login` reads the gaia secret's username
+  and password with op, which asks the person at the keyboard to allow
+  it, so a person runs it; see [secrets](#secrets). the session it keeps
+  is readable by its owner alone, and fetch sends it when
+  `GAIA_SESSION` names it.
 
   the `gaia` package reads what the job answered, too: `OpenCatalogue`
   opens the product through celestial's FITS table reader and holds
@@ -242,6 +416,52 @@ apogee
   `APOGEE_DR17_ALLSTAR` naming the file. the reader needs celestial's
   `arrays` branch, whose table reader steps over columns of many.
 
+astronn
+: astroNN's catalogue of APOGEE DR17, from SDSS's Science Archive
+  Server: a row for each of allStar's, in allStar's order, with what
+  Leung and Bovy's networks read from each spectrum. one file of 647 MB,
+  whatever the circle. asked only by name.
+
+  the `astronn` package reads it as `apogee` reads allStar. a `Star` has
+  its age in Gyr (the bias-corrected age the catalogue recommends, the
+  uncorrected and linear ones, and their uncertainties), its distance
+  from the spectrum and weighed with Gaia's parallax, and its orbit.
+
+  the file names its age, distance and orbit columns in lower case, as
+  the data model does not; the reader asks for them as the file does.
+  its rows are allStar's, so a star's row in allStar is its row here: a
+  reader with that row number needs no pass through `Find`.
+
+  the server answers byte ranges, so one star's row can be read without
+  the file: testdata holds the header and firang's star's row, fetched
+  so, and the test reads that row against its own bytes.
+
+starhorse
+: StarHorse's results for APOGEE DR17 and Gaia EDR3, v2 (Queiroz et al.
+  2023), from AIP: a row a star it fit, 562,424 of them, keyed by
+  APOGEE_ID and Gaia DR3 source, not in allStar's order. one file of 249
+  MB, whatever the circle. asked only by name.
+
+  a `Star` has the 16th, 50th and 84th percentiles of its mass, distance,
+  extinction at 542 nm and age, the age's 5th and 95th, its temperature,
+  log g and metallicity, and StarHorse's flags as text. `Find` gives the
+  rows of the Gaia sources asked.
+
+  StarHorse gives ages only near the turn-off and on the subgiant branch:
+  its age flag is NOAGE elsewhere, red giants among them, and the age is
+  then not a number. a giant's mass is there all the same.
+
+tess
+: TESS's light curves at MAST: the mission's own and its high level
+  science products', QLP's among them, found by MAST's CAOM cone search
+  and each observation's products, each fetched as a FITS file. asked
+  only by name; full-frame images are not found.
+
+  MAST answers a question it is still working on with EXECUTING, and is
+  asked again, ten times at most. the tests replay MAST's answers for
+  firang's star, recorded through the adapter on 2026-11-06: sector 92,
+  QLP, 200 s.
+
 galah
 : GALAH DR4's allstar, from Data Central: a row a star observed with
   HERMES on the Anglo-Australian Telescope, with the parameters and
@@ -256,6 +476,21 @@ galah
   a survey id or a flag left empty is refused, by its column, but for
   lithium's, empty in 25,364 rows; no other is empty in the file. the test
   of the file on disk runs with `-tags galahdata` and `GALAH_DR4_ALLSTAR`
+  naming the file.
+
+bsc5
+: the Yale Bright Star Catalogue, fifth revised edition (Hoffleit and
+  Warren 1991): 9,110 stars, near enough every one brighter than visual
+  magnitude 6.5, every star a naked eye sees. one gzipped file of 574 kB,
+  ybsc5.gz, from Harvard's Telescope Data Center, whatever the circle.
+  asked only by name. CDS Strasbourg keeps the same catalogue as V/50; it
+  did not answer from here on 2026-11-10, so the adapter asks Harvard.
+
+  the `bsc5` package reads it by the byte columns of Warren's readme,
+  ybsc5.readme: a `Star` has its HR and HD numbers, its name, its J2000
+  place, its V and B-V where given, and its spectral type. the 14 rows
+  with no place, novae and objects found not to be stars, have none. the
+  test of the file on disk runs with `-tags bsc5data` and `BSC5_FILE`
   naming the file.
 
 sdssv
@@ -288,6 +523,128 @@ keck
   asked only by name, through KOA's TAP service and its level-1 lists;
   KOA answers anyone not signed in with public frames only. work using
   them acknowledges KOA and each frame's principal investigator.
+
+spherex
+: the images NASA's SPHEREx mission has taken of a place, as IRSA holds
+  them: for the circle, a cutout of each image whose footprint meets it,
+  the earliest first, `--most` of them. SPHEREx's filters put a star at
+  a different wavelength in each image, so the cutouts of one place hold
+  its spectrum between 0.75 and 5 micron. making that spectrum is not
+  done here.
+
+  find asks IRSA's TAP service once, and names each cutout for its
+  release (qr2 or qr3), its observation and detector, and the place, so
+  `spherex_qr3_2026W37_2A_0136_2D2_` and what follows it is detector 2
+  of observation 2026W37_2A_0136_2. the cutout is a square
+  twice the radius a side, from 0.03 degrees to 0.5. it is some 4 to 5
+  MB whatever its side, since IRSA does not cut the point spread
+  function, so a place with a few hundred images is a gigabyte or two.
+  IRSA says no length for a cutout, so fetch holds each to being a whole
+  cutout: a FITS file whose headers and data add up to its length, and
+  whose units are a cutout's, in order: the empty primary, IMAGE, then
+  FLAGS, VARIANCE and ZODI of the image's size, the release's PSF (an
+  image named PSF in QR2, a table named EPSF in QR3, either in a
+  release not yet seen) and the WCS-WAVE table, and nothing after. it
+  keeps none that is cut short, even where a unit ends, or is not FITS.
+  the structure is as read from the 340 cutouts of both releases
+  fetched on 2026-11-06. IRSA states no limit on requests; fetch takes
+  them one at a time. asked only by name.
+
+  IRSA asks that work using the data say: "This publication makes use
+  of data products from the Spectro-Photometer for the History of the
+  Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is
+  a joint project of the Jet Propulsion Laboratory and the California
+  Institute of Technology, and is funded by the National Aeronautics and
+  Space Administration." and cite the release's DOI, 10.26131/IRSA652
+  for QR2 and 10.26131/IRSA662 for QR3.
+
+plates
+: the photographic sky surveys of STScI's Digitized Sky Survey: for the
+  circle's centre, a FITS cutout from each of POSS-I blue and red,
+  POSS-II or the UK Schmidt's SERC and AAO surveys in blue, red and
+  infrared, and Quick-V, whichever has a plate there. the cutout is a
+  square twice the radius a side, from one arcminute to sixty, which is
+  all the form allows.
+
+  find asks each survey in turn and reads the plate's header cards from
+  the start of its answer, so what it says of a plate, its id, label,
+  telescope, emulsion, filter, exposure and date, is the scan's own; the
+  plate id and the date are in the file's name too. fetch brings the
+  whole file, header cards as the scan left them. a survey with no plate
+  at the place answers with a page, not FITS; find leaves it out. no
+  page is kept as a plate: a fetched file must be whole FITS blocks,
+  begin as FITS does, name in its header the plate find read there, and
+  reach the end of the image that header declares, whatever length the
+  server said or did not say, so another plate of the same length, and
+  a plate's header without its image, are refused too. the plate id
+  names the plate, not the cutout: two cutouts of one plate at other
+  places would both pass. a FITS string's quote written as two
+  is read as one, and a string with no closing quote is refused.
+
+  find asks each survey for the cutout at the side asked and reads its
+  header from the start of the answer, then closes it. at the largest
+  side, sixty arcminutes, STScI makes an image of some 26 MB for each
+  of the six surveys to answer that, and find reads about 115 KB of
+  each. it asks at the side asked, not the least, so that the length
+  find records is the plate's own and the plate named is the one the
+  fetch will bring. work using the scans acknowledges the surveys, in
+  the words of STScI's acknowledging page. asked only by name.
+
+  the form, help and acknowledging pages in `plates/sources.yaml` were
+  read live on the dates it gives; no copy of them was kept, and their
+  hashes were not recorded.
+
+k2
+: what Kepler's second mission, K2, holds of a place, as MAST keeps it:
+  the light curves and target pixel files of the stars it watched there,
+  and the full-frame images of each campaign whose field holds the
+  place. a full-frame image is the whole focal plane in one file, some
+  400 MB, in four forms: calibrated, raw, raw with WCS, and its
+  uncertainty. `--match ffi-cal` keeps the calibrated one. asked only
+  by name, through MAST's API as tess is (internal/caom).
+
+## secrets
+
+celestial-data signs in to some services. their secrets are named in
+one place, the `secrets` package, and kept in 1Password: each person's
+config says which item holds each, and op reads it each time it is
+needed. no command ever says a password or a token. a refused gaia
+login names the username it tried, so the person knows which login
+the archive refused.
+
+the config is `celestial-data-secrets`'s own, in the `.config` folder
+of the home `HOME` names, a line a service:
+
+```
+secret ads :: op://vault/item
+secret gaia :: op://vault/item
+```
+
+```sh
+$ celestial-data-secrets list        # each service, its fields, its item
+$ celestial-data-secrets check       # reads each, says read or why not
+$ celestial-data-secrets gaia-login  # signs in to the gaia archive
+$ celestial-data-secrets ads-login   # keeps the ads token
+```
+
+ads
+: an API token for NASA's Astrophysics Data System, in the item's
+  `credential` field. `ads-login` keeps it in `ads-token` beside the
+  config, or where `ADS_SESSION` says, and `celestial-data ads`
+  searches with what it kept.
+
+gaia
+: a login to the Gaia archive at ESA, in the item's `username` and
+  `password` fields. `gaia-login` signs in with it, and keeps the
+  session where `GAIA_SESSION` says.
+
+op asks the person at the keyboard to allow each read, so a person
+runs `check` and the logins, once. celestial-data itself never runs
+op: it reads only what the logins kept.
+
+`gaia-login` was celestial-data's own verb, with `--op` naming the
+item. it is `celestial-data-secrets gaia-login` now, and the item
+`--op` named is the config's `secret gaia` line.
 
 ## how it is held
 

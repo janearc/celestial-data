@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"slices"
@@ -12,23 +13,34 @@ import (
 
 	"github.com/janearc/celestial-data"
 	"github.com/janearc/celestial-data/apogee"
+	"github.com/janearc/celestial-data/astronn"
 	"github.com/janearc/celestial-data/bluemarble"
+	"github.com/janearc/celestial-data/bsc5"
 	"github.com/janearc/celestial-data/cardiff"
 	"github.com/janearc/celestial-data/cds"
 	"github.com/janearc/celestial-data/chandra"
 	"github.com/janearc/celestial-data/chroma"
+	"github.com/janearc/celestial-data/dasch"
 	"github.com/janearc/celestial-data/gaia"
 	"github.com/janearc/celestial-data/galah"
+	"github.com/janearc/celestial-data/horizons"
 	"github.com/janearc/celestial-data/irsa"
+	"github.com/janearc/celestial-data/k2"
 	"github.com/janearc/celestial-data/keck"
 	"github.com/janearc/celestial-data/lamost"
 	"github.com/janearc/celestial-data/mast"
 	"github.com/janearc/celestial-data/naturalearth"
 	"github.com/janearc/celestial-data/nustar"
+	"github.com/janearc/celestial-data/plates"
 	"github.com/janearc/celestial-data/sarao"
 	"github.com/janearc/celestial-data/sdssv"
+	"github.com/janearc/celestial-data/soniakeys"
+	"github.com/janearc/celestial-data/spherex"
+	"github.com/janearc/celestial-data/starhorse"
 	"github.com/janearc/celestial-data/tap"
+	"github.com/janearc/celestial-data/tess"
 	"github.com/janearc/celestial-data/usgs"
+	"github.com/janearc/celestial-data/usno"
 	"github.com/janearc/celestial-data/web"
 	"github.com/janearc/puzzlemouth/pzm"
 )
@@ -91,6 +103,40 @@ const (
 	gaiaWhere = "radial_velocity IS NOT NULL"
 )
 
+// What gaia-near asks of every source in a circle, picked on 2026-11-07
+// for the neighbours SPHEREx's crowded cutouts need fitted beside a
+// star: where each is at its epoch, how it moves, and how bright.
+const gaiaNearColumns = "source_id, ref_epoch, ra, dec, parallax, " +
+	"pmra, pmdec, phot_g_mean_mag, phot_bp_mean_mag, phot_rp_mean_mag"
+
+// What gaia-rv asks of the stars in a circle that have a radial
+// velocity, picked on 2026-11-07: the spectrograph's own account of each
+// velocity, so one can be judged before it is believed. The names are
+// the data model's for gaia_source, read that day.
+const gaiaRVColumns = "source_id, ra, dec, radial_velocity, " +
+	"radial_velocity_error, rv_method_used, rv_nb_transits, " +
+	"rv_nb_deblended_transits, rv_visibility_periods_used, " +
+	"rv_expected_sig_to_noise, rv_renormalised_gof, rv_chisq_pvalue, " +
+	"rv_time_duration, rv_amplitude_robust, rv_template_teff, " +
+	"rv_template_logg, rv_template_fe_h, rv_atm_param_origin, " +
+	"grvs_mag, grvs_mag_error"
+
+// What gaia-distance asks, picked on 2026-11-07 for firang's candidates:
+// each source's distance as Bailer-Jones et al. (2021) give it from its
+// EDR3 parallax, geometric and photogeometric, with their 16th and 84th
+// percentiles and the flag that says how each was made.
+//
+// The table has no places of its own, so it is joined to gaia_source on
+// the source_id DR3 shares with EDR3. The names are the archive's for
+// external.gaiaedr3_distance, read that day.
+const (
+	gaiaDistanceTable = "gaiadr3.gaia_source AS g JOIN " +
+		"external.gaiaedr3_distance AS d ON g.source_id = d.source_id"
+	gaiaDistanceColumns = "g.source_id, g.ra, g.dec, d.r_med_geo, " +
+		"d.r_lo_geo, d.r_hi_geo, d.r_med_photogeo, d.r_lo_photogeo, " +
+		"d.r_hi_photogeo, d.flag"
+)
+
 // holds is what each archive holds in a line, by its name.
 var holds = map[string]string{
 	"chandra": "Chandra's primary products: events, field of view, aspect",
@@ -106,16 +152,33 @@ var holds = map[string]string{
 // holdsByName is the same for each archive that is asked only when it is
 // named, so it is not in holds, which is those asked with no name.
 var holdsByName = map[string]string{
-	"bluemarble":   "NASA's Blue Marble, July 2004, and Black Marble 2016",
-	"usgs":         "the USGS Spectral Library Version 7, as one archive",
-	"naturalearth": "Natural Earth's land outlines at 1:50m, as GeoJSON",
-	"chroma":       "the colourways in janearc/chroma, listed by GitHub",
-	"gaia":         "Gaia DR3's stars with a radial velocity, as a job",
-	"apogee":       "APOGEE DR17's allStar: each star's parameters and abundances",
-	"galah":        "GALAH DR4's allstar: each star's parameters and abundances",
-	"sdssv":        "SDSS-V DR19's BOSS spectra, as SkyServer lists them",
-	"lamost":       "LAMOST DR10's low and medium resolution spectra, by TAP",
-	"keck":         "the Keck Observatory Archive's HIRES frames and spectra",
+	"bluemarble":    "NASA's Blue Marble, July 2004, and Black Marble 2016",
+	"usgs":          "the USGS Spectral Library Version 7, as one archive",
+	"naturalearth":  "Natural Earth's land outlines at 1:50m, as GeoJSON",
+	"chroma":        "the colourways in janearc/chroma, listed by GitHub",
+	"gaia":          "Gaia DR3's stars with a radial velocity, as a job",
+	"gaia-near":     "Gaia DR3's every source in a circle, as a job",
+	"gaia-rv":       "Gaia DR3's radial velocities in a circle, judged",
+	"gaia-distance": "Bailer-Jones' distances for Gaia's sources in a circle",
+	"apogee": "APOGEE DR17's allStar: each star's parameters and " +
+		"abundances",
+	"galah": "GALAH DR4's allstar: each star's parameters and " +
+		"abundances",
+	"bsc5":        "the Yale Bright Star Catalogue, naked-eye stars",
+	"sdssv":       "SDSS-V DR19's BOSS spectra, as SkyServer lists them",
+	"lamost":      "LAMOST DR10's low and medium resolution spectra, by TAP",
+	"keck":        "the Keck Observatory Archive's HIRES frames and spectra",
+	"astronn":     "astroNN's APOGEE DR17 ages, distances and orbits",
+	"starhorse":   "StarHorse's APOGEE DR17 masses, distances and ages",
+	"tess":        "TESS's light curves at MAST, QLP's among them",
+	"spherex":     "SPHEREx's spectral images at IRSA, cut round a place",
+	"plates":      "the Digitized Sky Survey's Palomar and UK Schmidt plates",
+	"k2":          "K2's light curves and full-frame images at MAST",
+	"dasch":       "DASCH DR7's plate light curves, from Starglass",
+	"dasch-pages": "DASCH DR7's own pages the dasch adapter was read from",
+	"usno":        "the US Naval Observatory's pages celestial reads",
+	"soniakeys":   "Sonia Keys's Meeus tests, to check against, not derive",
+	"horizons":    "JPL Horizons: the sun, earth and moon as Webb sees them",
 }
 
 // holdsOf is the line on what an archive holds, by its name.
@@ -130,6 +193,7 @@ func holdsOf(name string) string {
 type settings struct {
 	most, pixels int
 	host, hips   string
+	curves       dasch.Doer
 }
 
 // defaults are the settings when a call gives none: the picked numbers,
@@ -137,11 +201,36 @@ type settings struct {
 func (tool command) defaults() (*settings, error) {
 	most, mostErr := tool.picked.Get("most")
 	pixels, pixelsErr := tool.picked.Get("pixels")
-	if err := errors.Join(mostErr, pixelsErr); err != nil {
+	curves, curvesErr := tool.daschAsker()
+	if err := errors.Join(mostErr, pixelsErr, curvesErr); err != nil {
 		return nil, err
 	}
 	return &settings{most: int(most), pixels: int(pixels),
-		host: cds.Strasbourg, hips: survey}, nil
+		host: cds.Strasbourg, hips: survey, curves: curves}, nil
+}
+
+// daschAsker is what DASCH is asked through: the one a test gives, or
+// the network's, with the whole request held to dasch-whole.
+//
+// No redirect is followed: a POST redirected would be sent again as a
+// GET, or its body re-sent, perhaps off Harvard's host, so a redirect is
+// its status, which the asker refuses.
+func (tool command) daschAsker() (dasch.Doer, error) {
+	if tool.curves != nil {
+		return tool.curves, nil
+	}
+	whole, err := tool.picked.Get("dasch-whole")
+	if err != nil {
+		return nil, err
+	}
+	return &http.Client{Timeout: web.Seconds(whole),
+		CheckRedirect: unfollowed}, nil
+}
+
+// unfollowed has a client keep a redirect's answer instead of following
+// it.
+func unfollowed(*http.Request, []*http.Request) error {
+	return http.ErrUseLastResponse
 }
 
 // settingsOf are the settings a call gives, and the defaults for the
@@ -217,16 +306,47 @@ func known(get web.Web, with *settings) ([]celestialdata.Archive, error) {
 	asked.keep(colours, err)
 	stars, err := gaia.New(gaiaColumns, gaiaWhere)
 	asked.keep(stars, err)
+	neighbours, err := gaia.Called("gaia-near", gaiaNearColumns, "")
+	asked.keep(neighbours, err)
+	velocities, err := gaia.Called("gaia-rv", gaiaRVColumns, gaiaWhere)
+	asked.keep(velocities, err)
+	distances, err := gaia.From("gaia-distance", gaiaDistanceTable,
+		gaiaDistanceColumns, "")
+	asked.keep(distances, err)
 	allStar, err := apogee.New()
 	asked.keep(allStar, err)
 	survey, err := galah.New()
 	asked.keep(survey, err)
+	bright, err := bsc5.New()
+	asked.keep(bright, err)
 	boss, err := sdssv.New(get, with.most)
 	asked.keep(boss, err)
 	fibres, err := lamost.New(get, with.most)
 	asked.keep(fibres, err)
 	echelle, err := keck.New(get, with.most)
 	asked.keep(echelle, err)
+	ages, err := astronn.New()
+	asked.keep(ages, err)
+	fitted, err := starhorse.New()
+	asked.keep(fitted, err)
+	curves, err := tess.New(get)
+	asked.keep(curves, err)
+	infrared, err := spherex.New(get, with.most)
+	asked.keep(infrared, err)
+	photographs, err := plates.New(get)
+	asked.keep(photographs, err)
+	kepler, err := k2.New(get)
+	asked.keep(kepler, err)
+	harvard, err := dasch.New(with.curves, agent, with.most)
+	asked.keep(harvard, err)
+	read, err := dasch.Pages()
+	asked.keep(read, err)
+	observatory, err := usno.New()
+	asked.keep(observatory, err)
+	transcriptions, err := soniakeys.New()
+	asked.keep(transcriptions, err)
+	ephemeris, err := horizons.New()
+	asked.keep(ephemeris, err)
 	if err := errors.Join(asked.refused...); err != nil {
 		return nil, err
 	}
@@ -309,6 +429,7 @@ func circle(call pzm.Call) (*celestialdata.Near, error) {
 type search struct {
 	near     *celestialdata.Near
 	get      web.Web
+	curves   dasch.Doer
 	archives []celestialdata.Archive
 }
 
@@ -334,7 +455,8 @@ func (tool command) searchOf(call pzm.Call) (*search, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &search{near: near, get: get, archives: archives}, nil
+	return &search{near: near, get: get, curves: with.curves,
+		archives: archives}, nil
 }
 
 // archivesVerb lists the archives celestial-data asks.
@@ -403,7 +525,7 @@ func (tool command) fetchVerb(call pzm.Call) error {
 		return err
 	}
 	match := call.Value("match")
-	get, err := tool.jobs(asked.get, call.Out())
+	get, err := tool.fetchWeb(asked, call.Out())
 	if err != nil {
 		return err
 	}
@@ -419,17 +541,39 @@ func (tool command) fetchVerb(call pzm.Call) error {
 }
 
 // fetchEach fetches each of the products whose name holds match into the
-// folder, and gives what went wrong with each that failed.
+// folder, and gives what went wrong with each that failed. When an
+// archive asks us to stop, it stops, and says how many were not asked.
 func fetchEach(call pzm.Call, get web.Web, products []*celestialdata.Product,
 	folder, match string) []error {
 	var failed []error
-	for _, product := range products {
+	for at, product := range products {
 		if strings.Contains(product.Name(), match) {
 			err := fetchOne(call, get, product, folder)
 			failed = append(failed, err)
+			if errors.Is(err, dasch.ErrStopped) {
+				left := matching(products[at+thisOne:], match)
+				return append(failed, fmt.Errorf("stopped: %d more "+
+					"of its files were not asked for", left))
+			}
 		}
 	}
 	return failed
+}
+
+// thisOne is the product just asked for, past which the rest begin. It's
+// defined.
+const thisOne = 1
+
+// matching is how many of some products have a name that holds match:
+// those a fetch would have asked for, not those --match left out.
+func matching(products []*celestialdata.Product, match string) int {
+	count := none
+	for _, product := range products {
+		if strings.Contains(product.Name(), match) {
+			count++
+		}
+	}
+	return count
 }
 
 // fetchOne brings one file into a folder. When the call is dry it says
@@ -468,6 +612,21 @@ func named(archive celestialdata.Archive, err error) error {
 func say(out io.Writer, product *celestialdata.Product) {
 	fmt.Fprintf(out, "%s %s %s\n    %s\n    %s\n", product.Archive(),
 		product.ID(), product.Name(), product.About(), product.URL())
+}
+
+// fetchWeb is the web fetch brings files through: the search's web, with
+// jobs run as jobs and DASCH's light curves asked as DASCH takes them.
+func (tool command) fetchWeb(asked *search, told io.Writer) (web.Web,
+	error) {
+	jobs, err := tool.jobs(asked.get, told)
+	if err != nil {
+		return nil, err
+	}
+	curves, err := dasch.NewLightcurves(jobs, asked.curves, agent)
+	if err != nil {
+		return nil, err
+	}
+	return curves, nil
 }
 
 // jobs is a web over under that runs a query asked of an async endpoint

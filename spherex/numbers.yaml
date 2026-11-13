@@ -1,0 +1,28 @@
+# numbers.yaml: the numbers the spherex package picks for the cutouts it
+# asks IRSA for. The sources are in sources.yaml.
+
+numbers:
+  - name: least-side
+    value: 0.03
+    unit: degrees
+    says: the shortest side a cutout is asked at. A SPHEREx pixel is 6.15 arcseconds, so this is 17.6 pixels, which holds the 15 by 15 pixel region the photometry reads its local background from, and the 11 pixel stamp it fits the point spread function in. IRSA states no least size
+    kind: picked
+    by: celestial-data's spherex package, 2026-11-06
+  - name: most-side
+    value: 0.5
+    unit: degrees
+    says: the longest side a cutout is asked at. A whole image is 2040 pixels, 3.5 degrees, about 60 MB; half a degree is 81 pixels, which is far more than a spectrum of one star reads. IRSA states no greatest size
+    kind: picked
+    by: celestial-data's spherex package, 2026-11-06
+  - name: ra-dec-places
+    value: 5
+    unit: decimals
+    says: how many decimals of a degree a cutout's centre is written with; five is 0.036 arcseconds, far finer than a pixel of 6.15 arcseconds
+    kind: picked
+    by: celestial-data's spherex package, 2026-11-06
+  - name: side-places
+    value: 4
+    unit: decimals
+    says: how many decimals of a degree a cutout's side is written with; four is 0.36 arcseconds
+    kind: picked
+    by: celestial-data's spherex package, 2026-11-06

@@ -39,6 +39,12 @@ numbers:
     says: how long an archive is given to connect and begin its answer; HEASARC took several seconds to begin on 2026-11-01, and the Chandra archive seventeen to answer a HEAD
     kind: picked
     by: celestial-data's command, 2026-11-02
+  - name: dasch-whole
+    value: 60
+    unit: seconds
+    says: how long the dasch archive gives DASCH's Starglass API for the whole of one answer, from asking to the last byte; a light curve is a line of CSV a plate, and the one fetched on 2026-11-08 for a star on 2820 plates was 413 kilobytes, so a minute is generous, and a question that hangs is let go
+    kind: picked
+    by: celestial-data's command, 2026-11-08
   - name: job-every
     value: 30
     unit: seconds
@@ -61,5 +67,17 @@ numbers:
     value: 20
     unit: ids
     says: how many ids papers asks arXiv's API about in one query; fewer queries are gentler, and twenty keeps the address short. No flag takes its place
+    kind: picked
+    by: celestial-data's command, 2026-11-06
+  - name: ads-most
+    value: 20
+    unit: papers
+    says: how many papers the ads verb shows of a search, the newest first; a page to read at once, from one request however many match
+    kind: picked
+    by: celestial-data's command, 2026-11-06
+  - name: ads-whole
+    value: 30
+    unit: seconds
+    says: how long the ads verb gives ADS for its whole answer, from asking to the last byte; a page of a few dozen papers is a few kilobytes of JSON, so half a minute is generous, and a search that hangs is let go
     kind: picked
     by: celestial-data's command, 2026-11-06

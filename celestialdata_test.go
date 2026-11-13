@@ -650,3 +650,74 @@ func TestFoundIsOneProductOrWhyNot(t *testing.T) {
 		t.Errorf("%v, %v", none, err)
 	}
 }
+
+// saying is a check that holds a file to saying exactly what it wants.
+type saying struct{ want string }
+
+// Check is nil for a file that says what the check wants.
+func (check saying) Check(path string) error {
+	got, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	if string(got) != check.want {
+		return errors.New("not what was wanted")
+	}
+	return nil
+}
+
+// checkedFor is a check that holds a file to saying exactly want.
+func checkedFor(want string) celestialdata.Checker { return saying{want} }
+
+// A product's check is given the file once all its bytes are in, and a
+// file that passes is kept under the product's name.
+func TestFetchKeepsAFileItsCheckPasses(t *testing.T) {
+	content := []byte("whole")
+	product := productOf(t, "w.fits", unsized).Checked(
+		checkedFor("whole"))
+	into := t.TempDir()
+	home, err := celestialdata.Fetch(served(t, content, unsaid), product,
+		into)
+	if err != nil || !nothingBut(t, into, "w.fits") {
+		t.Errorf("%s, %v", home, err)
+	}
+}
+
+// Anti-test: a file its product's check refuses is not kept, nor is its
+// .part, and the check's reason is the fetch's.
+func TestFetchLeavesNothingWhenItsCheckRefuses(t *testing.T) {
+	product := productOf(t, "w.fits", unsized).Checked(
+		checkedFor("whole"))
+	into := t.TempDir()
+	get := served(t, []byte("whol"), unsaid)
+	_, err := celestialdata.Fetch(get, product, into)
+	if err == nil || err.Error() != "not what was wanted" ||
+		!nothingBut(t, into) {
+		t.Errorf("%v", err)
+	}
+}
+
+// A product that was never made, because Product refused it, stays none
+// when it is checked, so its refusal can be handed on with it.
+func TestCheckedHandsOnAProductThatWasNeverMade(t *testing.T) {
+	made, err := tester(t).Product("1", "a/b", where, unsized, "")
+	if checked := made.Checked(checkedFor("")); checked != nil ||
+		!errors.Is(err, celestialdata.Refused()) {
+		t.Errorf("%v, %v", checked, err)
+	}
+}
+
+// Anti-test: a whole gzip file is read to its end and then still held to
+// the product's check.
+func TestFetchChecksAGzipFileAfterReadingIt(t *testing.T) {
+	content := zipped(t, "events")
+	product := productOf(t, "e.fits.gz", unsized).Checked(
+		checkedFor("not the gzip file"))
+	into := t.TempDir()
+	_, err := celestialdata.Fetch(served(t, content, unsaid), product,
+		into)
+	if err == nil || err.Error() != "not what was wanted" ||
+		!nothingBut(t, into) {
+		t.Errorf("%v", err)
+	}
+}

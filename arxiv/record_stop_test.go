@@ -2,6 +2,7 @@ package arxiv_test
 
 import (
 	"context"
+	"io"
 	"math"
 	"net/http"
 	"os"
@@ -113,5 +114,59 @@ func TestAWaitTooLongForATimeIsKeptAsLongAsItCan(t *testing.T) {
 	if !arxiv.AskedToStop(later) || !strings.Contains(later.Error(),
 		"left until "+until) {
 		t.Errorf("%v", later)
+	}
+}
+
+// Anti-test: the wait arXiv asks for is in the record as soon as it is
+// asked, not only when the run lets go. A run killed before Release
+// left the record of its last start without the wait, and the next run
+// asked again inside it. Here the record is copied as a killed run
+// leaves it, before Release, and the next run on the copy still waits.
+func TestAWaitAskedIsKeptBeforeTheRunLetsGo(t *testing.T) {
+	path := recordIn(t)
+	start, asked := begun(t), seconds(t, "asked-wait")
+	refused := halted(t, halting{http.StatusTooManyRequests, wait})
+	get := mocks.NewMockWeb(gomock.NewController(t))
+	get.EXPECT().Get(paper).Return(nil, int64(noPaper), refused)
+	gate := heldToTheEnd(t, readings(t, start, start, start), path)
+	pacedOn(context.Background(), t, get, gate).Get(paper)
+	kept, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	left := recordIn(t)
+	if err := os.MkdirAll(filepath.Dir(left), openFolder); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(left, kept, plainFile); err != nil {
+		t.Fatal(err)
+	}
+	ends := start.Add(asked)
+	early := asksAt(t, left, ends.Add(-time.Nanosecond))
+	if !arxiv.AskedToStop(early) || !strings.Contains(early.Error(),
+		"left until "+ends.Format(time.RFC3339)) {
+		t.Errorf("a killed run's record lost the wait: %v", early)
+	}
+}
+
+// Anti-test: a stop whose wait will not write to the record says so
+// beside the stop, rather than the run believing the wait is kept. The
+// folder is shut after the request's start is written and before arXiv
+// answers.
+func TestAWaitThatWillNotWriteIsSaid(t *testing.T) {
+	path := recordIn(t)
+	start := begun(t)
+	refused := halted(t, halting{http.StatusTooManyRequests, wait})
+	get := mocks.NewMockWeb(gomock.NewController(t))
+	get.EXPECT().Get(paper).DoAndReturn(
+		func(string) (io.ReadCloser, int64, error) {
+			closedTo(t, filepath.Dir(path))
+			return nil, int64(noPaper), refused
+		})
+	gate := heldToTheEnd(t, readings(t, start, start, start), path)
+	_, _, err := pacedOn(context.Background(), t, get, gate).Get(paper)
+	if !arxiv.AskedToStop(err) || !strings.Contains(err.Error(),
+		"open "+path+".part") {
+		t.Errorf("a wait that was not written went unsaid: %v", err)
 	}
 }

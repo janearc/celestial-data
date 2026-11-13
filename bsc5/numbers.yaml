@@ -1,0 +1,259 @@
+# numbers.yaml: the numbers the bsc5 package reads the catalogue by: the
+# file's length as Harvard served it, and the record and the byte
+# columns of each field the reader reads, as the readme's byte-by-byte
+# description gives them. The sources are in sources.yaml. A field's
+# first and last byte are numbered from one, as the readme numbers them.
+
+numbers:
+  - name: catalogue-size
+    value: 573921
+    unit: bytes
+    says: the length of ybsc5.gz, as Harvard's Telescope Data Center served it
+    kind: measured
+    source:
+      key: bsc5-catalogue
+      where: the Content-Length the server answered for the file
+      text: "Content-Length: 573921"
+  - name: record
+    value: 197
+    unit: bytes
+    says: a row's length, the catalog file's Lrecl; the file trims each line's trailing spaces
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the File Summary
+      text: "catalog        197       9110    The main part of the Catalogue"
+  - name: hr-first
+    value: 1
+    unit: byte
+    says: the first byte of the Harvard Revised number
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "   1-  4  I4     ---     HR       [1/9110]+ Harvard Revised Number"
+  - name: hr-last
+    value: 4
+    unit: byte
+    says: the last byte of the Harvard Revised number
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "   1-  4  I4     ---     HR       [1/9110]+ Harvard Revised Number"
+  - name: name-first
+    value: 5
+    unit: byte
+    says: the first byte of the star's name, Bayer or Flamsteed
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "   5- 14  A10    ---     Name     Name, generally Bayer and/or Flamsteed name"
+  - name: name-last
+    value: 14
+    unit: byte
+    says: the last byte of the star's name, Bayer or Flamsteed
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "   5- 14  A10    ---     Name     Name, generally Bayer and/or Flamsteed name"
+  - name: hd-first
+    value: 26
+    unit: byte
+    says: the first byte of the Henry Draper number
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  26- 31  I6     ---     HD       [1/225300]? Henry Draper Catalog Number"
+  - name: hd-last
+    value: 31
+    unit: byte
+    says: the last byte of the Henry Draper number
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  26- 31  I6     ---     HD       [1/225300]? Henry Draper Catalog Number"
+  - name: ra-hours-first
+    value: 76
+    unit: byte
+    says: the first byte of the hours of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  76- 77  I2     h       RAh      ?Hours RA, equinox J2000, epoch 2000.0 (1)"
+  - name: ra-hours-last
+    value: 77
+    unit: byte
+    says: the last byte of the hours of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  76- 77  I2     h       RAh      ?Hours RA, equinox J2000, epoch 2000.0 (1)"
+  - name: ra-minutes-first
+    value: 78
+    unit: byte
+    says: the first byte of the minutes of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  78- 79  I2     min     RAm      ?Minutes RA, equinox J2000, epoch 2000.0 (1)"
+  - name: ra-minutes-last
+    value: 79
+    unit: byte
+    says: the last byte of the minutes of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  78- 79  I2     min     RAm      ?Minutes RA, equinox J2000, epoch 2000.0 (1)"
+  - name: ra-seconds-first
+    value: 80
+    unit: byte
+    says: the first byte of the seconds of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  80- 83  F4.1   s       RAs      ?Seconds RA, equinox J2000, epoch 2000.0 (1)"
+  - name: ra-seconds-last
+    value: 83
+    unit: byte
+    says: the last byte of the seconds of right ascension, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  80- 83  F4.1   s       RAs      ?Seconds RA, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-sign-first
+    value: 84
+    unit: byte
+    says: the byte of the declination's sign, J2000; one byte, so it is its first and its last
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "      84  A1     ---     DE-      ?Sign Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-sign-last
+    value: 84
+    unit: byte
+    says: the byte of the declination's sign, J2000; one byte, so it is its first and its last
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "      84  A1     ---     DE-      ?Sign Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-degrees-first
+    value: 85
+    unit: byte
+    says: the first byte of the degrees of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  85- 86  I2     deg     DEd      ?Degrees Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-degrees-last
+    value: 86
+    unit: byte
+    says: the last byte of the degrees of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  85- 86  I2     deg     DEd      ?Degrees Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-minutes-first
+    value: 87
+    unit: byte
+    says: the first byte of the minutes of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  87- 88  I2     arcmin  DEm      ?Minutes Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-minutes-last
+    value: 88
+    unit: byte
+    says: the last byte of the minutes of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  87- 88  I2     arcmin  DEm      ?Minutes Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-seconds-first
+    value: 89
+    unit: byte
+    says: the first byte of the seconds of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  89- 90  I2     arcsec  DEs      ?Seconds Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: dec-seconds-last
+    value: 90
+    unit: byte
+    says: the last byte of the seconds of declination, J2000
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: "  89- 90  I2     arcsec  DEs      ?Seconds Dec, equinox J2000, epoch 2000.0 (1)"
+  - name: visual-first
+    value: 103
+    unit: byte
+    says: the first byte of the visual magnitude
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 103-107  F5.2   mag     Vmag     ?Visual magnitude (1)"
+  - name: visual-last
+    value: 107
+    unit: byte
+    says: the last byte of the visual magnitude
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 103-107  F5.2   mag     Vmag     ?Visual magnitude (1)"
+  - name: b-v-first
+    value: 110
+    unit: byte
+    says: the first byte of the B-V colour in the UBV system
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 110-114  F5.2   mag     B-V      ? B-V color in the UBV system"
+  - name: b-v-last
+    value: 114
+    unit: byte
+    says: the last byte of the B-V colour in the UBV system
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 110-114  F5.2   mag     B-V      ? B-V color in the UBV system"
+  - name: spectral-first
+    value: 128
+    unit: byte
+    says: the first byte of the spectral type
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 128-147  A20    ---     SpType   Spectral type"
+  - name: spectral-last
+    value: 147
+    unit: byte
+    says: the last byte of the spectral type
+    kind: measured
+    source:
+      key: bsc5-readme
+      where: the byte-by-byte description of the catalogue
+      text: " 128-147  A20    ---     SpType   Spectral type"

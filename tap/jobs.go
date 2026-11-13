@@ -38,13 +38,20 @@ type Jobs struct {
 	told  io.Writer
 }
 
+// What a web of jobs is refused for: a wait of none or less, and fewer
+// asks than one.
+const (
+	noWait    = 0 // defined: no time between asks
+	leastAsks = 1 // defined: a job is asked after once at least
+)
+
 // NewJobs is a web of jobs over under, which asks after a job every so
 // often and at most asks times, and says each job's address to told. It
 // refuses no web under it, a wait that is not one, fewer than one ask,
 // and no one to tell.
 func NewJobs(under web.Web, every time.Duration, asks int,
 	told io.Writer) (*Jobs, error) {
-	if under == nil || every <= 0 || asks < 1 || told == nil {
+	if under == nil || every <= noWait || asks < leastAsks || told == nil {
 		return nil, fmt.Errorf("jobs need a web, a wait, an ask "+
 			"and someone to tell, not %v, %v, %d and %v", under,
 			every, asks, told)
@@ -105,7 +112,9 @@ func asked(address string) (string, url.Values, bool) {
 // phase is what a job's description says of it: its phase, and when it
 // failed, why.
 type phase struct {
-	Phase   string `xml:"phase"`
+	//ninja:vow gate encoding/xml reads the job's description into it
+	Phase string `xml:"phase"`
+	//ninja:vow gate encoding/xml reads the job's description into it
 	Message string `xml:"errorSummary>message"`
 }
 
@@ -118,7 +127,7 @@ func (jobs *Jobs) wait(job string) error {
 		if err != nil {
 			return err
 		}
-		switch last = now; now.Phase {
+		switch last = *now; now.Phase {
 		case complete:
 			return nil
 		case errored, aborted:
@@ -131,19 +140,20 @@ func (jobs *Jobs) wait(job string) error {
 		jobs.asks)
 }
 
-// state is a job's description as the service gives it now.
-func (jobs *Jobs) state(job string) (phase, error) {
+// state is a job's description as the service gives it now, or none
+// when it cannot be read or says no phase.
+func (jobs *Jobs) state(job string) (*phase, error) {
 	body, _, err := jobs.under.Get(job)
 	if err != nil {
-		return phase{}, err
+		return nil, err
 	}
 	defer body.Close()
 	var now phase
 	if err := xml.NewDecoder(body).Decode(&now); err != nil {
-		return phase{}, fmt.Errorf("%s: %w", job, err)
+		return nil, fmt.Errorf("%s: %w", job, err)
 	}
 	if now.Phase == "" {
-		return phase{}, fmt.Errorf("%s says no phase", job)
+		return nil, fmt.Errorf("%s says no phase", job)
 	}
-	return now, nil
+	return &now, nil
 }

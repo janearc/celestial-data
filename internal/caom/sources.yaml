@@ -1,0 +1,16 @@
+# sources.yaml: where the questions the adapter asks, and the columns it
+# reads of MAST's answers, were read.
+
+sources:
+  - key: mast-api
+    title: "MAST API: the request URL and its long-polling"
+    from: https://mast.stsci.edu/api/v0/index.html
+    fetched: 2026-11-06
+  - key: mast-services
+    title: "MAST API services: Mast.Caom.Cone and Mast.Caom.Products"
+    from: https://mast.stsci.edu/api/v0/_services.html
+    fetched: 2026-11-06
+  - key: mast-answers
+    title: "MAST's answers for firang's star, recorded in tess/testdata"
+    from: https://mast.stsci.edu/api/v0/invoke
+    fetched: 2026-11-06

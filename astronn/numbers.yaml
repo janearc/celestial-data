@@ -1,0 +1,13 @@
+# numbers.yaml: the one number the astronn package reads from the file
+# itself. The source is in sources.yaml.
+
+numbers:
+  - name: astronn-size
+    value: 647328960
+    unit: bytes
+    says: the length of astroNN's DR17 catalogue, apogee_astroNN-DR17.fits, as the Science Archive Server served it
+    kind: measured
+    source:
+      key: astronn-catalogue
+      where: the Content-Length the server answered for the file
+      text: "content-length: 647328960"

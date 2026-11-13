@@ -1,0 +1,37 @@
+# numbers.yaml: the numbers the plates package reads from the file
+# itself. The sources are in sources.yaml.
+
+numbers:
+  - name: most-side
+    value: 60
+    unit: arcminutes
+    says: the longest side STScI's Digitized Sky Survey form allows a cutout, in height and in width
+    kind: measured
+    source:
+      key: dss-form
+      where: the form's Height and Width labels
+      text: "Height (max: 60.0)"
+  - name: least-side
+    value: 1
+    unit: arcminutes
+    says: the shortest side a cutout is asked at; a side of 0.01 arcminutes was answered with an image of one pixel and 0.0006 with one of none, on 2026-11-06, and a side of one arcminute with 59 by 60 pixels
+    kind: picked
+    by: celestial-data's plates package, 2026-11-06
+  - name: header-blocks
+    value: 40
+    unit: blocks
+    says: the most blocks of 2880 bytes read for a plate's header before it is given up on; the headers STScI answered with on 2026-11-06 were 20 blocks
+    kind: picked
+    by: celestial-data's plates package, 2026-11-06
+  - name: ra-dec-places
+    value: 5
+    unit: decimals
+    says: how many decimals of a degree a cutout's centre is written with; five is 0.036 arcseconds, finer than a scan of one arcsecond a pixel can tell
+    kind: picked
+    by: celestial-data's plates package, 2026-11-06
+  - name: side-places
+    value: 2
+    unit: decimals
+    says: how many decimals of an arcminute a cutout's side is written with; two is 0.6 arcseconds
+    kind: picked
+    by: celestial-data's plates package, 2026-11-06

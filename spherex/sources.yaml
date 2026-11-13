@@ -1,0 +1,37 @@
+# sources.yaml: where the numbers in numbers.yaml, and the addresses, table
+# and column names, file layout and cutout form the reader is held to,
+# were read.
+
+sources:
+  - key: spherex-explanatory-supplement
+    title: "SPHEREx Explanatory Supplement, version 2.0, 2026-08-25: pixel scale (Table 2), local background region (section 3.3), file names (Table 3)"
+    from: https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp_QR.pdf
+    fetched: 2026-11-06
+  - key: spherex-user-guide-products
+    title: "SPHEREx Archive at IRSA User Guide: Data Products (spectral image extensions, 2040 by 2040 pixels, cutouts and their extensions)"
+    from: https://caltech-ipac.github.io/spherex-archive-documentation/spherex-data-products
+    fetched: 2026-11-06
+  - key: spherex-user-guide-access
+    title: "SPHEREx Archive at IRSA User Guide: Data Access (browsable directories, releases qr2 and qr3, the cutout address)"
+    from: https://caltech-ipac.github.io/spherex-archive-documentation/spherex-data-access
+    fetched: 2026-11-06
+  - key: ibe-cutouts
+    title: "IRSA Image Server Cutouts: the center and size parameters, the units, the clipping, no gzip for SPHEREx"
+    from: https://irsa.ipac.caltech.edu/ibe/cutouts.html
+    fetched: 2026-11-06
+  - key: spherex-cutouts-tutorial
+    title: "Download a collection of SPHEREx Spectral Image cutouts as a multi-extension FITS file: the TAP query over spherex.artifact and spherex.plane"
+    from: https://caltech-ipac.github.io/irsa-tutorials/spherex-cutouts/
+    fetched: 2026-11-06
+  - key: irsa-tap
+    title: "IRSA TAP service, sync endpoint: TAP_SCHEMA.columns for spherex.artifact and spherex.plane, and the answers to the queries recorded in testdata"
+    from: https://irsa.ipac.caltech.edu/TAP/sync
+    fetched: 2026-11-06
+  - key: spherex-mission-page
+    title: "IRSA SPHEREx mission page: the acknowledgement the data ask for, and the releases"
+    from: https://irsa.ipac.caltech.edu/Missions/spherex.html
+    fetched: 2026-11-06
+  - key: spherex-qr-overview
+    title: "IRSA SPHEREx Quick Release overview: the DOIs of QR1, QR2 and QR3, and the acknowledgement"
+    from: https://irsa.ipac.caltech.edu/data/SPHEREx/docs/overview_qr.html
+    fetched: 2026-11-06

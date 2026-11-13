@@ -1,0 +1,8 @@
+{"responseHeader": {"status": 0, "QTime": 4, "params": {"q": "crafted"}},
+ "response": {"numFound": 12, "start": 0, "docs": [
+  {"bibcode": "2099ApJ...999..111A", "title": ["A crafted paper about nothing"],
+   "year": "2099", "author": ["Quill, A.", "Marsh, B.", "Thorn, C."],
+   "identifier": ["2099arXiv990900001Q", "10.0000/crafted.1", "arXiv:9909.00001"]},
+  {"bibcode": "2098MNRAS.888..222B",
+   "title": ["A second crafted paper", "its second title"],
+   "year": "2098", "author": ["Fen, D."]}]}}

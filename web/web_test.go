@@ -29,9 +29,6 @@ const agent = "celestial-data-test"
 // photons is what /file holds.
 const photons = "photons"
 
-// limitless is no limit on the whole request. It's defined by web.New.
-const limitless time.Duration = 0
-
 // seconds is a picked number of seconds from the numbers file, as a time.
 func seconds(t *testing.T, name string) time.Duration {
 	t.Helper()
@@ -54,7 +51,7 @@ func seconds(t *testing.T, name string) time.Duration {
 // limit on the whole request.
 func patient(t *testing.T) web.Client {
 	t.Helper()
-	return web.New(seconds(t, "patient-wait"), limitless, agent)
+	return web.Patient(seconds(t, "patient-wait"), agent)
 }
 
 // serve is the local archive. Its /file holds photons with its length, and
@@ -247,7 +244,7 @@ func TestASlowServerIsGivenUpOn(t *testing.T) {
 	slow := lagging(seconds(t, "slow-server"))
 	server := httptest.NewServer(http.HandlerFunc(slow.serve))
 	t.Cleanup(server.Close)
-	hasty := web.New(seconds(t, "hasty-wait"), limitless, agent)
+	hasty := web.Patient(seconds(t, "hasty-wait"), agent)
 	if _, _, err := hasty.Get(server.URL); err == nil {
 		t.Error("waited past its wait")
 	}

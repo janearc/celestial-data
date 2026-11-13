@@ -92,6 +92,105 @@ func TestNewRefusesNoColumns(t *testing.T) {
 	}
 }
 
+// the test: an archive called by another name is that name, asked only
+// by name, and asks its own columns of the rows that meet its own
+// condition, as one New makes would.
+func TestAnArchiveCalledOtherwiseAsksItsOwnQuestion(t *testing.T) {
+	asked, err := gaia.Called("gaia-near", "source_id, ra, dec", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if asked.Name() != "gaia-near" || !asked.ByNameOnly() {
+		t.Fatalf("got %q, %v", asked.Name(), asked.ByNameOnly())
+	}
+	found, err := asked.Find(circle(t, picked(t, "small-circle")))
+	if err != nil || len(found) != oneProduct {
+		t.Fatalf("got %v, %v", found, err)
+	}
+	address := found[0].URL()
+	if !strings.Contains(address, "source_id%2C+ra%2C+dec") ||
+		strings.Contains(address, "radial_velocity") {
+		t.Fatalf("asked %s", address)
+	}
+}
+
+// the anti-test: an archive called by a name that is not one word, or
+// asked for no columns, is refused.
+func TestCalledRefusesABadNameOrNoColumns(t *testing.T) {
+	for _, each := range [][2]string{{"gaia near", "source_id"},
+		{"", "source_id"}, {"gaia-near", " "}} {
+		_, err := gaia.Called(each[0], each[1], "")
+		if !errors.Is(err, celestialdata.Refused()) {
+			t.Errorf("%q, %q: got %v", each[0], each[1], err)
+		}
+	}
+}
+
+// joined is gaia_source joined to Bailer-Jones' distances, which have
+// no places of their own, as gaia-distance asks it.
+const joined = "gaiadr3.gaia_source AS g JOIN " +
+	"external.gaiaedr3_distance AS d ON g.source_id = d.source_id"
+
+// the test: an archive from a joined table asks that table for the rows
+// within the circle, its places gaia_source's, and names its file and
+// its product for what it asks, not for gaia_source.
+func TestAnArchiveFromAJoinAsksTheJoinAndIsNamedForIt(t *testing.T) {
+	asked, err := gaia.From("gaia-distance", joined,
+		"g.source_id, d.r_med_geo", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if asked.Name() != "gaia-distance" || !asked.ByNameOnly() {
+		t.Fatalf("got %q, %v", asked.Name(), asked.ByNameOnly())
+	}
+	found, err := asked.Find(circle(t, picked(t, "small-circle")))
+	if err != nil || len(found) != oneProduct {
+		t.Fatalf("got %v, %v", found, err)
+	}
+	want := tap.URL(async, "SELECT g.source_id, d.r_med_geo FROM "+joined+
+		" WHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', "+
+		"266.4168371, -29.0078106, 0.1)) = 1", "fits")
+	product := found[0]
+	if product.URL() != want ||
+		product.Name() != "gaia_distance_266.4168371_-29.0078106_r0.1.fits" ||
+		product.ID() != joined ||
+		!strings.Contains(product.About(), "external.gaiaedr3_distance") {
+		t.Fatalf("got %s %s %s %q", product.URL(), product.Name(),
+			product.ID(), product.About())
+	}
+}
+
+// the test: the whole sky asks a joined table for every row, with its
+// condition and no circle.
+func TestAJoinOverTheWholeSkyAsksEveryRow(t *testing.T) {
+	asked, err := gaia.From("gaia-distance", joined, "g.source_id",
+		"d.flag = '10033'")
+	if err != nil {
+		t.Fatal(err)
+	}
+	found, err := asked.Find(circle(t, wholeSky))
+	if err != nil || len(found) != oneProduct {
+		t.Fatalf("got %v, %v", found, err)
+	}
+	want := tap.URL(async, "SELECT g.source_id FROM "+joined+
+		" WHERE d.flag = '10033'", "fits")
+	if found[0].URL() != want {
+		t.Fatalf("got %s", found[0].URL())
+	}
+}
+
+// the anti-test: an archive from a table is refused a name that is not
+// one word, no table, or no columns.
+func TestFromRefusesABadNameNoTableOrNoColumns(t *testing.T) {
+	for _, each := range [][3]string{{"gaia distance", joined, "g.ra"},
+		{"gaia-distance", " ", "g.ra"}, {"gaia-distance", joined, ""}} {
+		_, err := gaia.From(each[0], each[1], each[2], "")
+		if !errors.Is(err, celestialdata.Refused()) {
+			t.Errorf("%q, %q, %q: got %v", each[0], each[1], each[2], err)
+		}
+	}
+}
+
 // a circle is one job: the query of the rows within it, as the archive's
 // TAP service takes it, named for the circle.
 func TestACircleIsOneJobOfTheRowsWithinIt(t *testing.T) {
@@ -174,8 +273,10 @@ func TestASavedSessionLoadsAsItWas(t *testing.T) {
 		}
 	}
 	got, err := gaia.Load(path)
-	if err != nil || len(got) != oneCookie {
-		t.Fatalf("got %v, %v", got, err)
+	about, statErr := os.Stat(path)
+	if err != nil || len(got) != oneCookie || statErr != nil ||
+		about.Mode().Perm() != onlyOwner {
+		t.Fatalf("got %v, %v; kept as %v, %v", got, err, about, statErr)
 	}
 	for _, cookie := range got {
 		if cookie.Value != "s1" {
@@ -215,25 +316,35 @@ func TestLoadRefusesWhatIsNotAPrivateSession(t *testing.T) {
 	for name, file := range map[string]struct {
 		text string
 		mode os.FileMode
-	}{"open": {`[{"Name":"JSESSIONID","Value":"s1"}]`, openToAll},
-		"cookieless": {`[{"Name":"other","Value":"s1"}]`, onlyOwner},
-		"garbled":    {`[{`, onlyOwner}} {
+		says string
+	}{"open": {`[{"Name":"JSESSIONID","Value":"s1"}]`, openToAll,
+		"a session is -rw-------"},
+		"cookieless": {`[{"Name":"other","Value":"s1"}]`, onlyOwner,
+			"has no JSESSIONID"},
+		"garbled": {`[{`, onlyOwner, "garbled: "}} {
 		path := filepath.Join(dir, name)
 		if err := os.WriteFile(path, []byte(file.text),
 			file.mode); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := gaia.Load(path); err == nil {
-			t.Errorf("%s was loaded", name)
+		_, err := gaia.Load(path)
+		if err == nil || !strings.Contains(err.Error(), file.says) ||
+			(name == "garbled" && strings.Contains(err.Error(), "has no")) {
+			t.Errorf("%s gave %v, not %q", name, err, file.says)
 		}
 	}
+	// a folder its owner alone may read is refused as a folder, and a
+	// file that is not there as not there
 	folder := filepath.Join(dir, "folder")
 	if err := os.Mkdir(folder, onlyOwner); err != nil {
 		t.Fatal(err)
 	}
-	for _, path := range []string{folder, filepath.Join(dir, "none")} {
-		if _, err := gaia.Load(path); err == nil {
-			t.Errorf("%s was loaded", path)
-		}
+	if _, err := gaia.Load(folder); err == nil ||
+		!strings.Contains(err.Error(), "is a directory") {
+		t.Errorf("a folder gave %v", err)
+	}
+	if _, err := gaia.Load(filepath.Join(dir, "none")); !errors.Is(err,
+		os.ErrNotExist) {
+		t.Errorf("a file not there gave %v", err)
 	}
 }

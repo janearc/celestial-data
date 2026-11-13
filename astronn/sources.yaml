@@ -1,0 +1,12 @@
+# sources.yaml: where the number in numbers.yaml, and the columns the
+# reader is held to, were read.
+
+sources:
+  - key: astronn-catalogue
+    title: "astroNN's APOGEE DR17 catalogue"
+    from: https://data.sdss.org/sas/dr17/env/APOGEE_ASTRO_NN/apogee_astroNN-DR17.fits
+    fetched: 2026-11-06
+  - key: astronn-datamodel
+    title: "SDSS data model: apogee_astroNN"
+    from: https://data.sdss.org/datamodel/files/APOGEE_ASTRONN/apogee_astronn.html
+    fetched: 2026-11-06

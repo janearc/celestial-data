@@ -1,0 +1,10 @@
+# numbers.yaml: the numbers celestial-data-secrets picks, by name. It
+# asks one archive, to sign in, and waits for it as celestial-data does.
+
+numbers:
+  - name: wait
+    value: 30
+    unit: seconds
+    says: how long an archive is given to connect and begin its answer; HEASARC took several seconds to begin on 2026-11-01, and the Chandra archive seventeen to answer a HEAD
+    kind: picked
+    by: celestial-data's command, 2026-11-02

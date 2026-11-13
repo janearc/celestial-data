@@ -62,7 +62,8 @@ func TestWhatIsNotAnIDIsRefused(t *testing.T) {
 		"astro-ph//0602086", "1809.03507v0", "1809.03507v01",
 		"1809.03507v", "1809.03507 v2", "arXiv:", "https://example.org/" +
 			"abs/1809.03507", "https://arxiv.org/list/astro-ph",
-		"http://[::1", "https://arxiv.org/abs/not-an-id"} {
+		"http://[::1", "https://arxiv.org/abs/not-an-id",
+		"1809.03507v999999999999999999999999999999"} {
 		id, err := arxiv.ParseID(written)
 		quoted := fmt.Sprintf("%q", written)
 		if id != nil || !errors.Is(err, celestialdata.Refused()) ||
@@ -231,4 +232,32 @@ func refusesASeparator(draw *rapid.T) {
 // it is refused, so no list of ids is ever taken for one.
 func TestAnIDWithASeparatorInItIsRefused(t *testing.T) {
 	rapid.Check(t, refusesASeparator)
+}
+
+// The lengths of a version too long for an int, in digits.
+const (
+	pastAnInt  = 20 // defined: one more than the 19 an int64 holds
+	farPastInt = 40 // defined: far past it
+)
+
+// refusesALongVersion is the property that an id whose version has more
+// digits than an int holds is refused, saying what was written.
+func refusesALongVersion(draw *rapid.T) {
+	written, _ := drawnName(draw)
+	count := rapid.IntRange(pastAnInt, farPastInt).Draw(draw, "count")
+	version := "1" + digits(draw, count-oneIn, "version")
+	long := written + "v" + version
+	id, err := arxiv.ParseID(long)
+	quoted := fmt.Sprintf("%q", long)
+	if id != nil || !errors.Is(err, celestialdata.Refused()) ||
+		!strings.Contains(err.Error(), quoted) {
+		draw.Fatalf("%s: %v, %v", quoted, id, err)
+	}
+}
+
+// Anti-test, the property: a version too long for an int is refused,
+// where Atoi's error was dropped and the id read as another version,
+// the most an int holds, which two such ids then shared.
+func TestAVersionTooLongIsRefused(t *testing.T) {
+	rapid.Check(t, refusesALongVersion)
 }

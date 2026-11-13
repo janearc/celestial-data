@@ -146,7 +146,11 @@ func writeRecord(path string, last, until time.Time) error {
 // stopUntil has the gate leave arXiv alone as long as a Retry-After
 // asks: so many seconds, or until a date. With none it can read, the
 // gate rests as long as rest-unsaid says.
-func (gate *Gate) stopUntil(retryAfter string) {
+//
+// The wait is written to the record at once, while the run still holds
+// it, so a run killed before Release still leaves it for the next; a
+// record that will not write is said.
+func (gate *Gate) stopUntil(retryAfter string) error {
 	now := gate.clock.Now()
 	until := now.Add(restUnsaid())
 	if seconds, err := strconv.Atoi(retryAfter); err == nil &&
@@ -159,6 +163,7 @@ func (gate *Gate) stopUntil(retryAfter string) {
 	// no request goes out while an earlier wait is left, so no stop
 	// can come before it has passed: the wait asked now is the one
 	gate.until = until
+	return gate.note()
 }
 
 // noSeconds is a Retry-After of no wait. It's defined: none.

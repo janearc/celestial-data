@@ -61,8 +61,14 @@ func ParseID(written string) (*ID, error) {
 	}
 	id := ID{name: bare}
 	if parts := versioned.FindStringSubmatch(bare); parts != nil {
-		// Atoi reads it: the pattern holds digits alone there
-		count, _ := strconv.Atoi(parts[versionAt])
+		// the pattern holds digits alone there, but not that an int
+		// holds them: a version too long for one is refused, not cut
+		// to another
+		count, err := strconv.Atoi(parts[versionAt])
+		if err != nil {
+			return nil, celestialdata.Refuse("%q is not an arXiv id: "+
+				"its version is longer than a version can be", written)
+		}
 		id = ID{name: parts[nameAt], version: count}
 	}
 	if parts := oldStyle.FindStringSubmatch(id.name); parts != nil {

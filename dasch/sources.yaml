@@ -1,0 +1,40 @@
+# sources.yaml: the pages the dasch adapter's wire contract was read
+# from, by their address and the copy kept of each.
+#
+# The copies are fetched through this package's dasch-pages archive and
+# kept in cited-sources/ at the repository's root, which .game omits and
+# excludes, so they are in version control and never in a release.
+#
+# The fetch's record is the FETCHED.md in a folder named
+# fetched/dasch-pages/, kept with the other fetch records outside the
+# repository.
+
+sources:
+  - key: dasch-dr7-web-apis
+    title: "DASCH: DR7 Web API Reference"
+    from: https://dasch.cfa.harvard.edu/dr7/web-apis/
+    fetched: "2026-11-09T02:16:01Z, by the dasch-pages archive at 1c508da"
+    sha256: fafaa4a7fc31580beb061432d0550fd85f65fa9dea58dea3bee62848a210adb1
+    size: 158977
+    read: "2026-11-08, the public tier, querycat and lightcurve: their POST bodies and their answers, a JSON list of CSV lines; read again in the kept copy on 2026-11-09"
+
+  - key: dasch-dr7-data-products
+    title: "DASCH: DR7 Data Products"
+    from: https://dasch.cfa.harvard.edu/dr7/data-products/
+    fetched: "2026-11-09T02:16:01Z, by the dasch-pages archive at 1c508da"
+    sha256: 7db8cb456a4ed2cebcc52bfea8cd938cc55fd95e9ad891e0747bf009f36a50ee
+    size: 22573
+    read: "2026-11-08, what a light curve is, the APASS reference catalogue"
+
+  - key: dasch-dr7-lightcurve-columns
+    title: "DASCH: DR7 Lightcurve Data Table Columns"
+    from: https://dasch.cfa.harvard.edu/dr7/lightcurve-columns/
+    fetched: "2026-11-09T02:16:01Z, by the dasch-pages archive at 1c508da"
+    sha256: 9b2cc808a2e51a97b1c54bc801bd42a862473c7c1827f34e5f4febb1dfe5d3d2
+    size: 63834
+    read: "2026-11-09, in the kept copy: magcal_magdep is the calibrated magnitude to use, magcal_local_rms its preferred uncertainty; time is the HJD midpoint of the exposure, its timescale not yet specified by DASCH; aflags, a2flags, bflags and b2flags are not yet documented there, which points to the Legacy Data Guide"
+
+# not yet kept: daschlab's source (apiclient.py, lightcurves.py,
+# refcat.py), read 2026-11-08 at no pinned commit, and Starglass's page
+# on authentication, whose address was not recorded. Both are to be
+# pinned and fetched through an adapter before they are cited.

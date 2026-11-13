@@ -141,7 +141,7 @@ func (papers *Papers) ask(ctx context.Context, batch []ID) (
 	entries, err := papers.read(answer)
 	var asked *halt
 	if errors.As(err, &asked) {
-		papers.gate.stopUntil(asked.retryAfter)
+		err = errors.Join(err, papers.gate.stopUntil(asked.retryAfter))
 	}
 	return entries, err
 }

@@ -22,16 +22,34 @@ lint abbreviations APOGEE ASPCAP ASPCAPFLAG ELEMFLAG EXTRATARG FIELD GALAH
 lint abbreviations GLIMPSE HEASARC HERMES HIRES LAMOST MAKEE MARCS MODIS
 lint abbreviations NICMOS PPMAP SARAO STARFLAG TARGET TFORM TNULL TUNIT VESTA
 lint abbreviations VIIRS VSCATTER
+lint abbreviations BITPIX GCOUNT INTERSECTS
+lint abbreviations EXECUTING LOWESS NOAGE
 
 sweep allow chroma/chroma.go author
 sweep allow chroma/chroma_test.go author
 
+# the SPHEREx pipeline's own ids for the calibration files it used, in
+# HISTORY cards of a cutout recorded as it came
+sweep allow spherex/testdata/cutout-qr3-D2-image.fits uuids
+# STScI's own help address, in the pages its cutout service answers
+# when a survey has no plate, recorded as they came
+sweep allow plates/testdata/noplate-quickv.html emails
+sweep allow plates/testdata/noplate-poss2ukstu_blue.html emails
+
 # test data is scrungy, quit complaining ok
 exclude testdata
 exclude lamost/testdata
+
+# Keep the pages an adapter was read from for source verification
+# without distributing them: game keeps them in version control and out
+# of dist, as celestial keeps its cited-sources.
+omit cited-sources
+exclude cited-sources
 
 # mocks
 run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/web.go -package mocks github.com/janearc/celestial-data/web Web
 run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/normal.go -package mocks github.com/janearc/celestial-data/gaia Normal
 run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/searcher.go -package mocks github.com/janearc/celestial-data/arxiv Searcher
 run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/clock.go -package mocks github.com/janearc/celestial-data/arxiv Clock
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/reader.go -package mocks github.com/janearc/celestial-data/secrets Reader
+run mocks . :: go tool mockgen -write_package_comment=false -destination mocks/doer.go -package mocks github.com/janearc/celestial-data/ads Doer

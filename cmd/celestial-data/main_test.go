@@ -29,9 +29,6 @@ func TestMain(suite *testing.M) {
 		main()
 		return
 	}
-	if os.Getenv(asOp) != "" {
-		os.Exit(answerAsOp(os.Args[1:]))
-	}
 	os.Exit(suite.Run())
 }
 

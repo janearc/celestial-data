@@ -246,10 +246,9 @@ func (catalogue *Catalogue) Find(sources ...int64) ([]*Star, error) {
 	}
 	var found []*Star
 	for index := range catalogue.table.Rows() {
-		row, rowErr := catalogue.table.Row(index)
-		if rowErr != nil {
-			return nil, rowErr
-		}
+		// Row refuses only an index outside the table, and index runs
+		// over the table's own rows, so it refuses none here.
+		row, _ := catalogue.table.Row(index)
 		source, known, err := row.Int(catalogue.found[gaiaID])
 		if err != nil {
 			return nil, err

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VOTABLE version="1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:stc="http://www.ivoa.net/xml/STC/v1.30" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/STC/v1.30 http://www.ivoa.net/xml/STC/v1.30">
+  <RESOURCE type="results">
+    <INFO name="QUERY_STATUS" value="OK"/>
+    <TABLE>
+      <FIELD name="uri" datatype="char" arraysize="*" ID="col_0" utype="caom2:Artifact.uri">
+        <DESCRIPTION>artifact access url</DESCRIPTION>
+      </FIELD>
+      <FIELD name="energy_bounds_lower" datatype="double" ID="col_1" irsa_format="10.5e" precision="E5" unit="m" utype="caom2:Plane.energy.bounds.lower">
+        <DESCRIPTION>lower bound on energy axis (barycentric wavelength)</DESCRIPTION>
+      </FIELD>
+      <FIELD name="energy_bounds_upper" datatype="double" ID="col_2" irsa_format="10.5e" precision="E5" unit="m" utype="caom2:Plane.energy.bounds.upper">
+        <DESCRIPTION>upper bound on energy axis (barycentric wavelength)</DESCRIPTION>
+      </FIELD>
+      <FIELD name="time_bounds_lower" datatype="double" ID="col_3" irsa_format="12.6f" precision="F6" unit="d" utype="caom2:Plane.time.bounds.lower">
+        <DESCRIPTION>lower bound on time axis (Modified Julian Day)</DESCRIPTION>
+      </FIELD>
+      <FIELD name="provenance_version" datatype="char" arraysize="*" ID="col_4" utype="caom2:Plane.provenance.version">
+        <DESCRIPTION>version of the process/software</DESCRIPTION>
+      </FIELD>
+      <DATA>
+        <TABLEDATA>
+          <TR>
+            <TD>ibe/data/spherex/qr2/level2/2025W35_2A/l2b-v20-2025-271/3/level2_2025W35_2A_0599_1D3_spx_l2b-v20-2025-271.fits</TD>
+            <TD>1.63010e-06</TD>
+            <TD>2.43460e-06</TD>
+            <TD>60918.563856</TD>
+            <TD>6.4</TD>
+          </TR>
+          <TR>
+            <TD>ibe/data/spherex/qr2/level2/2025W35_2A/l2b-v20-2025-271/6/level2_2025W35_2A_0599_1D6_spx_l2b-v20-2025-271.fits</TD>
+            <TD>4.41150e-06</TD>
+            <TD>5.00960e-06</TD>
+            <TD>60918.563856</TD>
+            <TD>6.4</TD>
+          </TR>
+          <TR>
+            <TD>ibe/data/spherex/qr2/level2/2025W37_2A/l2b-v20-2025-267/6/level2_2025W37_2A_0342_1D6_spx_l2b-v20-2025-267.fits</TD>
+            <TD>4.41150e-06</TD>
+            <TD>5.00960e-06</TD>
+            <TD>60931.059606</TD>
+            <TD>6.4</TD>
+          </TR>
+        </TABLEDATA>
+      </DATA>
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>

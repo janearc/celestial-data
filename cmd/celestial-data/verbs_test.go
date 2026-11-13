@@ -237,8 +237,10 @@ func numbersWith(values map[string]string) []byte {
 func TestMissingNumbersAreAnError(t *testing.T) {
 	for says, values := range map[string]map[string]string{
 		"no number called most": {},
-		"no number called wait": {"most": "5", "pixels": "64"},
-		"search, not 0":         {"most": "0", "pixels": "64", "wait": "1"},
+		"no number called wait": {"most": "5", "pixels": "64",
+			"dasch-whole": "1"},
+		"search, not 0": {"most": "0", "pixels": "64", "wait": "1",
+			"dasch-whole": "1"},
 	} {
 		tool := command{picked: picked(t, numbersWith(values))}
 		for _, words := range [][]string{{"archives"},
