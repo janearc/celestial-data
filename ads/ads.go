@@ -18,6 +18,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/janearc/celestial-data/web"
 )
 
 // api is the address of ADS's search endpoint, on the host ADS keeps
@@ -179,15 +181,29 @@ func Search(ctx context.Context, doer Doer, token, query string,
 // the network said.
 //
 // One the caller stopped says so, and errors.Is finds the context's
-// reason in it. Any other is said in its own words with the token taken
-// out, after what is said is the error of what failed, and is not
-// wrapped, so nothing further down its chain can hold the token.
+// reason in it.
+//
+// A gentle stop is copied with its printed strings said safely, so
+// callers can still find the typed stop without its words exposing the
+// token.
+//
+// Any other is said in its own words with the token taken out, and is
+// not wrapped, so nothing further down its chain can hold the token.
 func safely(what string, err error, token string) error {
 	for _, reason := range []error{context.Canceled,
 		context.DeadlineExceeded} {
 		if errors.Is(err, reason) {
-			return fmt.Errorf("ads: the search was stopped: %w", reason)
+			return fmt.Errorf("ads: the search was stopped: %w",
+				reason)
 		}
+	}
+	var stopped *web.Stopped
+	if errors.As(err, &stopped) && stopped != nil {
+		safe := *stopped
+		safe.Host = heard(safe.Host, token)
+		safe.Why = heard(safe.Why, token)
+		safe.RetryAfter = heard(safe.RetryAfter, token)
+		return fmt.Errorf("ads: %s: %w", what, &safe)
 	}
 	return fmt.Errorf("ads: %s: %s", what, heard(err.Error(), token))
 }

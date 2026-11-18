@@ -1,0 +1,2 @@
+# Focused CPU checks and build for the primary-document retention adapter.
+check-primarydocs . :: go test -p=1 ./primarydocs

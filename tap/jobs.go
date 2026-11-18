@@ -1,6 +1,7 @@
 package tap
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -32,7 +33,9 @@ const unsaid = -1
 // It says each job's address when it is submitted and when it is
 // complete, so a fetch says which job its file came from.
 type Jobs struct {
+	ctx   context.Context
 	under web.Web
+	clock web.Clock
 	every time.Duration
 	asks  int
 	told  io.Writer
@@ -46,17 +49,24 @@ const (
 )
 
 // NewJobs is a web of jobs over under, which asks after a job every so
-// often and at most asks times, and says each job's address to told. It
-// refuses no web under it, a wait that is not one, fewer than one ask,
-// and no one to tell.
-func NewJobs(under web.Web, every time.Duration, asks int,
-	told io.Writer) (*Jobs, error) {
-	if under == nil || every <= noWait || asks < leastAsks || told == nil {
-		return nil, fmt.Errorf("jobs need a web, a wait, an ask "+
-			"and someone to tell, not %v, %v, %d and %v", under,
-			every, asks, told)
+// often and at most asks times, and says each job's address to told. The
+// clock keeps the waits, and the context ends them early.
+//
+// It refuses no context, web under it, clock, wait that is not one,
+// fewer than one ask, and no one to tell.
+func NewJobs(ctx context.Context, under web.Web, clock web.Clock,
+	every time.Duration, asks int, told io.Writer) (*Jobs, error) {
+	if ctx == nil || under == nil || clock == nil || every <= noWait ||
+		asks < leastAsks || told == nil {
+		return nil, fmt.Errorf(
+			"jobs need a context, a web, a "+
+				"clock, a wait, an ask and "+
+				"someone to tell, not %v, %v, "+
+				"%v, %v, %d and %v",
+			ctx, under, clock, every, asks, told)
 	}
-	return &Jobs{under: under, every: every, asks: asks, told: told}, nil
+	return &Jobs{ctx: ctx, under: under, clock: clock, every: every,
+		asks: asks, told: told}, nil
 }
 
 // Get opens what an address holds. For a query asked of an async
@@ -119,10 +129,12 @@ type phase struct {
 }
 
 // wait asks after a job until it is complete. It says why when the job
-// fails or is stopped, and when it is not complete after every ask.
+// fails or is stopped, and when it is not complete after every ask. The
+// wait between asks is the same every time: a wait is not a failure, so
+// there is no backoff and no jitter.
 func (jobs *Jobs) wait(job string) error {
 	var last phase
-	for range jobs.asks {
+	for ask := 1; ask <= jobs.asks; ask++ {
 		now, err := jobs.state(job)
 		if err != nil {
 			return err
@@ -134,7 +146,13 @@ func (jobs *Jobs) wait(job string) error {
 			return fmt.Errorf("%s: %s: %s", job, now.Phase,
 				strings.TrimSpace(now.Message))
 		}
-		time.Sleep(jobs.every)
+		// no wait after the last ask, which has nothing to ask next
+		if ask == jobs.asks {
+			break
+		}
+		if err := jobs.clock.Sleep(jobs.ctx, jobs.every); err != nil {
+			return err
+		}
 	}
 	return fmt.Errorf("%s is %s still, after %d asks", job, last.Phase,
 		jobs.asks)

@@ -165,15 +165,20 @@ func (flags Flags) Has(bit uint) bool { return flags&(set<<bit) != none }
 
 // The bits of flag_sp the search reads, by the flags page.
 const (
-	EmissionLines     = 0  // defined: value 1, emission lines
-	SingleLinedBinary = 2  // defined: value 4, a single-line spectroscopic binary
-	DoubleLinedBinary = 3  // defined: value 8, a double-line spectroscopic binary
+	EmissionLines = 0 // defined: value 1, emission lines
+	// SingleLinedBinary is defined: value 4, a single-line spectroscopic
+	// binary.
+	SingleLinedBinary = 2
+	// DoubleLinedBinary is defined: value 8, a double-line spectroscopic
+	// binary.
+	DoubleLinedBinary = 3
 	TripleStar        = 7  // defined: value 128, a triple star warning
 	IronWarn          = 10 // defined: value 1024, a warning on [Fe/H]
 	LowSNR            = 11 // defined: value 2048, low S/N
 	NotConverged      = 12 // defined: value 4096, the fit did not converge
-	Extrapolated      = 13 // defined: value 8192, parameters outside the MARCS grid
-	NoResults         = 14 // defined: value 16384, no analysis results
+	Extrapolated      = 13 // defined: value 8192, parameters outside
+	// the MARCS grid.
+	NoResults = 14 // defined: value 16384, no analysis results
 )
 
 // The bits of an element's flag, flag_X_fe, by the flags page. Lithium's

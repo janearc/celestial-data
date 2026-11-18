@@ -17,3 +17,15 @@ numbers:
     says: how long the gate leaves arXiv alone after arXiv asked it to stop without a Retry-After saying how long; arXiv's pages give no number for this
     kind: picked
     by: celestial-data's arxiv package, papers should be fetched gently
+  - name: tries
+    value: 0
+    unit: attempts
+    says: how many times more a request to arXiv is asked after a failure with no word from arXiv, such as a timeout or a 503 with no Retry-After. None, so a failed request is not asked again, as this adapter has always done. This keeps arXiv asked once and never stopped by a circuit, as before. The web package's default is three
+    kind: picked
+    by: celestial-data's arxiv package, so arXiv's behaviour is the one it had before it used the web package's gentle
+  - name: opens
+    value: 0
+    unit: requests
+    says: how many requests in a row may fail with no word from arXiv before it is left alone for the rest of the run. None means never, so arXiv is always asked, however many fail, as this adapter has always done. This keeps arXiv asked once and never stopped by a circuit, as before. The web package's default is two
+    kind: picked
+    by: celestial-data's arxiv package, so arXiv's behaviour is the one it had before it used the web package's gentle

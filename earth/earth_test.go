@@ -35,7 +35,7 @@ func TestCatalog(t *testing.T) {
 			adapted++
 		}
 	}
-	if len(seen) != 64 || adapted != 6 || seen["nasa"] {
+	if len(seen) != 68 || adapted != 10 || seen["nasa"] {
 		t.Fatalf("found %d entries and %d adapters, Black Marble=%t",
 			len(seen), adapted, seen["nasa"])
 	}

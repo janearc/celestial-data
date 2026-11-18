@@ -3,8 +3,7 @@ package arxiv
 import (
 	"context"
 	_ "embed"
-	"fmt"
-	"os"
+	"io"
 	"time"
 
 	"github.com/janearc/celestial-data"
@@ -20,62 +19,54 @@ var numbersRaw []byte
 // asks is what arXiv asks of a program, read from numbers.yaml.
 var asks = celestialdata.NewMeasured(numbersFile, numbersRaw)
 
+// host is arXiv as a person says it, in every message about it.
+const host = "arXiv"
+
+// Clock is the time a gate keeps. It is the web package's, so a clock
+// made for either is a clock for both.
+type Clock = web.Clock
+
+// Wall is the clock on the wall.
+func Wall() Clock { return web.Wall() }
+
+// Gate lets one request at a time through to arXiv, each at least its
+// pace after the one before began, and none while arXiv has asked to be
+// left alone. It keeps the web package's gentle, asked for arXiv by its
+// numbers. The gentle is not exported: a caller asks through the gate.
+type Gate struct {
+	gentle *web.Gentle
+}
+
 // leastPace is the least time from one request's start to the next's.
 // It is three seconds, as arXiv's API terms ask.
 func leastPace() time.Duration {
 	return web.Seconds(asks.Value("least-pace"))
 }
 
-// Clock is the time a gate keeps. Its Sleep ends early when the context
-// ends, and gives the context's error.
-type Clock interface {
-	Now() time.Time
-	Sleep(ctx context.Context, wait time.Duration) error
-}
-
-// wall is the clock on the wall.
-type wall struct{}
-
-// Wall is the clock on the wall.
-func Wall() Clock { return wall{} }
-
-// Now is the time now.
-func (wall) Now() time.Time { return time.Now() }
-
-// Sleep waits so long, or until the context ends.
-func (wall) Sleep(ctx context.Context, wait time.Duration) error {
-	timer := time.NewTimer(wait)
-	defer timer.Stop()
-	select {
-	case <-timer.C:
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-}
-
-// oneAtATime is how many requests a gate lets through at once. It's
-// defined: arXiv asks for a single connection at a time.
-const oneAtATime = 1
-
-// noWait is a wait with nothing left of it. It's defined: none.
-const noWait time.Duration = 0
-
-// Gate lets one request at a time through to arXiv. Each starts at
-// least its pace after the one before started. A request enters, is
-// answered and leaves; the next waits at the gate.
+// policy is how arXiv is asked at a pace: arXiv's own numbers, and the
+// pace a caller picked. The rest of a policy is the web package's
+// default.
 //
-// Held, a gate keeps its last start and any time arXiv asked it to wait
-// until in a record, so the pace and the wait carry over between runs.
-type Gate struct {
-	turn   chan struct{}
-	pace   time.Duration
-	clock  Clock
-	last   time.Time
-	until  time.Time
-	asked  int
-	record string
-	lock   *os.File
+// arXiv is asked once and no more: a request that fails with no word
+// from arXiv is not asked again. That is what this adapter has always
+// done, and arXiv's numbers keep it so on purpose, as tries. Nor is arXiv
+// left alone for the run after failures with no word, as opens says.
+func policy(pace time.Duration) web.Policy {
+	// the defaults are the web package's own numbers, which its tests
+	// read, so they always read
+	made, _ := web.DefaultPolicy(host)
+	made.Defaulted = false
+	made.Pace = pace
+	made.LeastPace = web.Seconds(asks.Value("least-pace"))
+	made.Rest = web.Seconds(asks.Value("rest-unsaid"))
+	made.Tries = int(asks.Value("tries"))
+	made.Opens = int(asks.Value("opens"))
+	// a download is still the only request until it is closed
+	made.HoldsUntilClosed = true
+	// the record is held for the run, as arXiv's always was: a second run
+	// is refused while one is asking
+	made.Keeping = web.KeepsForTheRun
+	return made
 }
 
 // NewGate is a gate at a pace, on a clock. It refuses a pace quicker
@@ -90,55 +81,48 @@ func NewGate(pace time.Duration, clock Clock) (*Gate, error) {
 	if clock == nil {
 		return nil, celestialdata.Refuse("a gate needs a clock")
 	}
-	return &Gate{turn: make(chan struct{}, oneAtATime), pace: pace,
-		clock: clock}, nil
+	gentle, err := web.NewGentle(policy(pace), clock, web.Unix())
+	if err != nil {
+		return nil, celestialdata.Refuse("%v", err)
+	}
+	return &Gate{gentle: gentle}, nil
 }
 
-// enter waits until the request before has left and the pace has
-// passed since it started, then notes the start in the record.
-//
-// When the context ends first, or the record will not write, it gives
-// why and does not hold the gate. Before the time arXiv asked to be
-// left until, it sends nothing and says so.
-func (gate *Gate) enter(ctx context.Context) error {
-	// an ended context sends nothing, even when the gate is free
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-	select {
-	case gate.turn <- struct{}{}:
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-	now := gate.clock.Now()
-	if gate.until.After(now) {
-		<-gate.turn
-		return &halt{status: fmt.Sprintf("it asked to be left until "+
-			"%s, and it is %s", gate.until.Format(time.RFC3339),
-			now.Format(time.RFC3339))}
-	}
-	// before the first request, last is the zero time, long past; a
-	// last that a clock set wrong puts ahead is waited no more than the
-	// pace
-	wait := min(gate.last.Add(gate.pace).Sub(now), gate.pace)
-	if wait > noWait {
-		if err := gate.clock.Sleep(ctx, wait); err != nil {
-			<-gate.turn
-			return err
-		}
-	}
-	gate.last = gate.clock.Now()
-	if err := gate.note(); err != nil {
-		<-gate.turn
-		return err
-	}
-	gate.asked++
-	return nil
+// Insist has the gate ask arXiv anyway, for this run. What arXiv asked
+// for is written to say before the request goes. It refuses a missing
+// writer, since what is overridden must be said.
+func (gate *Gate) Insist(say io.Writer) error {
+	return gate.gentle.Insist(say)
 }
 
-// leave lets the next request through to wait out the pace.
-func (gate *Gate) leave() { <-gate.turn }
+// Say gives the gate a writer for saying what it cannot keep, such as a
+// record that will not write. With none it stays quiet and goes on.
+func (gate *Gate) Say(say io.Writer) { gate.gentle.Say(say) }
 
 // Asked is how many requests the gate has let through. Read it when none
 // is waiting.
-func (gate *Gate) Asked() int { return gate.asked }
+func (gate *Gate) Asked() int { return gate.gentle.Asked() }
+
+// enter waits until the request before has left and the pace has
+// passed, as the web package's gentle does it. A request let through
+// must be left.
+func (gate *Gate) enter(ctx context.Context) error {
+	return gate.gentle.Enter(ctx)
+}
+
+// leave lets the next request through to wait at the gate.
+func (gate *Gate) leave() { gate.gentle.Leave() }
+
+// judge says what arXiv's answer means, once the request is done, with
+// the gate held. See web.Gentle.Judge.
+func (gate *Gate) judge(code int, retryAfter string,
+	failure error) (bool, error) {
+	return gate.gentle.Judge(code, retryAfter, failure)
+}
+
+// reask is what follows a fresh stop from arXiv when the gate insists:
+// asked once more, with the gate held. See web.Gentle.Reask.
+func (gate *Gate) reask(ctx context.Context, err error,
+	reasked *bool) error {
+	return gate.gentle.Reask(ctx, err, reasked)
+}

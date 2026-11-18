@@ -126,7 +126,8 @@ func (archive *Archive) Find(near *celestialdata.Near) (
 // query is the ADQL for the rows within the circle.
 func (archive *Archive) query(near *celestialdata.Near) string {
 	if near.Radius() < whole {
-		return tap.Search(tap.Every, archive.columns, archive.table, near,
+		return tap.Search(tap.Every, archive.columns, archive.table,
+			near,
 			archive.where, "")
 	}
 	query := "SELECT " + archive.columns + " FROM " + archive.table

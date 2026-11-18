@@ -19,3 +19,93 @@ numbers:
     says: how long the hasty client waits for a server to begin its answer, a quarter of the slow server's delay
     kind: picked
     by: celestial-data's web tests, 2026-11-02
+  - name: example-pace
+    value: 3
+    unit: seconds
+    says: the pace of the example host the gentle tests ask, wider than the default so a test sees the pace and the default apart
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: example-rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long the example host is left alone after it said stop and not how long
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: example-tries
+    value: 2
+    unit: attempts
+    says: how many retries the example host gets, two so a test sees one retry, and then the last one
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: example-opens
+    value: 2
+    unit: requests
+    says: how many requests in a row may use up their tries before the example host's circuit opens
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: example-repeats-posts
+    value: 1
+    unit: 1 for yes, 0 for no
+    says: whether a POST to the example host may be repeated; yes, so a test sees the retry, and the tests of the default see it refused
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: tied-pace
+    value: 3
+    unit: seconds
+    says: the pace of a host whose numbers are wrong in the one way each test of a refusal names
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: tied-tries
+    value: 1.5
+    unit: attempts
+    says: not a count, so the policy refuses it
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: tied-repeats-posts
+    value: 2
+    unit: 1 for yes, 0 for no
+    says: neither yes nor no, so the policy refuses it
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: least-pace
+    value: 3
+    unit: seconds
+    says: the pace of a host that names the quickest pace its terms allow
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: least-least-pace
+    value: 5
+    unit: seconds
+    says: the quickest pace the host's terms allow, slower than its pace, so a gentle for it is refused
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: huge-pace
+    value: 1000000000000
+    unit: seconds
+    says: more seconds than a time holds, so the policy refuses it
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: many-pace
+    value: 3
+    unit: seconds
+    says: the pace of a host that asks for more tries than may be
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: many-tries
+    value: 11
+    unit: attempts
+    says: one more than the most tries any host's policy may ask for
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: quiet-tries
+    value: 0
+    unit: attempts
+    says: a host that is asked once and not again, as arXiv is
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11
+  - name: quiet-pace
+    value: 3
+    unit: seconds
+    says: the pace of the host that is asked once and not again
+    kind: picked
+    by: celestial-data's web tests, 2026-11-11

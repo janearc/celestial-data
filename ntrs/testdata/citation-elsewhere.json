@@ -1,0 +1,4 @@
+{"id": 20990000001, "title": "A crafted report whose PDF is elsewhere",
+ "downloads": [
+   {"mimetype": "application/pdf", "name": "report.pdf", "links": {
+      "pdf": "/api/citations/20123450000/downloads/report.pdf"}}]}

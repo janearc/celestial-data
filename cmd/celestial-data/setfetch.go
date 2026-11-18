@@ -34,6 +34,9 @@ func (tool command) setVerb(call pzm.Call) error {
 	if err != nil {
 		return err
 	}
+	if err := tool.insist(call); err != nil {
+		return err
+	}
 	get, err := tool.web()
 	if err != nil {
 		return err

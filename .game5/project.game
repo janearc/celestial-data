@@ -1,0 +1,6 @@
+# vim: set filetype=game:
+# game: celestial-data, which finds and fetches what the archives hold
+#
+# name says which project this is. the builder's config has a block for
+# it that says where its road is; this file never names a remote.
+name celestial-data

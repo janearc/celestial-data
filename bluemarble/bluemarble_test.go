@@ -16,15 +16,16 @@ import (
 const (
 	julyID    = "2004-07"
 	julyName  = "world.200407.3x5400x2700.jpg"
-	julyURL   = folder + "74000/74092/" + julyName
+	julyURL   = folder + "bmng/bmng-base/july/" + julyName
 	julyAbout = "NASA Blue Marble Next Generation, July 2004; " +
 		"fetched locally, never shipped"
 	nightID    = "2016-night"
 	nightName  = "BlackMarble_2016_01deg.jpg"
-	nightURL   = folder + "144000/144898/" + nightName
+	nightURL   = folder + "imagerecords/144000/144898/" + nightName
 	nightAbout = "NASA Black Marble 2016, the earth at night; " +
 		"fetched locally, never shipped"
-	folder = "https://eoimages.gsfc.nasa.gov/images/imagerecords/"
+	folder = "https://assets.science.nasa.gov/content/dam/science/" +
+		"esd/eo/images/"
 )
 
 // The counts and places the tests work with.

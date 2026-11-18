@@ -138,7 +138,8 @@ func ownersAlone(path string, about os.FileInfo) error {
 		return fmt.Errorf("ads: %s is a directory, not a kept token",
 			path)
 	}
-	if !about.Mode().IsRegular() || about.Mode().Perm()&noOneElse != noBits {
+	if !about.Mode().IsRegular() ||
+		about.Mode().Perm()&noOneElse != noBits {
 		return fmt.Errorf("ads: %s is %v; a kept token is a file "+
 			"readable by no one else, as %v is", path, about.Mode(),
 			os.FileMode(onlyItsOwner))

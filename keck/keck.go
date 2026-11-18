@@ -43,7 +43,8 @@ const (
 const (
 	instrument = "HIRES"
 	table      = "koa_hires"
-	columns    = "koaid, filehand, targname, object, utdatetime, exptime, " +
+	columns    = "koaid, filehand, targname, " +
+		"object, utdatetime, exptime, " +
 		"deckname, progpi"
 	// science keeps the frames of a target, not its calibrations.
 	science = "koaimtyp = 'object'"
@@ -72,7 +73,8 @@ func New(get web.Web, most int) (*Archive, error) {
 		return nil, err
 	}
 	if most < least {
-		return nil, base.Refuse("needs at least one frame a search, not %d",
+		return nil, base.Refuse("needs at least one frame a "+
+			"search, not %d",
 			most)
 	}
 	return &Archive{base: base, most: most}, nil
@@ -163,11 +165,15 @@ func (archive *Archive) spectra(seen *sighting, about string) (
 			if !strings.HasSuffix(file, flux) {
 				continue
 			}
-			kept := path.Join(listed.Result.Prefix, folder.Subdir, file)
-			address := reduced + "?" + url.Values{"instrument": {instrument},
-				"koaid": {seen.koaid}, "filehand": {kept}}.Encode()
-			product, err := archive.base.Product(seen.koaid, file, address,
-				celestialdata.Unsized, about+", extracted by MAKEE")
+			kept := path.Join(listed.Result.Prefix, folder.Subdir,
+				file)
+			address := reduced + "?" + url.Values{
+				"instrument": {instrument},
+				"koaid":      {seen.koaid},
+				"filehand":   {kept}}.Encode()
+			product, err := archive.base.Product(seen.koaid, file,
+				address, celestialdata.Unsized,
+				about+", extracted by MAKEE")
 			if err != nil {
 				return nil, archive.base.Wrap(err)
 			}
@@ -210,7 +216,8 @@ func sighted(answer rows, at int) (*sighting, error) {
 // about is a few words on the frame.
 func (seen sighting) about() string {
 	return fmt.Sprintf("a HIRES frame of %s, %s, %.0f s through %s, PI %s",
-		seen.target, seen.when, seen.exposure, seen.deck, seen.investigator)
+		seen.target, seen.when, seen.exposure, seen.deck,
+		seen.investigator)
 }
 
 // rows is what sighted reads of an answered table.

@@ -289,12 +289,9 @@ func TestFindRefusesWhatIsNotACatalogue(t *testing.T) {
 	}{
 		"a server error": {answer(http.StatusInternalServerError, ""),
 			"answered with status 500"},
-		"a stop without a time": {answer(http.StatusTooManyRequests,
-			""), `asked us to stop: POST /dasch/dr7/querycat, ` +
-			`Retry-After ""`},
-		"a stop with one": {answer(http.StatusTooManyRequests, "",
-			"Retry-After", "120"), `asked us to stop: POST ` +
-			`/dasch/dr7/querycat, Retry-After "120"`},
+		"a column named both ways": {answer(http.StatusOK,
+			`["ref_number,refNumber,gsc_bin_index,ra_deg,dec_deg"]`),
+			"twice"},
 		"an object": {answer(http.StatusOK, `{"message":"no"}`),
 			"not a list of lines"},
 		"not JSON": {answer(http.StatusOK, "<html>"),
@@ -326,6 +323,31 @@ func TestFindRefusesWhatIsNotACatalogue(t *testing.T) {
 		products, err := archive(t, doer, twoSources).Find(
 			star(t, starWide))
 		if products != nil || err == nil ||
+			!strings.HasPrefix(err.Error(), "dasch: ") ||
+			!strings.Contains(err.Error(), each.want) ||
+			*each.reply.closed != oneSource {
+			t.Errorf("%s: %v, %v", name, products, err)
+		}
+	}
+}
+
+// Anti-tests: a stop of the API, asked through the gentle, is an error
+// that begins with the archive's name, is ErrStopped, says that the API
+// asked, and what it asked for when it said, and no product.
+func TestFindSaysWhenTheAPIAsksUsToStop(t *testing.T) {
+	for name, each := range map[string]struct {
+		reply reply
+		want  string
+	}{
+		"a stop without a time": {answer(http.StatusTooManyRequests, ""),
+			"DASCH asked us to stop"},
+		"a stop with one": {answer(http.StatusTooManyRequests, "",
+			"Retry-After", "120"), "its Retry-After is 120"},
+	} {
+		doer, _ := doerAnswering(t, each.reply)
+		products, err := archive(t, gentled(t, doer), twoSources).Find(
+			star(t, starWide))
+		if products != nil || !errors.Is(err, dasch.ErrStopped) ||
 			!strings.HasPrefix(err.Error(), "dasch: ") ||
 			!strings.Contains(err.Error(), each.want) ||
 			*each.reply.closed != oneSource {
@@ -495,19 +517,55 @@ func TestALightCurveAddressThatAsksNonsenseSendsNothing(t *testing.T) {
 	}
 }
 
-// Anti-test: the API failing is an error with no body.
-func TestALightCurveTheAPIRefusesIsAnError(t *testing.T) {
-	doer, _ := doerAnswering(t, answer(http.StatusTooManyRequests, "",
-		"Retry-After", "30"))
+// Anti-test: a 200 that holds no light curve is an error with no body.
+func TestAnAnswerThatIsNoLightCurveIsAnError(t *testing.T) {
+	doer, _ := doerAnswering(t, answer(http.StatusOK, `["no such source"]`))
 	curves, err := dasch.NewLightcurves(
 		mocks.NewMockWeb(gomock.NewController(t)), doer, agent)
 	if err != nil {
 		t.Fatal(err)
 	}
 	body, length, err := curves.Get(curveURL)
+	if body != nil || length != unsaid || err == nil ||
+		!strings.Contains(err.Error(), "not a light curve") {
+		t.Errorf("%v, %d, %v", body, length, err)
+	}
+}
+
+// gentled is a doer asked through the gentle of this package's policy,
+// as a run on the network asks. Its one question goes at once, so it
+// never waits.
+func gentled(t *testing.T, under dasch.Doer) dasch.Doer {
+	t.Helper()
+	policy, err := dasch.Policy()
+	if err != nil {
+		t.Fatal(err)
+	}
+	gentle, err := web.NewGentle(policy, web.Wall(), web.Unix())
+	if err != nil {
+		t.Fatal(err)
+	}
+	through, err := web.Through(under, gentle)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return through
+}
+
+// Anti-test: the API asking us to stop is an error with no body, that is
+// ErrStopped, and says what it asked for.
+func TestALightCurveTheAPIRefusesIsAnError(t *testing.T) {
+	doer, _ := doerAnswering(t, answer(http.StatusTooManyRequests, "",
+		"Retry-After", "30"))
+	curves, err := dasch.NewLightcurves(
+		mocks.NewMockWeb(gomock.NewController(t)), gentled(t, doer), agent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, length, err := curves.Get(curveURL)
 	if body != nil || length != unsaid || !errors.Is(err,
 		dasch.ErrStopped) || !strings.Contains(err.Error(),
-		`Retry-After "30"`) {
+		"its Retry-After is 30") {
 		t.Errorf("%v, %d, %v", body, length, err)
 	}
 }

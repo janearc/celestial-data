@@ -1,0 +1,9 @@
+# SPHEREx's cutouts are NASA imagery, recorded for the tests as they
+# came: kept on the road, never in a dist
+spherex/testdata/cutout-qr3-D2-image.fits
+spherex/spectrum/testdata
+
+# Keep the pages an adapter was read from for source verification
+# without distributing them: game keeps them in version control and out
+# of dist, as celestial keeps its cited-sources.
+cited-sources

@@ -15,7 +15,7 @@ import (
 // defined by web.Web.
 const unsaid = -1
 
-// Lightcurves is a web that asks DASCH for a light curve. Asked for a
+// Lightcurves is a web that asks the archive for a light curve. Asked for a
 // light curve's address, as Find makes it, it sends the question as a
 // POST, which is the only way DR7 gives one.
 //
@@ -28,7 +28,7 @@ type Lightcurves struct {
 }
 
 // NewLightcurves is a web of light curves over under, asking through
-// doer and naming itself to DASCH by agent. It refuses no web under it,
+// doer and naming itself to the archive by agent. It refuses no web under it,
 // no doer and no agent.
 func NewLightcurves(under web.Web, doer Doer, agent string) (*Lightcurves,
 	error) {
@@ -40,8 +40,8 @@ func NewLightcurves(under web.Web, doer Doer, agent string) (*Lightcurves,
 }
 
 // Get opens what an address holds. For a light curve's address, that is
-// the light curve, as CSV; it asks DASCH once, and no more. An address
-// that is a light curve's but holds no question DASCH takes is an error.
+// the light curve, as CSV; it asks the archive once, and no more. An address
+// that is a light curve's but holds no question it takes is an error.
 func (curves *Lightcurves) Get(address string) (io.ReadCloser, int64,
 	error) {
 	asked, isCurve := question(address)
@@ -84,7 +84,8 @@ func curveShape(listed []string) error {
 	}
 	for at, line := range listed[first+header:] {
 		if fields := len(split(line)); fields != len(names) {
-			return fmt.Errorf("the answer is not a light curve: line "+
+			return fmt.Errorf("the answer is not a light "+
+				"curve: line "+
 				"%d has %d fields, not the %d of its columns",
 				at+linesBefore, fields, len(names))
 		}
@@ -134,7 +135,7 @@ func question(address string) (asked, bool) {
 }
 
 // body is the body of the POST the question is sent as. The numbers are
-// to be whole numbers, and the catalogue one of the two DASCH has; a
+// to be whole numbers, and the catalogue one of the two the archive has; a
 // question that is not is no body.
 func (what asked) body() (*curve, error) {
 	number, numberErr := strconv.ParseUint(what.number, decimal, bits64)

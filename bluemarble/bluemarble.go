@@ -35,9 +35,9 @@ const (
 	julyID = "2004-07"
 	// julyName is the image's file.
 	julyName = "world.200407.3x5400x2700.jpg"
-	// julyAddress is where Visible Earth serves it.
-	julyAddress = "https://eoimages.gsfc.nasa.gov/images/imagerecords/" +
-		"74000/74092/" + julyName
+	// julyAddress is the download linked by NASA's current base-map page.
+	julyAddress = "https://assets.science.nasa.gov/content/dam/science/" +
+		"esd/eo/images/bmng/bmng-base/july/" + julyName
 	// julySize is the name of its length in numbers.yaml.
 	julySize = "july-size"
 	// julyAbout says what it is.
@@ -53,9 +53,9 @@ const (
 	nightID = "2016-night"
 	// nightName is the image's file.
 	nightName = "BlackMarble_2016_01deg.jpg"
-	// nightAddress is where Visible Earth serves it.
-	nightAddress = "https://eoimages.gsfc.nasa.gov/images/imagerecords/" +
-		"144000/144898/" + nightName
+	// nightAddress is the download linked by NASA's current night-map page.
+	nightAddress = "https://assets.science.nasa.gov/content/dam/science/" +
+		"esd/eo/images/imagerecords/144000/144898/" + nightName
 	// nightSize is the name of its length in numbers.yaml.
 	nightSize = "night-size"
 	// nightAbout says what it is.

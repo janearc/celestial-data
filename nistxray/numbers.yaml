@@ -1,0 +1,358 @@
+# numbers.yaml: the values of the data the nistxray tests quote, read
+# from the pages themselves, not from our own choosing. The pins of
+# the pages (their lengths and the sums of their content) are in
+# manifest.yaml; the sources are in sources.yaml.
+
+numbers:
+  # Lead, ElemTab/z82.html, the page the tests read in full detail.
+  - name: lead-rows
+    value: 58
+    unit: rows
+    says: the rows of lead's table of coefficients
+    kind: measured
+    source:
+      key: nist-z82
+      where: the rows of the page's ASCII table, lines 445 to 502
+      text: "58 rows, from 1.00000E-03 to 2.00000E+01 MeV"
+  - name: lead-first-energy
+    value: 0.001
+    unit: MeV
+    says: the energy of lead's first row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 445 of the page's ASCII table, its first row
+      text: "1.00000E-03  5.210E+03  5.197E+03"
+  - name: lead-first-mu
+    value: 5210
+    unit: cm^2/g
+    says: the mass attenuation coefficient of lead's first row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 445 of the page's ASCII table, its first row
+      text: "1.00000E-03  5.210E+03  5.197E+03"
+  - name: lead-first-muen
+    value: 5197
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of lead's first row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 445 of the page's ASCII table, its first row
+      text: "1.00000E-03  5.210E+03  5.197E+03"
+  - name: lead-second-energy
+    value: 0.0015
+    unit: MeV
+    says: the energy of lead's second row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 446 of the page's ASCII table, its second row
+      text: "1.50000E-03  2.356E+03  2.344E+03"
+  - name: lead-second-mu
+    value: 2356
+    unit: cm^2/g
+    says: the mass attenuation coefficient of lead's second row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 446 of the page's ASCII table, its second row
+      text: "1.50000E-03  2.356E+03  2.344E+03"
+  - name: lead-second-muen
+    value: 2344
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of lead's second row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 446 of the page's ASCII table, its second row
+      text: "1.50000E-03  2.356E+03  2.344E+03"
+  - name: lead-k-edge-energy
+    value: 0.0880045
+    unit: MeV
+    says: the energy of lead's K-edge row, at the K absorption edge
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 482 of the page's ASCII table, the row labelled K
+      text: "K  8.80045E-02  7.683E+00  2.160E+00"
+  - name: lead-k-edge-mu
+    value: 7.683
+    unit: cm^2/g
+    says: the mass attenuation coefficient of lead's K-edge row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 482 of the page's ASCII table, the row labelled K
+      text: "K  8.80045E-02  7.683E+00  2.160E+00"
+  - name: lead-k-edge-muen
+    value: 2.16
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of lead's K-edge row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 482 of the page's ASCII table, the row labelled K
+      text: "K  8.80045E-02  7.683E+00  2.160E+00"
+  - name: lead-last-energy
+    value: 20
+    unit: MeV
+    says: the energy of lead's last row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 502 of the page's ASCII table, its last row
+      text: "2.00000E+01  6.206E-02  3.595E-02"
+  - name: lead-last-mu
+    value: 0.06206
+    unit: cm^2/g
+    says: the mass attenuation coefficient of lead's last row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 502 of the page's ASCII table, its last row
+      text: "2.00000E+01  6.206E-02  3.595E-02"
+  - name: lead-last-muen
+    value: 0.03595
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of lead's last row
+    kind: measured
+    source:
+      key: nist-z82
+      where: line 502 of the page's ASCII table, its last row
+      text: "2.00000E+01  6.206E-02  3.595E-02"
+
+  # Aluminum, ElemTab/z13.html.
+  - name: aluminum-rows
+    value: 38
+    unit: rows
+    says: the rows of aluminum's table of coefficients
+    kind: measured
+    source:
+      key: nist-z13
+      where: the rows of the page's ASCII table, lines 309 to 346
+      text: "38 rows, from 1.00000E-03 to 2.00000E+01 MeV"
+  - name: aluminum-first-energy
+    value: 0.001
+    unit: MeV
+    says: the energy of aluminum's first row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 309 of the page's ASCII table, its first row
+      text: "1.00000E-03  1.185E+03  1.183E+03"
+  - name: aluminum-first-mu
+    value: 1185
+    unit: cm^2/g
+    says: the mass attenuation coefficient of aluminum's first row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 309 of the page's ASCII table, its first row
+      text: "1.00000E-03  1.185E+03  1.183E+03"
+  - name: aluminum-first-muen
+    value: 1183
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of aluminum's first row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 309 of the page's ASCII table, its first row
+      text: "1.00000E-03  1.185E+03  1.183E+03"
+  - name: aluminum-k-edge-energy
+    value: 0.0015596
+    unit: MeV
+    says: the energy of aluminum's K-edge row, at the K absorption edge
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 312 of the page's ASCII table, the row labelled K
+      text: "K  1.55960E-03  3.957E+03  3.829E+03"
+  - name: aluminum-k-edge-mu
+    value: 3957
+    unit: cm^2/g
+    says: the mass attenuation coefficient of aluminum's K-edge row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 312 of the page's ASCII table, the row labelled K
+      text: "K  1.55960E-03  3.957E+03  3.829E+03"
+  - name: aluminum-k-edge-muen
+    value: 3829
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of aluminum's K-edge row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 312 of the page's ASCII table, the row labelled K
+      text: "K  1.55960E-03  3.957E+03  3.829E+03"
+  - name: aluminum-last-energy
+    value: 20
+    unit: MeV
+    says: the energy of aluminum's last row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 346 of the page's ASCII table, its last row
+      text: "2.00000E+01  2.168E-02  1.633E-02"
+  - name: aluminum-last-mu
+    value: 0.02168
+    unit: cm^2/g
+    says: the mass attenuation coefficient of aluminum's last row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 346 of the page's ASCII table, its last row
+      text: "2.00000E+01  2.168E-02  1.633E-02"
+  - name: aluminum-last-muen
+    value: 0.01633
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of aluminum's last row
+    kind: measured
+    source:
+      key: nist-z13
+      where: line 346 of the page's ASCII table, its last row
+      text: "2.00000E+01  2.168E-02  1.633E-02"
+
+  # Water, ComTab/water.html.
+  - name: water-rows
+    value: 36
+    unit: rows
+    says: the rows of water's table of coefficients
+    kind: measured
+    source:
+      key: nist-water
+      where: the rows of the page's ASCII table, lines 281 to 316
+      text: "36 rows, from 1.00000E-03 to 2.00000E+01 MeV"
+  - name: water-first-energy
+    value: 0.001
+    unit: MeV
+    says: the energy of water's first row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 281 of the page's ASCII table, its first row
+      text: "1.00000E-03  4.078E+03  4.065E+03"
+  - name: water-first-mu
+    value: 4078
+    unit: cm^2/g
+    says: the mass attenuation coefficient of water's first row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 281 of the page's ASCII table, its first row
+      text: "1.00000E-03  4.078E+03  4.065E+03"
+  - name: water-first-muen
+    value: 4065
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of water's first row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 281 of the page's ASCII table, its first row
+      text: "1.00000E-03  4.078E+03  4.065E+03"
+  - name: water-last-energy
+    value: 20
+    unit: MeV
+    says: the energy of water's last row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 316 of the page's ASCII table, its last row
+      text: "2.00000E+01  1.813E-02  1.382E-02"
+  - name: water-last-mu
+    value: 0.01813
+    unit: cm^2/g
+    says: the mass attenuation coefficient of water's last row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 316 of the page's ASCII table, its last row
+      text: "2.00000E+01  1.813E-02  1.382E-02"
+  - name: water-last-muen
+    value: 0.01382
+    unit: cm^2/g
+    says: the mass energy-absorption coefficient of water's last row
+    kind: measured
+    source:
+      key: nist-water
+      where: line 316 of the page's ASCII table, its last row
+      text: "2.00000E+01  1.813E-02  1.382E-02"
+
+  # The material constants of lead and water, Table 1 and Table 2.
+  - name: lead-overa
+    value: 0.39575
+    unit: "none"
+    says: the mean ratio of atomic number to mass NIST assumed for lead
+    kind: measured
+    source:
+      key: nist-tab1
+      where: lead's row of Table 1, Z 82
+      text: "82 Pb Lead 0.39575 823.0 1.135E+01"
+  - name: lead-density
+    value: 11.35
+    unit: g/cm^3
+    says: the density NIST assumed for lead
+    kind: measured
+    source:
+      key: nist-tab1
+      where: lead's row of Table 1, Z 82
+      text: "82 Pb Lead 0.39575 823.0 1.135E+01"
+  - name: water-overa
+    value: 0.55508
+    unit: "none"
+    says: the mean ratio of atomic number to mass NIST assumed for water
+    kind: measured
+    source:
+      key: nist-tab2
+      where: water's row of Table 2
+      text: "Water, Liquid 0.55508 75.0 1.000E+00"
+  - name: water-density
+    value: 1.0
+    unit: g/cm^3
+    says: the density NIST assumed for water
+    kind: measured
+    source:
+      key: nist-tab2
+      where: water's row of Table 2
+      text: "Water, Liquid 0.55508 75.0 1.000E+00"
+
+  # The first rows of the two tables, which the pages lay out with
+  # ROWSPAN spacer cells between their values.
+  - name: hydrogen-overa
+    value: 0.99212
+    unit: "none"
+    says: the mean ratio of atomic number to mass NIST assumed for hydrogen
+    kind: measured
+    source:
+      key: nist-tab1
+      where: hydrogen's row of Table 1, the table's first, Z 1
+      text: "1 H Hydrogen 0.99212 19.2 8.375E-05"
+  - name: hydrogen-density
+    value: 0.00008375
+    unit: g/cm^3
+    says: the density NIST assumed for hydrogen
+    kind: measured
+    source:
+      key: nist-tab1
+      where: hydrogen's row of Table 1, the table's first, Z 1
+      text: "1 H Hydrogen 0.99212 19.2 8.375E-05"
+  - name: a150-overa
+    value: 0.54903
+    unit: "none"
+    says: the mean ratio of atomic number to mass NIST assumed for A-150 tissue-equivalent plastic
+    kind: measured
+    source:
+      key: nist-tab2
+      where: A-150's row of Table 2, the table's first
+      text: "A-150 Tissue-Equivalent Plastic 0.54903 65.1 1.127E+00"
+  - name: a150-density
+    value: 1.127
+    unit: g/cm^3
+    says: the density NIST assumed for A-150 tissue-equivalent plastic
+    kind: measured
+    source:
+      key: nist-tab2
+      where: A-150's row of Table 2, the table's first
+      text: "A-150 Tissue-Equivalent Plastic 0.54903 65.1 1.127E+00"

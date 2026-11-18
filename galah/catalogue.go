@@ -161,11 +161,14 @@ func heldTo(table *fits.Table, want held) (*fits.Column, error) {
 		return nil, celestialdata.Refuse("%s is of kind %c, not %c",
 			want.name, found.Kind(), want.kind)
 	case found.Count() != oneValue:
-		return nil, celestialdata.Refuse("%s holds %d values a row, not one",
+		return nil, celestialdata.Refuse(
+			"%s holds %d values a row, not "+
+				"one",
 			want.name, found.Count())
 	case found.Unit() != "":
 		return nil, celestialdata.Refuse(
-			"%s is in %q, where the allstar file writes no unit", want.name,
+			"%s is in %q, where the allstar "+
+				"file writes no unit", want.name,
 			found.Unit())
 	}
 	return found, nil
@@ -206,18 +209,22 @@ func (catalogue *Catalogue) Star(index int64) (*Star, error) {
 		return nil, err
 	}
 	read := reading{row: row, found: catalogue.found}
-	star := &Star{sobject: read.whole(sobjectID), twoMASS: read.text(twoMASS),
-		snr:    read.float(snr),
-		radial: read.float(radial), radialError: read.float(radialError),
-		teff: read.float(teff), teffError: read.float(teffError),
+	star := &Star{sobject: read.whole(sobjectID),
+		twoMASS:     read.text(twoMASS),
+		snr:         read.float(snr),
+		radial:      read.float(radial),
+		radialError: read.float(radialError),
+		teff:        read.float(teff), teffError: read.float(teffError),
 		logg: read.float(logg), loggError: read.float(loggError),
 		vsini: read.float(vsini), vsiniError: read.float(vsiniError),
 		spectroscopic: Flags(read.whole(spectroscopic)),
 		iron: read.abundance(trio{value: catalogue.found[iron],
 			uncertainty: catalogue.found[ironError],
 			flag:        catalogue.found[ironFlag]}),
-		lithium: Lithium{value: read.float(lithium), limit: read.float(lithiumLimit),
-			below: read.float(lithiumBelow), above: read.float(lithiumAbove),
+		lithium: Lithium{value: read.float(lithium),
+			limit: read.float(lithiumLimit),
+			below: read.float(lithiumBelow),
+			above: read.float(lithiumAbove),
 		}}
 	star.gaia, star.inGaia = read.maybe(gaiaID)
 	flag, flagged := read.maybe(lithiumFlag)
@@ -312,7 +319,8 @@ func (read *reading) integer(column fits.Column) int64 {
 	read.keep(err)
 	if !known {
 		name := column.Name()
-		read.keep(celestialdata.Refuse("the survey left %s empty", name))
+		read.keep(celestialdata.Refuse("the survey left %s empty",
+			name))
 	}
 	return value
 }

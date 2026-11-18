@@ -57,10 +57,99 @@ grissom
   from SkyView into `sky/`. every colourway the chroma archive lists
   into `colourways/`.
 
+## how celestial-data asks a server
+
+every request to another person's server goes through one piece of
+code, the gentle, in the `web` package. arXiv, dasch, ADS and NTRS
+use it with numbers of their own; every other host is asked through
+it by the default numbers. this is what it does for all of them.
+
+- every host is paced: a least time from the start of one request to
+  the start of the next, one request at a time.
+- the general picked wait is 120 seconds to connect, finish TLS and
+  begin its answer (`wait`). dasch, ADS and NTRS also have independent
+  whole-answer limits, described in their sections. other downloads
+  and arXiv PDFs have no whole-answer limit; slow files can finish.
+- a 403, a 429, or a 503 with a Retry-After is the host asking us to
+  stop. nothing more is sent to it until the wait has passed: the
+  Retry-After's seconds or date, or five minutes when it gave none.
+  the wait is kept on disk, so the next run asks nothing either.
+- a timeout, a dropped connection or a 503 with no Retry-After is
+  asked again, up to three more times, after a wait that grows and is
+  randomised. a request that uses up all its tries counts against the
+  host; two in a row and the host is left alone for the rest of the
+  run.
+- a POST is not asked again after a failure, unless that host's
+  numbers say its POSTs are safe to repeat, and why. dasch's and
+  NTRS's say so; the others do not.
+- a host with no numbers of its own gets the defaults, and a stop
+  says so.
+
+a stop fails soft, not closed. it is a refusal that says which host,
+why, and until when, and ends by naming `--i-mean-it`. that switch
+asks anyway, for one run. it first prints what the server asked for.
+it asks the refused request once more and no more; if the host refuses
+again, the stop says the override was tried. a request that may not be
+asked twice, a POST the host's numbers do not clear, is not sent
+again, and the stop says so. every override is kept in the host's
+record, beside the wait it overrode; the newest twenty are kept.
+`find`, `fetch`, `fetch-set`, `papers`, `ads`, `ntrs`, `ntrs-fetch`,
+`terrain-index`, `terrain-fetch`, `noaa-crm` and `documents` take the
+switch.
+
+a stop in a later run reads like this, on one line:
+
+    example.org asked us to stop: it asked to be left until
+    2026-11-11T14:00:00Z, and it is 2026-11-11T13:50:00Z; its
+    Retry-After is 600; it may be asked again at 2026-11-11T14:00:00Z;
+    no pace was picked for this host, so the default pace was used; to
+    ask anyway, add --i-mean-it
+
+the first words of a stop that has just happened are the host's own
+status instead. with the switch, this goes to stderr before anything
+is asked:
+
+    example.org: it asked to be left until 2026-11-11T14:00:00Z, and
+    it is 2026-11-11T13:50:00Z; its Retry-After was 600; asking
+    anyway, as told to
+
+records live in `celestial-data` in the user's cache folder
+(`~/Library/Caches` on a mac), one file a host, named for the host
+and `-gate`, such as `arxiv-gate` and `ads-gate`. each holds when the
+last request began, the wait, and the overrides. two runs at once
+share one pace and one stop, and neither is refused. arXiv is the
+exception: a lock beside its record lets one run ask at a time, and a
+second run is refused until the first ends. the system lets the lock
+go when a run ends, however it ends.
+
+a record that cannot be kept is said once, with the path and why, and
+the run goes on, paced in memory, with no wait kept for the next. the
+same when there is no cache folder: it is said before the first
+request. a file that is not a record is refused, and the message
+names it; remove it and run again.
+
+the defaults are in `web/numbers.yaml`. every one was picked; none was
+given by a host:
+
+- pace: one second.
+- rest when a host names no wait: 300 seconds.
+- tries after a failure with no word: 3. a host's numbers may not ask
+  for more than 10.
+- requests in a row that may use up their tries before the host is
+  left alone: 2.
+- wait before the first retry: up to 1 second, doubled for each retry
+  after, up to 60 seconds.
+- overrides kept in a record: 20.
+- wait for another run to let go of a shared record: 2 seconds. then
+  the request goes ahead on what this run knows, and says so once.
+
+a host's own numbers take the place of these, and are in its package's
+`numbers.yaml`, each with its reason.
+
 ## dasch
 
-dasch brings the light curves of Harvard's plate archive (DASCH DR7)
-home, as CSV, for the APASS sources in a circle.
+dasch brings the light curves of Harvard's plate archive (dasch DR7)
+home, as CSV, for the apass sources in a circle.
 
 ```sh
 $ celestial-data fetch --archive dasch --ra 287.50086 --dec -22.23481 \
@@ -69,18 +158,18 @@ $ celestial-data fetch --archive dasch --ra 287.50086 --dec -22.23481 \
 
 DR7 gives a light curve only to a POST of JSON, at the public tier of
 Harvard's Starglass API, which asks for no key. `find` asks it once, for
-the APASS sources in the circle, and names a light curve for each, the
+the apass sources in the circle, and names a light curve for each, the
 nearest first, at most `--most` of them. `fetch` asks once more for each
 light curve it keeps. a light curve's address holds the question; it is
 no address a plain GET opens, and it is only `fetch` that answers it.
 
-the file is every measure DASCH has of the source, flagged or not: a
+the file is every measure dasch has of the source, flagged or not: a
 line a plate, the first line the names of the columns. a plate that
 covers the place and saw nothing has a line too, with only its date,
 plate and limiting magnitude. the measures are the lines that have a
 `ref_number`. nothing is dropped here: choosing is the reader's.
 
-a disagreement, said so it is not read as settled: DASCH's web APIs
+a disagreement, said so it is not read as settled: dasch's web APIs
 page, kept on 2026-11-09, says the raw API names its columns in camel
 case (`refNumber`, `dateJd`), not the snake case of its column pages.
 the API's own answers of 2026-11-08 were in snake case: the light curve
@@ -89,16 +178,16 @@ catalogue query passed a reader that took only `ref_number` and its
 neighbours. the page and the answers disagree; the readers take either
 spelling, and refuse a first line that names one column both ways.
 
-what DASCH's own column page says, read in its kept copy on 2026-11-09
+what dasch's own column page says, read in its kept copy on 2026-11-09
 (dasch/sources.yaml has its address and hash):
 
 - the magnitude to take is `magcal_magdep` ("Use this value"), with
   `magcal_local_rms` as its uncertainty.
-- daschlab's `time` is the HJD midpoint of the exposure, and DASCH has
+- daschlab's `time` is the HJD midpoint of the exposure, and dasch has
   not yet said its time scale. the page describes daschlab's column;
   that the API's `date_jd` is the same is not said there.
 - `aflags`, `a2flags`, `bflags` and `b2flags` are "not yet documented
-  here", pointing to DASCH's Legacy Data Guide, not yet read. firang read
+  here", pointing to dasch's Legacy Data Guide, not yet read. firang read
   "unflagged" as `aflags` of zero, which reproduced its count; no reading
   should rest on the bits until the guide is read.
 
@@ -113,12 +202,16 @@ circle's sources it is and how many there are, so those past `--most`
 are not left out unsaid. a source listed twice, or at a place that is
 not on the sky, is an error in the answer, not a source to skip.
 
-the questions are paced: one a second at most, from the start of one to
-the start of the next, picked, as Starglass gives its public tier no
-number. a 429, Starglass asking us to stop, stops the fetch: nothing
-more is sent until the time its Retry-After gives, or five minutes when
-it gives none, and fetch says how many light curves were not asked
-for. nothing is retried, and no redirect is followed.
+the questions go through the gentle; see [how celestial-data asks a
+server](#how-celestial-data-asks-a-server). dasch's own numbers are in
+`dasch/numbers.yaml`, each saying whether it was picked. Starglass
+gives its public tier no number, so the pace is one request a second,
+picked. a failure with no word from Starglass is asked again, up to
+the default number of tries. a POST is repeated here: both endpoints
+only ask for a table, as the DR7 web APIs page describes them, though
+it does not say so in as many words. when Starglass asks us to stop,
+fetch says how many light curves were not asked for. a whole answer is
+held to a minute. no redirect is followed.
 
 an answer is held to 32 MiB, and a light curve to its shape: a first
 line of columns beginning `date_jd`, and as many fields on every line.
@@ -223,22 +316,22 @@ arXiv has no paper for is said, and the run fails naming it.
 `--dry-run` fetches no PDF, but it does ask the API, to name the
 versions.
 
-it is gentle with arXiv, as arXiv asks of programs:
+it is gentle with arXiv, as arXiv asks of programs. the general rules
+are in [how celestial-data asks a server](#how-celestial-data-asks-a-server);
+what is particular to arXiv is here:
 
 - every request, to the API for a paper's details and for its PDF,
   goes through one gate: one at a time, each begun at least three
   seconds after the one before began. arXiv's terms ask that of its
   API; the PDFs are held to it too.
 - the pace carries from one run to the next, for this user on this
-  machine. the gate keeps when its last request began in
-  `celestial-data/arxiv-gate` in the user's cache folder
-  (`~/Library/Caches` on a mac), written as each request begins, so a
-  run stopped with control-c keeps it too. a lock on
-  `arxiv-gate.lock` beside it refuses a second run while one is
-  asking; the system lets the lock go when a run ends, however it
-  ends, so there is never one to clear by hand. another user, another
-  cache folder or another machine is not seen; arXiv counts all of a
-  caller's machines together, so run papers on one at a time.
+  machine, in `celestial-data/arxiv-gate` in the user's cache folder,
+  written as each request begins, so a run stopped with control-c
+  keeps it too. a lock on `arxiv-gate.lock` beside it refuses a second
+  run while one is asking; there is never a lock to clear by hand.
+  another user, another cache folder or another machine is not seen;
+  arXiv counts all of a caller's machines together, so run papers on
+  one at a time.
 - the pace is `arxiv-pace` in `cmd/celestial-data/numbers.yaml`, and
   nothing will go under arXiv's three seconds, which is in
   `arxiv/numbers.yaml` with where it was read.
@@ -271,7 +364,7 @@ its own. a download has no time limit, for a large file on a slow
 link: one that stalls holds the run until it is stopped with
 control-c.
 
-that library is under the MIT licence, by its LICENSE.md. a binary
+that library is under the MIT licence, by its `LICENSE.md`. a binary
 built with it carries it, so the library's copyright and licence notice
 must travel with any binary that is shipped.
 
@@ -288,9 +381,19 @@ $ celestial-data ads 'full:"4081136684118965760"'
 it says how many papers match and the newest of them, twenty unless
 `--most` says otherwise, each by bibcode, year, first author and
 title, and how many searches ADS allows today. a run sends one
-request, and follows no redirect: a redirect is said as the status it
-is, so the token goes to ADS's host alone. when ADS asks us to stop,
-the run says until when.
+request, and is never retried: ADS counts each request against the
+day's limit. It follows no redirect, so the token goes to ADS's host
+alone.
+
+the request goes through the gentle; see [how celestial-data asks a
+server](#how-celestial-data-asks-a-server). ADS's own numbers are in
+`ads/numbers.yaml`. ADS limits by the day and gives no pace, so the
+pace is one second, picked. nothing is retried, and the circuit never
+opens. a stop is kept in `celestial-data/ads-gate`. the wait is the
+Retry-After when ADS sends one; else the moment ADS's own
+`X-RateLimit-Reset` names, when a 429 carries one ahead of now; else
+five minutes. a 503 with no Retry-After is a stop here, since a
+request may not be asked again.
 
 the token is read from `ads-token`, beside the secrets' config, where
 `celestial-data-secrets ads-login` kept it, readable by its owner
@@ -314,6 +417,7 @@ celestial-data earth-sources
 celestial-data earth-find usgs-3dep --bounds=-123,37,-122,38 --most 3
 celestial-data earth-find nasa-gibs --bounds=-123,37,-122,38 --text "Black Marble"
 celestial-data earth-fetch nws --point 37.8,-122.4 --into earth-data
+celestial-data earth-fetch usgs-water-quality --bounds=-122.55,37.7,-122.3,37.9 --into earth-data
 ```
 
 | Source | Input | Product |
@@ -324,6 +428,36 @@ celestial-data earth-fetch nws --point 37.8,-122.4 --into earth-data
 | `opensky` | bounds | one current state-vector JSON response |
 | `open-meteo` | point | one current-conditions JSON response with units |
 | `nws` | point | the nearest listed station's latest observation JSON |
+| `terrain-tiles` | bounds | Mapzen Terrarium PNG elevations up to zoom 14 |
+| `terrain-tiles-offshore` | bounds | Mapzen Terrarium regional relief up to zoom 10 |
+| `noaa-etopo` | bounds | native NOAA ETOPO 2022 15-arc-second CSV elevation subset |
+| `usgs-water-quality` | bounds, optional text filter | USGS latest continuous water observations in GeoJSON |
+
+`usgs-water-quality` offers separate snapshots for turbidity (63680),
+practical salinity (90860), salinity in parts per thousand (00480),
+suspended sediment (80154), and estimated suspended sediment (80300).
+Use `--text turbidity`, `--text salinity`, `--text salinity-ppt`,
+`--text sediment`, or `--text estimated-sediment` for one. Any
+five-digit USGS parameter code is also accepted. `--most` caps the
+number of snapshot products, not observations within each snapshot.
+
+The service supplies the latest observation per time series, which may
+be old or provisional. Each GeoJSON feature records its site, time,
+coordinates, unit, qualifier, and approval status. Each page contains
+up to 1,000 observations and may link to another page; the fetch saves
+the first page. An empty snapshot does not mean the water has none of
+that constituent. The measurements do not directly specify rendering
+extinction or imply uniform conditions over the area.
+See the [USGS latest continuous API](https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous).
+
+The Terrarium sources choose one zoom where the complete tile set fits
+`--most`. Tile zoom and native source resolution are different. The
+[Mapzen source inventory](https://registry.opendata.aws/terrain-tiles/)
+documents the component datasets.
+
+`noaa-etopo` requests one box up to one degree on each side. Its CSV
+has separate latitude, longitude, and elevation columns. See the
+[NOAA ETOPO model documentation](https://www.ncei.noaa.gov/products/etopo-global-relief-model).
 
 The three catalog adapters default to 10 results. Use `--most` to
 set a limit between 1 and 50. A dry fetch lists destinations without
@@ -334,6 +468,47 @@ samples from the same query, use separate destination folders. Other
 entries from Kingfisher are visible as catalog references. The fixed
 2016 Black Marble image is available through `bluemarble` and `usgs`
 serves USGS Spectral Library Version 7.
+
+## ntrs
+
+`ntrs` searches NASA's Technical Reports Server, and `ntrs-fetch`
+brings the PDFs of what it finds home. public documents need no account
+and no key.
+
+```sh
+$ celestial-data ntrs --most 5 'Sagittarius A*'
+$ celestial-data ntrs-fetch --into ~/reports 20120013496
+```
+
+`ntrs` says how many citations match and the first of them in NTRS's
+order, twenty unless `--most` says otherwise, at most a hundred, each by
+its NTRS id, year, first author and title, and whether it holds a PDF.
+a run sends one request.
+
+`ntrs-fetch` takes ids, which are digits and nothing else. for each it
+asks NTRS for the citation, which names the file its PDF is, then for
+the PDF, one request at a time. the PDF is kept as its id and `.pdf`
+under `--into`. one already there is kept and asks NTRS nothing. a
+citation NTRS does not have, or that holds no PDF, is said and the rest
+are still asked for; NTRS asking us to stop, or anything unexpected,
+stops the run and says which ids were not asked for. `--dry-run` looks
+the citations up and fetches nothing.
+
+both verbs ask NTRS through the gentle; see [how celestial-data asks a
+server](#how-celestial-data-asks-a-server). NTRS states no limit, so
+its numbers are picked, in `ntrs/numbers.yaml`: two seconds apart,
+citations and PDFs alike; a failure with no word from NTRS is asked
+again twice. a search is a POST, and is the one POST that is asked
+again, since it only asks a question. an answer to a search or a
+citation is held to 30 seconds and read up to 16 MiB, and refused
+beyond it. a PDF is held to half an hour and 2 GiB, written to a part
+and put in place only when it begins as a PDF; one that is longer, or
+is not a PDF, is not kept.
+
+the shape of NTRS's answers is the one its own OpenAPI description
+gives, at <https://ntrs.nasa.gov/api/openapi-yaml>. the replies the
+tests read are crafted, in that shape; see `ntrs/testdata/README.md`.
+>>>>>>> vorrh/rc-v0.0.4
 
 ## the archives
 
@@ -562,8 +737,11 @@ spherex
   them: for the circle, a cutout of each image whose footprint meets it,
   the earliest first, `--most` of them. SPHEREx's filters put a star at
   a different wavelength in each image, so the cutouts of one place hold
-  its spectrum between 0.75 and 5 micron. making that spectrum is not
-  done here.
+  its spectrum between 0.75 and 5 micron. the `spectrum` verb measures
+  a star's light in the retained cutouts by forced photometry. it reads
+  local files and asks no archive; `--from` names their folder, `--ra`
+  and `--dec` the star, and `--into` a new file for the table. cutouts
+  it cannot measure, including QR2, are reported at the table's end.
 
   find asks IRSA's TAP service once, and names each cutout for its
   release (qr2 or qr3), its observation and detector, and the place, so
@@ -636,6 +814,79 @@ k2
   uncertainty. `--match ffi-cal` keeps the calibrated one. asked only
   by name, through MAST's API as tess is (internal/caom).
 
+refractiveindex
+: the refractiveindex.info database, release v2026-05-24, one zip from
+  GitHub, whatever the circle: 13440092 bytes, sha256
+  6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb,
+  fetched 2026-11-11 from
+  the v2026-05-24 release asset at the address in
+  `refractiveindex/sources.yaml`,
+  and held to that sum. in the database's own words, "the
+  refractiveindex.info database is in the public domain. copyright and
+  related rights waived via CC0 1.0"; it asks that work using it cite
+  "Polyanskiy, M. N. Refractiveindex.info database of optical
+  constants. Scientific Data 11, 94 (2024).
+  https://doi.org/10.1038/s41597-023-02898-2" and, where a dataset is
+  used, the publications in its data file's `REFERENCES`. asked only by
+  name.
+
+  the `refractiveindex` package reads it: a material is a book on a
+  shelf and a measurement of it a page, and `Read` takes a page by its
+  names, as "main", "Au", "Johnson". the page's rows are its optical
+  constants, a wavelength in micrometres each with n and k, or n alone
+  with k none, said so by a k of zero; its `References` are the
+  publications to cite. pages that give their constants as a formula,
+  or tabulate k alone, are refused by name.
+
+nistxray
+: the X-Ray Mass Attenuation Coefficients of NIST's Standard Reference
+  Database 126, Hubbell and Seltzer's tables of the mass attenuation
+  coefficient mu/rho and the mass energy-absorption coefficient
+  mu_en/rho from 1 keV to 20 MeV, for every element Z = 1 to 92 and
+  48 compounds and mixtures of dosimetric interest. the archive is the
+  pages themselves, asked only by name: 144 of them, under
+  https://physics.nist.gov/PhysRefData/XrayMassCoef/ (ElemTab/z01.html
+  to z92.html, the 48 ComTab/*.html pages that tab4.html indexes, and
+  tab1.html to tab4.html), fetched 2026-11-11. each is held to its
+  measured length and to the sha256 of its content, as recorded in
+  `nistxray/manifest.yaml`, which names each page's path, Z or
+  compound, bytes and content sha256.
+
+  the data is not open, and is not public domain. in NIST's own words:
+  "© 1989, 1990, 1996 copyright by the U.S. Secretary of Commerce on
+  behalf of the United States of America. All rights reserved. NIST
+  reserves the right to charge for these data in the future." work
+  using it cites "Hubbell, J.H. and Seltzer, S.M. (2004), Tables of
+  X-Ray Mass Attenuation Coefficients and Mass Energy-Absorption
+  Coefficients (version 1.4). [Online] Available:
+  http://physics.nist.gov/xaamdi", doi 10.18434/T4D01F.
+
+  one deliberate deviation, plainly: NIST serves each page through
+  Cloudflare, which rewrites one line of every response with a
+  per-request ray id and timestamp, so the bytes of a page are never
+  the same twice and no page can be held to the sha256 of its bytes.
+  each page is held to the sha256 of its content instead: the page as
+  NIST serves it with the one line carrying "window.__CF$cv$params="
+  removed, whole, and nothing else removed. any other change to a
+  page leaves the sum wrong and the fetch refused, never silently
+  passed. the rule was proved on the day the pages were pinned: every
+  page was fetched twice, and each pair differed on the wire in
+  exactly that one line while the sums of their content agreed. two
+  recorded fetches of lead's page are in `nistxray/testdata`, and a
+  test reads them as the evidence the rule earns its keep.
+
+  the `nistxray` package reads the pages after they are fetched, from
+  the folder fetch keeps them in: `Element` takes an element by its
+  atomic number, `Compound` a compound by its page's name, and each
+  hands out the page's own rows, an energy in MeV with mu/rho and
+  mu_en/rho in cm^2/g and the absorption-edge label the row carries,
+  with no interpolation and nothing derived. `Material` reads the
+  material constants NIST assumed, from Table 1 by an element's symbol
+  and Table 2 by a compound's name: Z/A and the density, with the
+  row's own text. the element and compound pages state no density of
+  their own; the densities are in Table 1 and Table 2, which NIST
+  warns hold some values that "are only nominal".
+
 ## secrets
 
 celestial-data signs in to some services. their secrets are named in
@@ -699,6 +950,17 @@ the header card they were read from, in each package's `numbers.yaml`.
 numbers that were picked say who picked them and why.
 
 ## building
+
+the `spectrum` command currently needs Celestial's unpublished `psf`
+package. the declared `celestial v0.0.7` dependency does not include it.
+
+local checks use a Go workspace with this module and Celestial's
+`spherex-photometry` branch at
+`2cf0628d3d69eb8ba009ba34e31aa31d893b043e`. a standalone build needs a
+published Celestial version containing that package.
+
+[Download troubleshooting](DOWNLOADS.md) covers slow surveys, SkyView's
+wait before its first byte, and the current NASA image addresses.
 
 ```sh
 $ game build

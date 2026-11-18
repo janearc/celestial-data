@@ -58,6 +58,7 @@ func (tool command) papersVerb(call pzm.Call) error {
 	if err != nil || len(left) == noPapers {
 		return errors.Join(err, run.done(nil))
 	}
+	tool.insistent = call.On(insistFlag)
 	return tool.fetchPapers(run, left)
 }
 
@@ -150,15 +151,21 @@ const pdfMark = "%PDF-"
 // isPDF refuses a file in the folder that does not begin as a PDF does,
 // and says how to clear it.
 func (run *papersRun) isPDF(name string) error {
+	return beginsAsPDF(run.into, name)
+}
+
+// beginsAsPDF refuses a file in a folder that does not begin as a PDF
+// does, and says how to clear it.
+func beginsAsPDF(into, name string) error {
 	head := make([]byte, len(pdfMark))
-	file, err := os.Open(filepath.Join(run.into, name))
+	file, err := os.Open(filepath.Join(into, name))
 	if err == nil {
 		_, err = io.ReadFull(file, head)
 		file.Close()
 	}
 	if err != nil || string(head) != pdfMark {
 		return celestialdata.Refuse("%s in %s is not a PDF (%v). Move "+
-			"it aside and run again", name, run.into, err)
+			"it aside and run again", name, into, err)
 	}
 	return nil
 }
@@ -174,20 +181,27 @@ func heldBy(id arxiv.ID, entries []os.DirEntry) (string, bool) {
 }
 
 // fetchPapers looks the ids up and fetches what is found. Every request
-// goes through one gate, at the pace the numbers say. The gate holds its
-// record for the run: the pace and any wait arXiv asked for carry over
-// to the next run, and no other run asks while this one does.
+// goes through one gate, at the pace the numbers say. The gate shares its
+// record with other runs: the pace and any wait arXiv asked for carry over
+// to the next run, and runs at once keep one pace between them.
+//
+// When it insists, the gate asks again before its wait has passed,
+// saying first on the tool's stderr what arXiv asked for.
 func (tool command) fetchPapers(run *papersRun, left []arxiv.ID) error {
 	gate, papers, get, err := tool.arxivOf()
 	if err != nil {
 		return err
 	}
-	record, err := tool.recordPath()
-	if err != nil {
-		return err
+	gate.Say(tool.errs)
+	if tool.insistent {
+		if err := gate.Insist(tool.errs); err != nil {
+			return err
+		}
 	}
-	if err := gate.Hold(record); err != nil {
-		return err
+	if record := tool.recordPath(); record != "" {
+		if err := gate.Hold(record); err != nil {
+			return err
+		}
 	}
 	failed := tool.lookAndBring(run, papers, get, left)
 	failed = append(failed, run.done(gate), gate.Release())
@@ -218,17 +232,17 @@ func (tool command) lookAndBring(run *papersRun, papers *arxiv.Papers,
 
 // recordPath is where the gate's record is kept between runs: where a
 // test puts it, or arxiv-gate in celestial-data's folder of the user's
-// cache. It refuses when the user has no cache folder.
-func (tool command) recordPath() (string, error) {
+// cache. It is nothing when the user has no cache folder, and then no
+// record is kept.
+func (tool command) recordPath() string {
 	if tool.record != "" {
-		return tool.record, nil
+		return tool.record
 	}
-	cache, err := os.UserCacheDir()
-	if err != nil {
-		return "", fmt.Errorf("papers keeps arXiv's pace between runs "+
-			"in the user's cache folder, and finds none: %w", err)
+	folder := cacheFolder()
+	if folder == "" {
+		return ""
 	}
-	return filepath.Join(cache, "celestial-data", "arxiv-gate"), nil
+	return web.RecordPath(folder, "arxiv")
 }
 
 // arxivOf is what papers needs to ask arXiv: a gate at the pace the
@@ -239,7 +253,7 @@ func (tool command) arxivOf() (*arxiv.Gate, *arxiv.Papers, web.Web,
 	pace, paceErr := tool.picked.Get("arxiv-pace")
 	most, mostErr := tool.picked.Get("arxiv-most")
 	wait, waitErr := tool.picked.Get("wait")
-	get, getErr := tool.web()
+	get, getErr := tool.bare()
 	if err := errors.Join(paceErr, mostErr, waitErr, getErr); err != nil {
 		return nil, nil, nil, err
 	}
@@ -284,9 +298,9 @@ func (tool command) stopped(err error, left []arxiv.ID) error {
 	for at, id := range left {
 		names[at] = id.String()
 	}
-	return fmt.Errorf("%w. Stopped with %d not fetched: %s. Nothing "+
-		"more was asked; run papers again later, and what is here is "+
-		"kept", err, len(left), strings.Join(names, " "))
+	return nameFlag(fmt.Errorf("%w. Stopped with %d not fetched: %s. "+
+		"Nothing more was asked; run papers again later, and what is "+
+		"here is kept", err, len(left), strings.Join(names, " ")))
 }
 
 // idsOfProducts is the ids of products, as arXiv names them.

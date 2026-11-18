@@ -1,0 +1,65 @@
+# numbers.yaml: how the web package asks a server gently when a host has
+# said nothing of its own. A host's own numbers, in its own package, take
+# the place of these. The names without a host are the defaults.
+
+numbers:
+  - name: default-pace
+    value: 1
+    unit: seconds
+    says: the least time from the start of one request to a host to the start of the next, for a host that has no pace of its own. Most archives give no number, so this is gentle and slow
+    kind: picked
+    by: celestial-data's web package, 2026-11-11, as DASCH's was picked
+  - name: default-rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long a host is left alone after it asked us to stop without saying how long
+    kind: picked
+    by: celestial-data's web package, 2026-11-11, as arXiv's adapter picked it
+  - name: default-tries
+    value: 3
+    unit: attempts
+    says: how many times more a request is asked after a failure with no word from the host, such as a timeout, a reset connection or a 503 with no Retry-After
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: default-opens
+    value: 2
+    unit: requests
+    says: how many requests in a row may use up all their tries before the host is left alone for the rest of the run
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: default-repeats-posts
+    value: 0
+    unit: 1 for yes, 0 for no
+    says: whether a request that carries a body, a POST, may be sent again after a failure. No, unless a host's own numbers say its POSTs are safe to repeat and why
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: backoff-base
+    value: 1
+    unit: seconds
+    says: the longest wait before the first retry; each retry after doubles it, and the wait is a random time up to it
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: backoff-cap
+    value: 60
+    unit: seconds
+    says: the longest a wait before a retry may be allowed to grow
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: most-tries
+    value: 10
+    unit: attempts
+    says: the most retries any host's policy may ask for. A host that names more is refused, so a mistake in a numbers file cannot make a request knock ten times over
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: record-overrides-kept
+    value: 20
+    unit: overrides
+    says: how many overrides a host's record keeps, the newest
+    kind: picked
+    by: celestial-data's web package, 2026-11-11
+  - name: record-lock-wait
+    value: 2
+    unit: seconds
+    says: how long a request waits for another run to let go of a host's shared record, which a run holds only for the moment it reads and writes, before the request goes ahead on what this run knows and says so once
+    kind: picked
+    by: celestial-data's web package, 2026-11-11

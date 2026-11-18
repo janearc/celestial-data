@@ -59,12 +59,16 @@ var providers = map[string]struct {
 	queries string
 	find    finder
 }{
-	"asf":        {"bounds, most", findASF},
-	"nasa-gibs":  {"bounds, most, text", findGIBS},
-	"nws":        {"point", findNWS},
-	"open-meteo": {"point", findOpenMeteo},
-	"opensky":    {"bounds", findOpenSky},
-	"usgs-3dep":  {"bounds, most", findUSGS},
+	"asf":                    {"bounds, most", findASF},
+	"nasa-gibs":              {"bounds, most, text", findGIBS},
+	"nws":                    {"point", findNWS},
+	"open-meteo":             {"point", findOpenMeteo},
+	"opensky":                {"bounds", findOpenSky},
+	"usgs-3dep":              {"bounds, most", findUSGS},
+	"terrain-tiles":          {"bounds, most", findTerrainTiles},
+	"terrain-tiles-offshore": {"bounds, most", findOffshoreTiles},
+	"noaa-etopo":             {"bounds", findETOPO},
+	"usgs-water-quality":     {"bounds, most, text", findWaterQuality},
 }
 
 // Find lists the products from one named source. It takes terrestrial

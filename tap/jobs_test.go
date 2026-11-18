@@ -1,6 +1,7 @@
 package tap_test
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net/url"
@@ -53,8 +54,12 @@ func jobsOver(t *testing.T) (*tap.Jobs, *mocks.MockWeb) {
 func jobsTelling(t *testing.T, told io.Writer) (*tap.Jobs,
 	*mocks.MockWeb) {
 	t.Helper()
-	under := mocks.NewMockWeb(gomock.NewController(t))
-	jobs, err := tap.NewJobs(under, time.Nanosecond, 3, told)
+	control := gomock.NewController(t)
+	under := mocks.NewMockWeb(control)
+	clock := mocks.NewMockClock(control)
+	clock.EXPECT().Sleep(gomock.Any(), time.Nanosecond).AnyTimes().Return(nil)
+	jobs, err := tap.NewJobs(context.Background(), under, clock,
+		time.Nanosecond, 3, told)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -182,24 +187,37 @@ func TestTheLengthOfAJobsAnswerIsUnsaidAndNothingIsRun(t *testing.T) {
 }
 
 func TestNewJobsRefusesWhatCannotRunAJob(t *testing.T) {
-	under := mocks.NewMockWeb(gomock.NewController(t))
+	control := gomock.NewController(t)
+	under := mocks.NewMockWeb(control)
+	clock := mocks.NewMockClock(control)
+	ctx := context.Background()
 	for _, each := range []struct {
 		every time.Duration
 		asks  int
 	}{{0, 1}, {time.Second, 0}} {
-		if _, err := tap.NewJobs(under, each.every, each.asks,
-			io.Discard); err == nil {
+		if _, err := tap.NewJobs(ctx, under, clock, each.every,
+			each.asks, io.Discard); err == nil {
 			t.Errorf("%+v was taken", each)
 		}
 	}
-	if _, err := tap.NewJobs(nil, time.Second, 1, io.Discard); err == nil {
+	if _, err := tap.NewJobs(ctx, nil, clock, time.Second, 1,
+		io.Discard); err == nil {
 		t.Error("jobs over no web were taken")
 	}
+	if _, err := tap.NewJobs(nil, under, clock, time.Second, 1,
+		io.Discard); err == nil {
+		t.Error("jobs with no context were taken")
+	}
+	if _, err := tap.NewJobs(ctx, under, nil, time.Second, 1,
+		io.Discard); err == nil {
+		t.Error("jobs with no clock were taken")
+	}
 	// one ask is enough to make jobs with
-	if _, err := tap.NewJobs(under, time.Second, 1, io.Discard); err != nil {
+	if _, err := tap.NewJobs(ctx, under, clock, time.Second, 1,
+		io.Discard); err != nil {
 		t.Errorf("jobs of one ask were refused: %v", err)
 	}
-	if _, err := tap.NewJobs(under, time.Second, 1, nil); err == nil {
+	if _, err := tap.NewJobs(ctx, under, clock, time.Second, 1, nil); err == nil {
 		t.Error("jobs that tell no one were taken")
 	}
 }

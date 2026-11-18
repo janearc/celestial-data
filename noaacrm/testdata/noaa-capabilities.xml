@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WCS_Capabilities xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
+  <Service>
+    <fees>NONE</fees>
+    <accessConstraints>NONE</accessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="https://www.ngdc.noaa.gov/thredds/wcs/crm/cudem/crm_vol10_2023.nc" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <DescribeCoverage>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="https://www.ngdc.noaa.gov/thredds/wcs/crm/cudem/crm_vol10_2023.nc" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </DescribeCoverage>
+      <GetCoverage>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:href="https://www.ngdc.noaa.gov/thredds/wcs/crm/cudem/crm_vol10_2023.nc" />
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetCoverage>
+    </Request>
+    <Exception>
+      <Format>application/vnd.ogc.se_xml</Format>
+    </Exception>
+  </Capability>
+  <ContentMetadata>
+    <CoverageOfferingBrief>
+      <description>z</description>
+      <name>z</name>
+      <label>z</label>
+      <lonLatEnvelope srsName="urn:ogc:def:crs:OGC:1.3:CRS84">
+        <gml:pos>-161.00000000004667 18.000000140046666</gml:pos>
+        <gml:pos>-153.50000021004666 23.000000000046665</gml:pos>
+      </lonLatEnvelope>
+    </CoverageOfferingBrief>
+  </ContentMetadata>
+</WCS_Capabilities>

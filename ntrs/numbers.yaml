@@ -1,0 +1,44 @@
+# numbers.yaml: how celestial-data asks NASA's Technical Reports Server.
+# NTRS states no limit for a program that fetches from it, so each number
+# here is picked, and says so. The web package's gentle reads the ones
+# named ntrs-pace, ntrs-rest-unsaid, ntrs-tries, ntrs-opens and
+# ntrs-repeats-posts; a number it does not name is the web package's
+# default.
+
+numbers:
+  - name: ntrs-pace
+    value: 2
+    unit: seconds
+    says: the least time from the start of one request to ntrs.nasa.gov to the start of the next, for searches, citations and PDFs alike, one at a time. NTRS states no limit, so this is picked a little slower than the web package's default of one second, since a PDF is a large answer
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, so NTRS is asked gently
+  - name: ntrs-rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long ntrs.nasa.gov is left alone after it asked us to stop without saying how long; NTRS's pages give no number for this
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, as the web package's default and arXiv's adapter picked it
+  - name: ntrs-tries
+    value: 2
+    unit: attempts
+    says: how many times more a request to NTRS is asked after a failure with no word from NTRS, such as a timeout, a reset connection or a 503 with no Retry-After. A lookup or a PDF is a GET, which asks nothing of NTRS that asking twice changes
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, a little under the web package's default of three, since a PDF is large to ask again
+  - name: ntrs-opens
+    value: 2
+    unit: requests
+    says: how many requests in a row may use up all their tries before ntrs.nasa.gov is left alone for the rest of the run
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, as the web package's default
+  - name: ntrs-repeats-posts
+    value: 1
+    unit: 1 for yes, 0 for no
+    says: whether a search to NTRS, which is a POST, may be sent again after a failure with no word from NTRS. Yes. A search is a POST only because its question is a body of JSON; it asks NTRS something and changes nothing there, as NTRS's API description gives it, so asking twice is the same as asking once. No other request to NTRS carries a body
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, from reading NTRS's API description at https://ntrs.nasa.gov/api/openapi-yaml
+  - name: ntrs-answer-most
+    value: 16777216
+    unit: bytes
+    says: the most that the answer to a search or to a citation may hold, 16 MiB. A page of citations is some tens of kilobytes of JSON, a guess not yet measured against a page of a hundred, so this is picked generously, and an answer that goes on past it is refused instead of read into memory
+    kind: picked
+    by: celestial-data's ntrs package, 2026-11-11, as DASCH's cap on an answer was picked

@@ -70,37 +70,40 @@ const (
 // named is each column as the archive writes it, read 2026-11-05 from
 // the product's header; no unit where the archive writes none.
 var named = [allColumns]archived{
-	sourceID:            {name: "source_id", kind: long},
-	refEpoch:            {name: "ref_epoch", unit: "yr", kind: double},
-	ra:                  {name: "ra", unit: "deg", kind: double},
-	raError:             {name: "ra_error", unit: "mas", kind: single},
-	dec:                 {name: "dec", unit: "deg", kind: double},
-	decError:            {name: "dec_error", unit: "mas", kind: single},
-	parallax:            {name: "parallax", unit: "mas", kind: double},
-	parallaxError:       {name: "parallax_error", unit: "mas", kind: single},
-	pmRA:                {name: "pmra", unit: "mas.yr**-1", kind: double},
-	pmRAError:           {name: "pmra_error", unit: "mas.yr**-1", kind: single},
-	pmDec:               {name: "pmdec", unit: "mas.yr**-1", kind: double},
-	pmDecError:          {name: "pmdec_error", unit: "mas.yr**-1", kind: single},
-	radialVelocity:      {name: "radial_velocity", unit: "km.s**-1", kind: single},
-	radialVelocityError: {name: "radial_velocity_error", unit: "km.s**-1", kind: single},
-	raDecCorr:           {name: "ra_dec_corr", kind: single},
-	raParallaxCorr:      {name: "ra_parallax_corr", kind: single},
-	raPMRACorr:          {name: "ra_pmra_corr", kind: single},
-	raPMDecCorr:         {name: "ra_pmdec_corr", kind: single},
-	decParallaxCorr:     {name: "dec_parallax_corr", kind: single},
-	decPMRACorr:         {name: "dec_pmra_corr", kind: single},
-	decPMDecCorr:        {name: "dec_pmdec_corr", kind: single},
-	parallaxPMRACorr:    {name: "parallax_pmra_corr", kind: single},
-	parallaxPMDecCorr:   {name: "parallax_pmdec_corr", kind: single},
-	pmRAPMDecCorr:       {name: "pmra_pmdec_corr", kind: single},
-	ruwe:                {name: "ruwe", kind: single},
-	gMagnitude:          {name: "phot_g_mean_mag", unit: "mag", kind: single},
-	bpRP:                {name: "bp_rp", unit: "mag", kind: single},
-	nuEff:               {name: "nu_eff_used_in_astrometry", unit: "um**-1", kind: single},
-	pseudocolour:        {name: "pseudocolour", unit: "um**-1", kind: single},
-	eclipticLatitude:    {name: "ecl_lat", unit: "deg", kind: double},
-	paramsSolved:        {name: "astrometric_params_solved", kind: short},
+	sourceID:      {name: "source_id", kind: long},
+	refEpoch:      {name: "ref_epoch", unit: "yr", kind: double},
+	ra:            {name: "ra", unit: "deg", kind: double},
+	raError:       {name: "ra_error", unit: "mas", kind: single},
+	dec:           {name: "dec", unit: "deg", kind: double},
+	decError:      {name: "dec_error", unit: "mas", kind: single},
+	parallax:      {name: "parallax", unit: "mas", kind: double},
+	parallaxError: {name: "parallax_error", unit: "mas", kind: single},
+	pmRA:          {name: "pmra", unit: "mas.yr**-1", kind: double},
+	pmRAError:     {name: "pmra_error", unit: "mas.yr**-1", kind: single},
+	pmDec:         {name: "pmdec", unit: "mas.yr**-1", kind: double},
+	pmDecError:    {name: "pmdec_error", unit: "mas.yr**-1", kind: single},
+	radialVelocity: {name: "radial_velocity", unit: "km.s**-1",
+		kind: single},
+	radialVelocityError: {name: "radial_velocity_error", unit: "km.s**-1",
+		kind: single},
+	raDecCorr:         {name: "ra_dec_corr", kind: single},
+	raParallaxCorr:    {name: "ra_parallax_corr", kind: single},
+	raPMRACorr:        {name: "ra_pmra_corr", kind: single},
+	raPMDecCorr:       {name: "ra_pmdec_corr", kind: single},
+	decParallaxCorr:   {name: "dec_parallax_corr", kind: single},
+	decPMRACorr:       {name: "dec_pmra_corr", kind: single},
+	decPMDecCorr:      {name: "dec_pmdec_corr", kind: single},
+	parallaxPMRACorr:  {name: "parallax_pmra_corr", kind: single},
+	parallaxPMDecCorr: {name: "parallax_pmdec_corr", kind: single},
+	pmRAPMDecCorr:     {name: "pmra_pmdec_corr", kind: single},
+	ruwe:              {name: "ruwe", kind: single},
+	gMagnitude:        {name: "phot_g_mean_mag", unit: "mag", kind: single},
+	bpRP:              {name: "bp_rp", unit: "mag", kind: single},
+	nuEff: {name: "nu_eff_used_in_astrometry", unit: "um**-1",
+		kind: single},
+	pseudocolour:     {name: "pseudocolour", unit: "um**-1", kind: single},
+	eclipticLatitude: {name: "ecl_lat", unit: "deg", kind: double},
+	paramsSolved:     {name: "astrometric_params_solved", kind: short},
 }
 
 // The reader's own numbers, each defined.
@@ -133,14 +136,18 @@ func OpenCatalogue(file io.ReaderAt) (*Catalogue, error) {
 	for which, want := range named {
 		found, err := table.Column(want.name)
 		if err != nil {
-			return nil, celestialdata.Refuse("the product has no %s", want.name)
+			return nil, celestialdata.Refuse(
+				"the product has no %s",
+				want.name)
 		}
 		if found.Kind() != want.kind {
-			return nil, celestialdata.Refuse("%s is of kind %c, not %c",
+			return nil, celestialdata.Refuse(
+				"%s is of kind %c, not %c",
 				want.name, found.Kind(), want.kind)
 		}
 		if found.Unit() != want.unit {
-			return nil, celestialdata.Refuse("%s is in %q, not %q", want.name,
+			return nil, celestialdata.Refuse("%s is in %q, not %q",
+				want.name,
 				found.Unit(), want.unit)
 		}
 		catalogue.found[which] = *found
@@ -173,8 +180,10 @@ func (catalogue *Catalogue) Source(index int64) (*Source, error) {
 	}
 	return &Source{id: id, epoch: values[refEpoch], place: *place,
 		raError: mas(values[raError]), decError: mas(values[decError]),
-		parallax: mas(values[parallax]), parallaxError: mas(values[parallaxError]),
-		motion:           galactocentric.NewProperMotion(values[pmRA], values[pmDec]),
+		parallax:      mas(values[parallax]),
+		parallaxError: mas(values[parallaxError]),
+		motion: galactocentric.NewProperMotion(values[pmRA],
+			values[pmDec]),
 		pmRAError:        values[pmRAError],
 		pmDecError:       values[pmDecError],
 		radial:           values[radialVelocity],
@@ -255,7 +264,9 @@ type Correlations struct {
 func (corr Correlations) Between(one, other Parameter) (float64, error) {
 	for _, each := range []Parameter{one, other} {
 		if each < RA || each >= parameters {
-			return math.NaN(), celestialdata.Refuse("no parameter %d", each)
+			return math.NaN(), celestialdata.Refuse(
+				"no parameter %d",
+				each)
 		}
 	}
 	return corr.between[one][other], nil

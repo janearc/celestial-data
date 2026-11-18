@@ -1,19 +1,19 @@
-// Package dasch finds the light curves DASCH holds of a place on the sky:
-// Harvard's Digital Access to a Sky Century @ Harvard, the photographic
-// plates of the Harvard College Observatory, 1880s to 1989, scanned and
-// measured; its final release is DR7.
+// Package dasch finds the light curves held by the archive at a place
+// on the sky: Harvard's Digital Access to a Sky Century @ Harvard, the
+// photographic plates of the Harvard College Observatory, 1880s to 1989,
+// scanned and measured; its final release is DR7.
 //
 // DR7 serves a light curve only through the Starglass web API, which
 // takes a POST with a JSON body, not an address a GET opens. Its public
 // tier asks for no key.
 //
-// The API was read on 2026-11-08 from DASCH's page on the DR7 web APIs,
+// The API was read on 2026-11-08 from the archive's page on the DR7 web APIs,
 // its page on the data products, Starglass's page on authentication, and
 // daschlab's source (apiclient.py, lightcurves.py, refcat.py), which is
 // Harvard's own client for it.
 //
 // A search is two questions. The first, querycat, is a box search of the
-// APASS reference catalogue, the one DASCH prefers, for the sources round
+// preferred reference catalogue, for the sources round
 // a place; each source has two numbers, ref_number and gsc_bin_index.
 //
 // The second, lightcurve, takes those and answers with one source's raw
@@ -41,8 +41,8 @@ import (
 // adapterName is the archive's name, as the command line takes it.
 const adapterName = "dasch"
 
-// refcat is the reference catalogue the sources are searched in. APASS is
-// the catalogue DASCH's pages prefer; ATLAS is its alternative.
+// refcat is the reference catalogue the sources are searched in. The
+// archive's pages name the preferred catalogue and an alternative.
 const refcat = "apass"
 
 // The columns of the catalogue search that are kept, as the API names
@@ -61,11 +61,12 @@ const (
 	// asked: the API refuses a larger one. Read 2026-11-08.
 	widest   = 3600
 	halfTurn = 180 // defined: half a circle, in degrees
-	twice    = 2   // defined: the haversine halves each angle, doubles the arc
-	least    = 1   // defined: the fewest sources a search asks to name
+	// twice is defined: the haversine halves each angle, doubles the arc.
+	twice = 2
+	least = 1 // defined: the fewest sources a search asks to name
 )
 
-// Archive is DASCH DR7's light curves.
+// Archive is the archive's DR7 light curves.
 type Archive struct {
 	base   *celestialdata.Adapter
 	asker  *asker
@@ -73,8 +74,8 @@ type Archive struct {
 	refcat string
 }
 
-// New is DASCH DR7's light curves, asked through doer, naming itself to
-// DASCH by agent, and naming at most so many sources a circle, the
+// New is DR7's light curves, asked through doer, naming itself to the
+// archive by agent, and naming at most so many sources a circle, the
 // nearest first. It refuses no doer, no agent, and fewer than one source.
 func New(doer Doer, agent string, most int) (*Archive, error) {
 	return build(adapterName, doer, agent, most)
@@ -158,7 +159,9 @@ func (archive *Archive) product(each source, nearest, inCircle int) (
 	id := fmt.Sprintf("%s-%d", archive.refcat, each.number)
 	name := fmt.Sprintf("dasch-dr7-%s-lightcurve.csv", id)
 	about := fmt.Sprintf("the DASCH DR7 light curve of %s source %d at "+
-		"ra %.5f, dec %.5f, %.1f arcseconds from the centre, number %d "+
+		"ra %.5f, dec %.5f, %.1f "+
+		"arcseconds from the centre, "+
+		"number %d "+
 		"of the %d sources in the circle, every measure flagged or not",
 		archive.refcat, each.number, each.ra, each.dec,
 		each.separation*arcseconds, nearest, inCircle)
@@ -241,8 +244,10 @@ func columnsAt(names []string) (map[string]int, error) {
 	for place, name := range names {
 		named := snake(name)
 		if _, twice := at[named]; twice {
-			return nil, fmt.Errorf("the answer names the column %s "+
-				"twice; its columns are %v", named, names)
+			return nil, fmt.Errorf(
+				"the answer names the column %s "+
+					"twice; its columns are %v",
+				named, names)
 		}
 		at[named] = place
 	}
@@ -253,7 +258,7 @@ func columnsAt(names []string) (map[string]int, error) {
 // spellings are read: refNumber is ref_number, dateJd is date_jd, and a
 // name in snake case is itself.
 //
-// DASCH's web APIs page, kept on 2026-11-09, says the raw API names its
+// The archive's web APIs page, kept on 2026-11-09, says the raw API names its
 // columns in camel case (wordsLikeThis); its column pages use snake case
 // (words_like_this), and so did the API's answers kept on 2026-11-08.
 //
@@ -264,7 +269,8 @@ func snake(name string) string {
 	previous := rune(first)
 	for _, letter := range name {
 		if unicode.IsUpper(letter) {
-			if unicode.IsLower(previous) || unicode.IsDigit(previous) {
+			if unicode.IsLower(previous) ||
+				unicode.IsDigit(previous) {
 				named.WriteByte('_')
 			}
 			previous = letter

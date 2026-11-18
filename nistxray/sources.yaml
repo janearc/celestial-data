@@ -1,0 +1,61 @@
+# sources.yaml: where the nistxray archive's pages and the numbers in
+# numbers.yaml were read. The pins of the pages are in manifest.yaml.
+#
+# The licence, in NIST's own words on the database's page:
+# "© 1989, 1990, 1996 copyright by the U.S. Secretary of Commerce on
+# behalf of the United States of America. All rights reserved. NIST
+# reserves the right to charge for these data in the future." This is
+# not public domain and not an open licence; it is recorded as NIST
+# writes it, and nothing here calls it one.
+#
+# The citation NIST asks for, in its own words:
+# "Hubbell, J.H. and Seltzer, S.M. (2004), Tables of X-Ray Mass
+# Attenuation Coefficients and Mass Energy-Absorption Coefficients
+# (version 1.4). [Online] Available: http://physics.nist.gov/xaamdi",
+# doi https://doi.org/10.18434/T4D01F.
+#
+# The content hash, in our own words as much as NIST's: NIST serves
+# every page through Cloudflare, which appends to each response one
+# script line of its own, the line carrying "window.__CF$cv$params=",
+# with a per-request ray id and timestamp in it, so the bytes of a
+# page are never the same twice. Each page is held to the sha256 of
+# its content instead: the page as NIST serves it with that one line
+# removed, whole, and nothing else removed. Every page was fetched
+# twice on 2026-11-11, as two separate requests: each pair differed
+# on the wire in exactly that one line, and agreed in the sum of its
+# content. If NIST or Cloudflare changes anything else about a page,
+# the sum will not match and the fetch is refused.
+
+sources:
+  - key: nist-database
+    title: "X-Ray Mass Attenuation Coefficients, NIST Standard Reference Database 126, Hubbell and Seltzer"
+    from: https://www.nist.gov/pml/x-ray-mass-attenuation-coefficients
+    fetched: 2026-11-11
+  - key: nist-tab1
+    title: "Table 1, material constants for elemental media: Z/A, the mean excitation energy and the density"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/tab1.html
+    fetched: 2026-11-11
+  - key: nist-tab2
+    title: "Table 2, material constants and composition for compounds and mixtures"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/tab2.html
+    fetched: 2026-11-11
+  - key: nist-tab3
+    title: "Table 3, the index of the element pages, Z 1 to 92"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/tab3.html
+    fetched: 2026-11-11
+  - key: nist-tab4
+    title: "Table 4, the index of the compound and mixture pages, 48 of them"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html
+    fetched: 2026-11-11
+  - key: nist-z82
+    title: "Lead, Z 82: mu/rho and mu_en/rho from 1 keV to 20 MeV"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/ElemTab/z82.html
+    fetched: 2026-11-11
+  - key: nist-z13
+    title: "Aluminum, Z 13: mu/rho and mu_en/rho from 1 keV to 20 MeV"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/ElemTab/z13.html
+    fetched: 2026-11-11
+  - key: nist-water
+    title: "Water, Liquid: mu/rho and mu_en/rho from 1 keV to 20 MeV"
+    from: https://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/water.html
+    fetched: 2026-11-11

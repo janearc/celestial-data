@@ -114,7 +114,9 @@ func (client Client) Post(address string, form url.Values) (string,
 	answer.Body.Close()
 	if answer.StatusCode < http.StatusOK ||
 		answer.StatusCode >= http.StatusBadRequest {
-		return "", fmt.Errorf("POST %s: %s", address, answer.Status)
+		return "", &Status{method: http.MethodPost, url: address,
+			status: answer.Status, code: answer.StatusCode,
+			retryAfter: answer.Header.Get("Retry-After")}
 	}
 	// the client has refused a Location it cannot read already, so the
 	// one thing left to go wrong is that there is none.

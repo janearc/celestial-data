@@ -66,8 +66,10 @@ func ParseID(written string) (*ID, error) {
 		// to another
 		count, err := strconv.Atoi(parts[versionAt])
 		if err != nil {
-			return nil, celestialdata.Refuse("%q is not an arXiv id: "+
-				"its version is longer than a version can be", written)
+			return nil, celestialdata.Refuse(
+				"%q is not an arXiv id: its "+
+					"version is longer than a "+
+					"version can be", written)
 		}
 		id = ID{name: parts[nameAt], version: count}
 	}

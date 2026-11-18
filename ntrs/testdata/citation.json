@@ -1,0 +1,13 @@
+{"id": 20990000001, "title": "A crafted report about nothing",
+ "stiType": "TECHNICAL_REPORT", "downloadsAvailable": true,
+ "authorAffiliations": [
+   {"sequence": 0, "meta": {"author": {"name": "Quill, Ann"}}}],
+ "publications": [
+   {"publicationDate": "2099-10-01T00:00:00.0000000+00:00"}],
+ "downloads": [
+   {"draft": false, "mimetype": "application/pdf", "name": "report.pdf",
+    "type": "STI", "links": {
+      "original": "/api/citations/20990000001/downloads/report.pdf",
+      "pdf": "/api/citations/20990000001/downloads/report.pdf",
+      "fulltext": "/api/citations/20990000001/downloads/report.pdf.txt"}}],
+ "related": []}

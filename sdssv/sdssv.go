@@ -26,8 +26,9 @@ const adapterName = "sdssv"
 
 // The places the spectra are listed and kept.
 const (
-	search = "https://skyserver.sdss.org/dr19/SkyServerWS/SearchTools/SqlSearch"
-	tree   = "https://dr19.sdss.org/sas/dr19/spectro/boss/redux"
+	search = "https://skyserver.sdss.org/dr19/" +
+		"SkyServerWS/SearchTools/SqlSearch"
+	tree = "https://dr19.sdss.org/sas/dr19/spectro/boss/redux"
 )
 
 // What SkyServer is asked and answers, as its DR19 service does.
@@ -40,18 +41,23 @@ const (
 	// at most so many, the circle's centre in degrees and its radius in
 	// arcminutes, as fDistanceArcMinEq takes them.
 	query = "SELECT TOP %d spec_file, run2d, class, sn_median_all " +
-		"FROM spAll WHERE dbo.fDistanceArcMinEq(%s, %s, racat, deccat) " +
+		"FROM spAll WHERE " +
+		"dbo.fDistanceArcMinEq(%s, %s, " +
+		"racat, deccat) " +
 		"<= %s ORDER BY sn_median_all DESC"
 )
 
 // The numbers a search works with, each defined.
 const (
-	least         = 1       // defined: a search that asks for none finds nothing
-	arcminutes    = 60      // defined: arcminutes in a degree
-	plain         = 'f'     // defined by strconv: no exponent
-	shortest      = -1      // defined by strconv: the fewest digits that read back
-	bits          = 64      // defined: a float64 is 64 bits
-	nameParts     = 3       // defined: a file names its field, MJD and target
+	// least is defined: a search that asks for none finds nothing.
+	least      = 1
+	arcminutes = 60  // defined: arcminutes in a degree
+	plain      = 'f' // defined by strconv: no exponent
+	// shortest is defined by strconv: the fewest digits that read back.
+	shortest = -1
+	bits     = 64 // defined: a float64 is 64 bits
+	// nameParts is defined: a file names its field, MJD and target.
+	nameParts     = 3
 	fieldAt       = 0       // defined: the field is the name's first part
 	mjdAt         = 1       // defined: the MJD its second
 	anyFields     = -1      // defined by encoding/csv: rows of any length
@@ -80,7 +86,8 @@ func New(get web.Web, most int) (*Archive, error) {
 		return nil, err
 	}
 	if most < least {
-		return nil, base.Refuse("needs at least one spectrum a search, "+
+		return nil, base.Refuse("needs at least one spectrum a "+
+			"search, "+
 			"not %d", most)
 	}
 	return &Archive{base: base, most: most}, nil
@@ -146,21 +153,24 @@ type row map[string]string
 // with the table line, one that lacks a column the products need, and
 // a row of more or fewer fields than the header.
 func (archive *Archive) rowsOf(records [][]string) ([]row, error) {
-	if len(records) < firstRowAt || len(records[headingAt]) != tableColumns ||
+	if len(records) < firstRowAt ||
+		len(records[headingAt]) != tableColumns ||
 		records[headingAt][headingAt] != tableLine {
 		return nil, archive.base.Fail("the answer is not one table")
 	}
 	header := records[columnsAt]
 	for _, name := range wanted {
 		if !slices.Contains(header, name) {
-			return nil, archive.base.Fail("the answer has no %s", name)
+			return nil, archive.base.Fail("the answer has no %s",
+				name)
 		}
 	}
 	var rows []row
 	for _, record := range records[firstRowAt:] {
 		if len(record) != len(header) {
-			return nil, archive.base.Fail("a row of %d fields under %d "+
-				"columns", len(record), len(header))
+			return nil, archive.base.Fail(
+				"a row of %d fields under %d "+
+					"columns", len(record), len(header))
 		}
 		each := row{}
 		for at, name := range header {
@@ -180,7 +190,8 @@ func (archive *Archive) spectrum(answered row) (*celestialdata.Product,
 		spectrumEnd)
 	parts := strings.Split(stem, "-")
 	if !strings.HasPrefix(name, spectrumStart) ||
-		!strings.HasSuffix(name, spectrumEnd) || slices.Contains(parts, "") ||
+		!strings.HasSuffix(name, spectrumEnd) ||
+		slices.Contains(parts, "") ||
 		len(parts) != nameParts {
 		return nil, archive.base.Fail("a spectrum file %q is not "+
 			"spec-FIELD-MJD-TARGET.fits", name)

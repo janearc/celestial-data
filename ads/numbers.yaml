@@ -1,0 +1,32 @@
+# numbers.yaml: how the ads package asks ADS. ADS publishes a limit by
+# the day for each endpoint, and says how much is left in the headers of
+# its answers; it publishes no least time between requests. Every number
+# here is picked, and says why. A number not named here is the web
+# package's default, such as how long ADS is left alone after it asks us
+# to stop and does not say how long.
+
+numbers:
+  - name: ads-pace
+    value: 1
+    unit: seconds
+    says: the least time from the start of one request to ADS to the start of the next, one at a time, and from one run to the next through the record. ADS limits requests by the day, not by the second, so no pace is its own; a run sends one request, and one second keeps a script that loops over searches from sending them all at once without slowing a person who runs one by hand
+    kind: picked
+    by: celestial-data's ads package, 2026-11-11, as DASCH's pace was picked
+  - name: ads-tries
+    value: 0
+    unit: attempts
+    says: how many times more a request to ADS is asked after a failure with no word from ADS, such as a timeout or a 503 with no Retry-After. None, because ADS counts every request against the day's limit, a request that timed out may have counted, and this package has always sent one request and no more
+    kind: picked
+    by: celestial-data's ads package, 2026-11-11, so ADS is asked as it was before it used the web package's gentle
+  - name: ads-opens
+    value: 0
+    unit: requests
+    says: how many requests in a row may fail with no word from ADS before it is left alone for the rest of the run. None means never; with no tries a run sends one request, so there is no run for a circuit to protect
+    kind: picked
+    by: celestial-data's ads package, 2026-11-11, so ADS is asked as it was before it used the web package's gentle
+  - name: ads-repeats-posts
+    value: 0
+    unit: 1 for yes, 0 for no
+    says: whether a request with a body to ADS may be sent again after a failure. No. A search is a GET and has no body; ADS's bigquery is a POST, is not used here, and a POST is not known to be safe to repeat
+    kind: picked
+    by: celestial-data's ads package, 2026-11-11

@@ -2,11 +2,11 @@ package dasch
 
 import "github.com/janearc/celestial-data"
 
-// pagesName is the archive of DASCH's own pages, as the command line
+// pagesName is the archive of the service's own pages, as the command line
 // takes it.
 const pagesName = "dasch-pages"
 
-// dr7 is where DASCH keeps its DR7 pages.
+// dr7 is where the service keeps its DR7 pages.
 const dr7 = "https://dasch.cfa.harvard.edu/dr7/"
 
 // The pages the adapter's wire contract was read from on 2026-11-08: the
@@ -19,10 +19,11 @@ const (
 	webAPIsAddress   = dr7 + "web-apis/"
 	dataProductsAddr = dr7 + "data-products/"
 	curveColumnsAddr = dr7 + "lightcurve-columns/"
-	pagesAbout       = "a DASCH DR7 page the adapter's contract was read from"
+	pagesAbout       = "a DASCH DR7 page the adapter's " +
+		"contract was read from"
 )
 
-// Pages is the archive of DASCH's own pages the adapter was built from,
+// Pages is the archive of the service's own pages the adapter was built from,
 // asked by name only. They are fetched to be kept as the record of what
 // the adapter was read from, in cited-sources, which .game holds out of
 // every release: they are Harvard's.

@@ -49,12 +49,14 @@ func TestTheBuiltBinaryAnswers(t *testing.T) {
 	}{
 		{[]string{"--age"}, stampedCommit},
 		{[]string{"--agent-help"}, "verb fetch: "},
-		{[]string{"archives"}, "meerkat        MeerKAT's Galactic Centre"},
-		{[]string{"archives"}, "dasch          DASCH DR7's plate"},
-		{[]string{"archives"}, "dasch-pages    DASCH DR7's own pages"},
-		{[]string{"archives"}, "usno           the US Naval Observatory"},
-		{[]string{"archives"}, "soniakeys      Sonia Keys's Meeus tests"},
-		{[]string{"archives"}, "horizons       JPL Horizons: the sun"},
+		{[]string{"archives"}, "meerkat          MeerKAT's Galactic Centre"},
+		{[]string{"archives"}, "dasch            DASCH DR7's plate"},
+		{[]string{"archives"}, "dasch-pages      DASCH DR7's own pages"},
+		{[]string{"archives"}, "usno             the US Naval Observatory"},
+		{[]string{"archives"}, "soniakeys        Sonia Keys's Meeus tests"},
+		{[]string{"archives"}, "horizons         JPL Horizons: the sun"},
+		{[]string{"archives"}, "ntrs             NASA's Technical Reports"},
+		{[]string{"archives"}, "refractiveindex  the refractiveindex.info"},
 	} {
 		out, code := runs(t, path, each.words...)
 		if code != exitOK || !strings.Contains(out, each.want) {

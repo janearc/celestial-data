@@ -1,0 +1,13 @@
+{"results": [
+  {"id": 20970000003, "title": "", "authorAffiliations": [
+     {"sequence": 0, "meta": {"author": {}}}],
+   "publications": [{"publicationDate": "unknown"}],
+   "downloads": [
+     {"mimetype": "application/pdf", "name": "y.pdf", "links": {}},
+     {"mimetype": "application/pdf", "name": "x.pdf", "links": {
+        "original": "/api/citations/20970000003/downloads/x.pdf"}}]},
+  {"id": 20960000004, "title": "A crafted report with no date",
+   "authorAffiliations": [], "publications": [], "downloads": []},
+  {"id": 20950000005, "title": "A crafted report with a short date",
+   "publications": [{"publicationDate": "99"}]}],
+ "stats": {"total": 3}}

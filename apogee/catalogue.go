@@ -164,11 +164,14 @@ func heldTo(table *fits.Table, want held) (*fits.Column, error) {
 		return nil, celestialdata.Refuse("%s is of kind %c, not %c",
 			want.name, found.Kind(), want.kind)
 	case found.Count() != oneValue:
-		return nil, celestialdata.Refuse("%s holds %d values a row, not one",
+		return nil, celestialdata.Refuse(
+			"%s holds %d values a row, not "+
+				"one",
 			want.name, found.Count())
 	case found.Unit() != "":
 		return nil, celestialdata.Refuse(
-			"%s is in %q, where the allStar file writes no unit", want.name,
+			"%s is in %q, where the allStar "+
+				"file writes no unit", want.name,
 			found.Unit())
 	}
 	return found, nil
@@ -178,7 +181,8 @@ func heldTo(table *fits.Table, want held) (*fits.Column, error) {
 // heldTo holds a column.
 func trioOf(table *fits.Table, symbol string) (*trio, error) {
 	stem := strings.ToUpper(symbol)
-	value, err := heldTo(table, held{name: stem + againstIron, kind: single})
+	value, err := heldTo(table,
+		held{name: stem + againstIron, kind: single})
 	if err != nil {
 		return nil, err
 	}
@@ -212,11 +216,14 @@ func (catalogue *Catalogue) Star(index int64) (*Star, error) {
 	star := &Star{gaia: read.whole(gaiaID), id: read.text(apogeeID),
 		telescope: read.text(telescope), field: read.text(field),
 		snr: read.float(snr), radial: read.float(radial),
-		scatter: read.float(scatter), radialError: read.float(radialError),
-		teff: read.float(teff), teffError: read.float(teffError),
+		scatter:     read.float(scatter),
+		radialError: read.float(radialError),
+		teff:        read.float(teff), teffError: read.float(teffError),
 		logg: read.float(logg), loggError: read.float(loggError),
-		metals: read.float(metals), metalsError: read.float(metalsError),
-		alpha: read.float(alpha), alphaError: read.float(alphaError),
+		metals:      read.float(metals),
+		metalsError: read.float(metalsError),
+		alpha:       read.float(alpha),
+		alphaError:  read.float(alphaError),
 		iron: read.abundance(trio{value: catalogue.found[iron],
 			uncertainty: catalogue.found[ironError],
 			flag:        catalogue.found[ironFlag]}),

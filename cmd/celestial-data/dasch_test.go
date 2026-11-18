@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,9 +10,11 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"go.uber.org/mock/gomock"
 
+	"github.com/janearc/celestial-data/dasch"
 	"github.com/janearc/celestial-data/mocks"
 	"github.com/janearc/celestial-data/web"
 )
@@ -165,11 +168,7 @@ func TestAFetchStopsWhenDASCHAsksItTo(t *testing.T) {
 	stop := &http.Response{StatusCode: http.StatusTooManyRequests,
 		Header: http.Header{"Retry-After": {"30"}},
 		Body:   io.NopCloser(strings.NewReader(""))}
-	doer := mocks.NewMockDoer(gomock.NewController(t))
-	gomock.InOrder(doer.EXPECT().Do(gomock.Any()).Return(ok(three), nil),
-		doer.EXPECT().Do(gomock.Any()).Return(stop, nil))
-	tool := through(t, quiet(t))
-	tool.curves = doer
+	tool, _ := hostedDASCH(t, ok(three), stop)
 	words := append([]string{"fetch", "--archive", "dasch", "--into",
 		t.TempDir()}, starWords...)
 	out, errs, code := ran(tool, words...)
@@ -190,6 +189,168 @@ func TestDASCHWithNoWaitIsRefused(t *testing.T) {
 		!strings.Contains(errs, "dasch-whole") {
 		t.Errorf("%d %q", code, errs)
 	}
+}
+
+// DASCH's questions are asked through the hosts, which keep a record of
+// the pace in the cache folder, as arXiv's gate does.
+func TestDASCHIsAskedThroughTheHostsAndTheirRecordKept(t *testing.T) {
+	tool, folder := hostedDASCH(t, ok(sources), ok(curve))
+	words := append([]string{"fetch", "--archive", "dasch", "--into",
+		t.TempDir()}, starWords...)
+	_, errs, code := ran(tool, words...)
+	record := web.RecordPath(folder, dasch.Host)
+	if kept, err := os.ReadFile(record); code != ranOK || err != nil ||
+		!strings.HasPrefix(string(kept), "last ") {
+		t.Errorf("%d %q %q, %v", code, errs, kept, err)
+	}
+}
+
+// Anti-test: a tool with no hosts asks DASCH as it is and keeps no
+// record.
+func TestDASCHIsAskedAsItIsWithNoHosts(t *testing.T) {
+	tool := askingDASCH(t)
+	asker, err := tool.daschAsker()
+	if err != nil || asker != tool.curves {
+		t.Errorf("%v, %v", asker, err)
+	}
+}
+
+// DASCH's own numbers are what the hosts ask it by: its host is its
+// own, with its pace, and it is not left to the defaults.
+func TestDASCHHasNumbersOfItsOwnInTheHosts(t *testing.T) {
+	policies, err := hostPolicies()
+	if err != nil {
+		t.Fatal(err)
+	}
+	policy, ok := policies[dasch.Host]
+	if !ok || policy.Host != "DASCH" || policy.Defaulted ||
+		policy.Pace != time.Second || !policy.RepeatsPosts {
+		t.Errorf("%v, %+v", ok, policy)
+	}
+}
+
+// When DASCH asks us to stop, the run says so, says what DASCH asked
+// for, names --i-mean-it, and the next run asks nothing until the wait
+// has passed.
+func TestADASCHStopIsSaidAndKeptForTheNextRun(t *testing.T) {
+	tool, folder := hostedDASCH(t, refusing429(farOff))
+	words := append([]string{"find", "--archive", "dasch"}, starWords...)
+	_, errs, code := ran(tool, words...)
+	for _, want := range []string{"DASCH asked us to stop",
+		"its Retry-After is " + farOff, "to ask anyway, add --i-mean-it"} {
+		if code == ranOK || !strings.Contains(errs, want) {
+			t.Errorf("no %q in %d %q", want, code, errs)
+		}
+	}
+	next := nextRun(t, folder)
+	_, errs, code = ran(next, words...)
+	if code == ranOK || !strings.Contains(errs, "it asked to be left "+
+		"until") {
+		t.Errorf("%d %q", code, errs)
+	}
+}
+
+// With --i-mean-it, the run after a stop says what DASCH asked for and
+// asks anyway.
+func TestTheSwitchAsksDASCHAgainAfterAStop(t *testing.T) {
+	tool, folder := hostedDASCH(t, refusing429(farOff))
+	words := append([]string{"find", "--archive", "dasch"}, starWords...)
+	ran(tool, words...)
+	next := nextRun(t, folder, ok(sources))
+	out, errs, code := ran(next, append(words, "--i-mean-it")...)
+	if code != ranOK || !strings.Contains(errs, "asking anyway, as told "+
+		"to") || !strings.Contains(out, "dasch apass-419100022221405") {
+		t.Errorf("%d %q %q", code, out, errs)
+	}
+}
+
+// Another run's gentle shares its record, so this run waits out that
+// run's pace and asks DASCH successfully.
+func TestAnotherRunAskingDASCHSharesItsPace(t *testing.T) {
+	tool, folder := hostedDASCH(t, ok(sources))
+	policy, _ := dasch.Policy()
+	clock := stillClock(gomock.NewController(t))
+	other, err := web.NewGentle(policy, clock, web.Unix())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := other.Hold(web.RecordPath(folder, dasch.Host)); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { other.Release() })
+	if err := other.Enter(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	other.Leave()
+	clock.EXPECT().Sleep(gomock.Any(), time.Second).Return(nil)
+	tool.hosts = web.NewHosts(folder, clock, web.Unix(),
+		map[string]web.Policy{dasch.Host: policy})
+	words := append([]string{"find", "--archive", "dasch"}, starWords...)
+	out, errs, code := ran(tool, words...)
+	if code != ranOK || !strings.Contains(out,
+		"dasch apass-419100022221405") || errs != "" {
+		t.Errorf("%d %q %q", code, out, errs)
+	}
+}
+
+// A fetch that DASCH stops leaves the light curves after it unasked,
+// and says how many.
+func TestAFetchDASCHStopsSaysHowManyWereNotAsked(t *testing.T) {
+	two := `["ref_number,gsc_bin_index,ra_deg,dec_deg",` +
+		`"419100022221405,52510421,287.50084,-22.2348",` +
+		`"419100022221406,52510421,287.50085,-22.2349"]`
+	tool, _ := hostedDASCH(t, ok(two), refusing429(farOff))
+	words := append([]string{"fetch", "--archive", "dasch", "--into",
+		t.TempDir()}, starWords...)
+	_, errs, code := ran(tool, words...)
+	if code == ranOK || !strings.Contains(errs, "stopped: 1 more of "+
+		"its files were not asked for") {
+		t.Errorf("%d %q", code, errs)
+	}
+}
+
+// refusing429 is a 429 that asks to be left alone so long.
+func refusing429(after string) *http.Response {
+	answer := ok("")
+	answer.StatusCode = http.StatusTooManyRequests
+	answer.Header.Set("Retry-After", after)
+	return answer
+}
+
+// hostedDASCH is celestial-data asking DASCH through hosts that keep
+// their records in a folder of the test's own, on a clock that never
+// waits. The doer answers each reply in turn, and is asked no more.
+func hostedDASCH(t *testing.T, replies ...*http.Response) (command,
+	string) {
+	t.Helper()
+	folder := t.TempDir()
+	return nextRun(t, folder, replies...), folder
+}
+
+// nextRun is a run asking DASCH through hosts that keep their records in
+// a folder, answered by the replies in turn.
+func nextRun(t *testing.T, folder string,
+	replies ...*http.Response) command {
+	t.Helper()
+	control := gomock.NewController(t)
+	doer := mocks.NewMockDoer(control)
+	for _, each := range replies {
+		doer.EXPECT().Do(gomock.Any()).Return(each, nil)
+	}
+	random := mocks.NewMockRandom(control)
+	random.EXPECT().Float64().Return(0.5).AnyTimes()
+	tool := through(t, quiet(t))
+	tool.curves = doer
+	// a record from an earlier run may put the last request ahead of this
+	// clock, which then sleeps; the sleep is no more than the pace
+	clock := hourly(control)
+	clock.EXPECT().Sleep(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	policies, err := hostPolicies()
+	if err != nil {
+		t.Fatal(err)
+	}
+	tool.hosts = web.NewHosts(folder, clock, random, policies)
+	return tool
 }
 
 // Anti-tests: a fetch with no one to ask DASCH through, and a fetch with

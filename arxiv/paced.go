@@ -3,30 +3,19 @@ package arxiv
 import (
 	"context"
 	"errors"
-	"io"
-	"net/http"
-	"net/url"
-	"sync"
+	"fmt"
 
 	"github.com/janearc/celestial-data"
 	"github.com/janearc/celestial-data/web"
 )
 
-// nothingCame is the length beside an error. It's defined by web.Web:
-// the error says what happened, and no bytes came.
-const nothingCame = 0
-
-// paced is a web whose every request goes through a gate.
-type paced struct {
-	ctx  context.Context
-	get  web.Web
-	gate *Gate
-}
-
 // Paced is a web whose every request goes through the gate, waiting
 // there while ctx lasts. One goes at a time, each begun at least the
 // gate's pace after the last began. A Get holds the gate until its body
 // is closed, so a slow download is still the only request.
+//
+// A 403, 429 or 503 is arXiv asking us to stop, and the request says so,
+// with the wait asked.
 //
 // It refuses a missing context, web or gate.
 func Paced(ctx context.Context, get web.Web, gate *Gate) (web.Web,
@@ -35,87 +24,75 @@ func Paced(ctx context.Context, get web.Web, gate *Gate) (web.Web,
 		return nil, celestialdata.Refuse("a paced web needs a " +
 			"context, a web and a gate")
 	}
-	return paced{ctx: ctx, get: get, gate: gate}, nil
-}
-
-// Get is the web's Get, through the gate. The gate is held until the
-// body is closed, or let go at once when there is none. A 429 or 503 is
-// arXiv asking us to wait, and Get says so, with the wait asked.
-func (pacing paced) Get(address string) (io.ReadCloser, int64, error) {
-	if err := pacing.gate.enter(pacing.ctx); err != nil {
-		return nil, nothingCame, err
-	}
-	body, length, err := pacing.get.Get(address)
+	within, err := web.Within(ctx, get, gate.gentle)
 	if err != nil {
-		err = pacing.halted(err)
-		pacing.gate.leave()
-		return nil, length, err
+		return nil, celestialdata.Refuse("%v", err)
 	}
-	return &held{body: body, gate: pacing.gate}, length, nil
+	return web.Rewriting(within, inWords), nil
 }
 
-// Head is the web's Head, through the gate. A 429 or 503 refusal is
-// returned as Get would.
-func (pacing paced) Head(address string) (int64, error) {
-	if err := pacing.gate.enter(pacing.ctx); err != nil {
-		return nothingCame, err
-	}
-	defer pacing.gate.leave()
-	length, err := pacing.get.Head(address)
-	return length, pacing.halted(err)
+// halt is arXiv asking us to stop, in the words this adapter has always
+// said it in: which host, why, and the wait it asked, as written. The
+// web package's stop, which it holds, says more; this is the part arXiv's
+// users have been told.
+type halt struct {
+	stopped *web.Stopped
+	kept    error
 }
 
-// halted says a refusal of 403, 429 or 503 as arXiv asking us to stop,
-// with the request refused and the wait asked, and has the gate keep
-// that wait. Any other error, or none, is given as it is. A wait whose
-// record will not write is said beside the halt.
-func (pacing paced) halted(err error) error {
-	var status *web.Status
-	if !errors.As(err, &status) || !stopping(status.Code()) {
+// inWords is an error as this adapter says it: a stop, as a halt, and any
+// other error as it is. arXiv's circuit never opens, so every stop is
+// its own asking.
+func inWords(err error) error {
+	var stopped *web.Stopped
+	if !errors.As(err, &stopped) {
 		return err
 	}
-	noted := pacing.gate.stopUntil(status.RetryAfter())
-	stop := &halt{status: status.Error(), retryAfter: status.RetryAfter()}
-	return errors.Join(stop, noted)
+	return &halt{stopped: stopped, kept: otherThanStop(err)}
 }
 
-// stopping is whether a status's code is arXiv asking us to stop.
-func stopping(code int) bool {
-	switch code {
-	case http.StatusForbidden, http.StatusTooManyRequests,
-		http.StatusServiceUnavailable:
-		return true
+// otherThanStop is what a stop was joined with, such as an error writing
+// the wait to arXiv's run record.
+func otherThanStop(err error) error {
+	joined, ok := err.(interface{ Unwrap() []error })
+	if !ok {
+		return nil
 	}
-	return false
-}
-
-// Post is the web's Post, through the gate.
-func (pacing paced) Post(address string, form url.Values) (string,
-	error) {
-	if err := pacing.gate.enter(pacing.ctx); err != nil {
-		return "", err
+	var others []error
+	for _, cause := range joined.Unwrap() {
+		var stopped *web.Stopped
+		if errors.As(cause, &stopped) {
+			if other := otherThanStop(cause); other != nil {
+				others = append(others, other)
+			}
+			continue
+		}
+		others = append(others, cause)
 	}
-	defer pacing.gate.leave()
-	return pacing.get.Post(address, form)
+	return errors.Join(others...)
 }
 
-// held is a body that holds the gate until it is closed, once.
-type held struct {
-	body io.ReadCloser
-	gate *Gate
-	once sync.Once
+// Error says arXiv asked us to stop, why, and how long when it said. When
+// the override was tried, it says that too.
+func (asking *halt) Error() string {
+	text := host + " asked us to stop: " + asking.stopped.Why
+	if asking.stopped.RetryAfter != "" {
+		text += fmt.Sprintf("; its Retry-After is %s",
+			asking.stopped.RetryAfter)
+	}
+	if asking.stopped.Tried {
+		text += "; the override was tried, and it refused again"
+	}
+	if asking.kept != nil {
+		text += "; could not keep arXiv's wait: " + asking.kept.Error()
+	}
+	return text
 }
 
-// Read reads the body.
-func (holding *held) Read(into []byte) (int, error) {
-	return holding.body.Read(into)
-}
-
-// Close closes the body, then lets the gate go, so the next request
-// begins after this one's connection is done. Closing again closes the
-// body again and lets go of nothing.
-func (holding *held) Close() error {
-	err := holding.body.Close()
-	holding.once.Do(holding.gate.leave)
-	return err
+// Unwrap keeps the stop and the error beside it, so a caller may read both.
+func (asking *halt) Unwrap() []error {
+	if asking.kept == nil {
+		return []error{asking.stopped}
+	}
+	return []error{asking.stopped, asking.kept}
 }

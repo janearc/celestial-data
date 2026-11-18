@@ -19,8 +19,9 @@ var (
 
 // The codes celestial-data exits with.
 const (
-	exitOK    = 0 // defined by the shell: success
-	exitUsage = 2 // defined by pzm: nothing ran
+	exitOK     = 0 // defined by the shell: success
+	exitFailed = 1 // defined by pzm: a verb failed
+	exitUsage  = 2 // defined by pzm: nothing ran
 )
 
 // afterName is where the words after the command's name begin. It's

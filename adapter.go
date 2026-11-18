@@ -176,10 +176,11 @@ type Fixed struct {
 }
 
 // File is one file a fixed archive holds, described ahead. NewFile makes
-// one; NewFixed makes it a product.
+// one; Summed gives it a digest; NewFixed makes it a product.
 type File struct {
 	id, name, url, about string
 	size                 int64
+	digest               *Digest
 }
 
 // NewFile describes a file ahead, as Adapter.Product takes one: what it
@@ -190,10 +191,21 @@ func NewFile(id, name, url string, size int64, about string) File {
 	return File{id: id, name: name, url: url, size: size, about: about}
 }
 
+// Summed is the file held to the sha256 sum of its bytes: NewFixed
+// gives its product the digest, and Fetch keeps the fetched file only
+// when its bytes sum to it.
+func (file File) Summed(digest Digest) File {
+	file.digest = &digest
+	return file
+}
+
 // NewFixed is an archive by a name whose files are described ahead. Each
 // is made a product as Adapter.Product makes one, so an adapter has no
-// refusal of its own to handle. It refuses a name that is not one word, no
-// files, and a file Product refuses.
+// refusal of its own to handle; a file that carries a digest is held to
+// it.
+//
+// It refuses a name that is not one word, no files, and a file Product
+// refuses.
 func NewFixed(name string, files ...File) (*Fixed, error) {
 	base, err := Named(name)
 	if err != nil {
@@ -208,6 +220,9 @@ func NewFixed(name string, files ...File) (*Fixed, error) {
 			file.size, file.about)
 		if err != nil {
 			return nil, base.Wrap(err)
+		}
+		if file.digest != nil {
+			products[at] = products[at].Checked(*file.digest)
 		}
 	}
 	return &Fixed{base: base, products: products}, nil

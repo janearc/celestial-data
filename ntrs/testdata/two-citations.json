@@ -1,0 +1,29 @@
+{"results": [
+  {"id": 20990000001, "title": "A crafted report about nothing",
+   "stiType": "TECHNICAL_REPORT", "downloadsAvailable": true,
+   "authorAffiliations": [
+     {"sequence": 1, "meta": {"author": {"name": "Marsh, Bea"}}},
+     {"sequence": 0, "meta": {"author": {"name": "Quill, Ann"}}},
+     {"sequence": 2, "meta": {"author": {"name": "Thorn, Cy"}}}],
+   "publications": [
+     {"publicationDate": "2099-10-01T00:00:00.0000000+00:00"}],
+   "downloads": [
+     {"draft": false, "mimetype": "text/plain", "name": "notes.txt",
+      "type": "OTHER", "links": {
+        "original": "/api/citations/20990000001/downloads/notes.txt"}},
+     {"draft": false, "mimetype": "application/pdf",
+      "name": "20990000001.pdf", "type": "STI", "links": {
+        "original": "/api/citations/20990000001/downloads/20990000001.pdf",
+        "pdf": "/api/citations/20990000001/downloads/20990000001.pdf",
+        "fulltext": "/api/citations/20990000001/downloads/20990000001.txt"}}],
+   "_meta": {"score": 12.5}},
+  {"id": 20980000002, "title": "A second crafted report",
+   "stiType": "PREPRINT", "downloadsAvailable": false,
+   "authorAffiliations": [
+     {"sequence": 0, "meta": {"author": {"name": "Fen, Dee"}}}],
+   "publications": [
+     {"publicationDate": "2098-01-15T00:00:00.0000000+00:00"}],
+   "downloads": [],
+   "_meta": {"score": 3.25}}],
+ "aggregations": {},
+ "stats": {"took": 7, "total": 115, "estimate": false, "maxScore": 12.5}}

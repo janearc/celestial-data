@@ -4,8 +4,11 @@ go 1.27.3
 
 require (
 	github.com/Epistemic-Technology/arxiv v1.0.1
-	github.com/janearc/celestial v0.0.7
+	github.com/janearc/celestial v0.0.10
 	github.com/janearc/puzzlemouth v0.1.3
+	// scigolib/netcdf at pull request 1's branch head, until it merges and there is a
+	// version to require.
+	github.com/scigolib/netcdf v0.0.0-20261114213206-11163b050643
 	go.uber.org/mock v0.6.0
 	pgregory.net/rapid v1.3.0
 )

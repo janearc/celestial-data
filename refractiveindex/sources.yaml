@@ -1,0 +1,32 @@
+# sources.yaml: where the number in numbers.yaml was read, and where the
+# release's sha256 sum was read: the release page, which gives a digest
+# beside the asset, 6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9
+# ac307b6d14eb. The database's own words of its licence, in the header
+# comment of every data file: "refractiveindex.info database is in the
+# public domain. copyright and related rights waived via CC0 1.0". Its
+# own words of how to cite it: "If you use data from this database in
+# research, publications, reports, or software, please cite the
+# peer-reviewed data descriptor published in Scientific Data:
+# Polyanskiy, M. N. Refractiveindex.info database of optical constants.
+# Scientific Data 11, 94 (2024). https://doi.org/10.1038/s41597-023-0289
+# 8-2", and "When appropriate, please also cite the original publications
+# from which specific datasets were obtained; these references are listed
+# in the corresponding data files."
+
+sources:
+  - key: rii-release
+    title: "refractiveindex.info database, release v2026-05-24, and its sha256 digest"
+    from: https://github.com/polyanskiy/refractiveindex.info-database/releases/tag/v2026-05-24
+    fetched: 2026-11-11
+  - key: rii-release-archive
+    title: "the release's zip of the whole database, rii-database-2026-05-24.zip"
+    from: https://github.com/polyanskiy/refractiveindex.info-database/releases/download/v2026-05-24/rii-database-2026-05-24.zip
+    fetched: 2026-11-11
+  - key: rii-paper
+    title: "Polyanskiy, M. N. Refractiveindex.info database of optical constants. Scientific Data 11, 94 (2024)"
+    from: https://doi.org/10.1038/s41597-023-02898-2
+    fetched: 2026-11-11
+  - key: rii-licence
+    title: "the database's README and each data file's header: public domain, copyright and related rights waived via CC0 1.0"
+    from: https://github.com/polyanskiy/refractiveindex.info-database
+    fetched: 2026-11-11

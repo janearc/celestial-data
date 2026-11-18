@@ -26,6 +26,7 @@ import (
 
 	library "github.com/Epistemic-Technology/arxiv/arxiv"
 	"github.com/janearc/celestial-data"
+	"github.com/janearc/celestial-data/web"
 )
 
 // API is the address of arXiv's API on export.arxiv.org, the host arXiv
@@ -125,9 +126,27 @@ func (papers *Papers) Look(ctx context.Context, ids []ID) (
 func (papers *Papers) ask(ctx context.Context, batch []ID) (
 	[]library.EntryMetadata, error) {
 	if err := papers.gate.enter(ctx); err != nil {
-		return nil, err
+		return nil, inWords(err)
 	}
 	defer papers.gate.leave()
+	reasked := false
+	for {
+		entries, err := papers.once(ctx, batch)
+		if !AskedToStop(err) {
+			return entries, err
+		}
+		// With the override set, a fresh stop is asked once more, as a
+		// PDF is.
+		if err = papers.gate.reask(ctx, err, &reasked); err != nil {
+			return nil, inWords(err)
+		}
+	}
+}
+
+// once is one query for a batch of ids, with the gate held: arXiv's
+// entries, or why there are none.
+func (papers *Papers) once(ctx context.Context, batch []ID) (
+	[]library.EntryMetadata, error) {
 	names := make([]string, len(batch))
 	for at, id := range batch {
 		names[at] = id.String()
@@ -138,24 +157,22 @@ func (papers *Papers) ask(ctx context.Context, batch []ID) (
 		return nil, papers.adapter.Wrap(err)
 	}
 	defer answer.Body.Close()
-	entries, err := papers.read(answer)
-	var asked *halt
-	if errors.As(err, &asked) {
-		err = errors.Join(err, papers.gate.stopUntil(asked.retryAfter))
-	}
-	return entries, err
+	return papers.read(answer)
 }
 
 // read is the entries of an answer. A 403, 429 or 503 is arXiv asking
-// us to stop. A 400 is arXiv refusing what was asked, in its own words.
+// us to stop, and the gate keeps the wait it asked. A 400 is arXiv
+// refusing what was asked, in its own words.
 func (papers *Papers) read(answer *http.Response) (
 	[]library.EntryMetadata, error) {
 	switch answer.StatusCode {
 	case http.StatusOK, http.StatusBadRequest:
 	case http.StatusForbidden, http.StatusTooManyRequests,
 		http.StatusServiceUnavailable:
-		return nil, &halt{status: answer.Status,
-			retryAfter: answer.Header.Get("Retry-After")}
+		_, stop := papers.gate.judge(answer.StatusCode,
+			answer.Header.Get("Retry-After"),
+			errors.New(answer.Status))
+		return nil, inWords(stop)
 	default:
 		return nil, papers.adapter.Fail("the API answered %s",
 			answer.Status)
@@ -290,26 +307,11 @@ func surname(author library.Author) string {
 	return "someone unnamed"
 }
 
-// halt is arXiv asking us to stop: an answer of 403, 429 or 503, or a
-// wait it asked for that has not passed. It holds what was said, and
-// the wait its Retry-After asked as written, or none.
-type halt struct {
-	status, retryAfter string
-}
-
-// Error says arXiv asked us to stop, and how long when it said.
-func (asking *halt) Error() string {
-	if asking.retryAfter == "" {
-		return "arXiv asked us to stop: " + asking.status
-	}
-	return fmt.Sprintf("arXiv asked us to stop: %s; its Retry-After "+
-		"is %s", asking.status, asking.retryAfter)
-}
-
 // AskedToStop is whether an error is arXiv asking us to stop: a 403,
 // 429 or 503 from the API or a PDF fetched through a paced web, or a
-// wait arXiv asked for that has not passed.
+// wait it asked for that has not passed. Such an error is a
+// *web.Stopped.
 func AskedToStop(err error) bool {
-	var asking *halt
+	var asking *web.Stopped
 	return errors.As(err, &asking)
 }

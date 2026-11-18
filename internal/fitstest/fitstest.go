@@ -14,18 +14,19 @@ import (
 // The standard's numbers the files are written by, each defined by the
 // FITS Standard 4.0, as recalled.
 const (
-	block      = 2880 // defined: a block's bytes
-	cardWidth  = 80   // defined: a card's characters
-	keyWidth   = 8    // defined: a keyword's characters
-	firstFrom  = 1    // defined: TTYPEn counts columns from one
-	oneValue   = 1    // defined: a form with no count holds one value
-	lastOf     = 1    // defined: a string's last byte is one before its length
-	nothing    = 0    // defined: no bytes
-	padding    = ' '  // defined: a header is padded with spaces
-	oneByte    = 1    // defined: an L, B or A value's bytes
-	twoBytes   = 2    // defined: an I value's bytes
-	fourBytes  = 4    // defined: a J or E value's bytes
-	eightBytes = 8    // defined: a K or D value's bytes
+	block     = 2880 // defined: a block's bytes
+	cardWidth = 80   // defined: a card's characters
+	keyWidth  = 8    // defined: a keyword's characters
+	firstFrom = 1    // defined: TTYPEn counts columns from one
+	oneValue  = 1    // defined: a form with no count holds one value
+	lastOf    = 1    // defined: the last byte's index is one less than
+	// the string's length
+	nothing    = 0   // defined: no bytes
+	padding    = ' ' // defined: a header is padded with spaces
+	oneByte    = 1   // defined: an L, B or A value's bytes
+	twoBytes   = 2   // defined: an I value's bytes
+	fourBytes  = 4   // defined: a J or E value's bytes
+	eightBytes = 8   // defined: a K or D value's bytes
 )
 
 // Column is a column of the table: its name, its TFORM, its TUNIT, or
@@ -84,15 +85,85 @@ func widthOf(letter byte) int {
 // File is a FITS file of a primary array of nothing and a binary table
 // of the columns and rows given, each row's bytes as a Row wrote them.
 func File(columns []Column, rows ...*Row) []byte {
-	primary := hdu([]string{card("SIMPLE", "T"), card("BITPIX", "8"),
+	return Join(Primary(), Table("", columns, nil, rows...))
+}
+
+// Primary is a primary array of nothing, the first HDU of a file.
+func Primary() []byte {
+	return hdu([]string{card("SIMPLE", "T"), card("BITPIX", "8"),
 		card("NAXIS", "0")}, nil)
+}
+
+// Table is a binary table extension of the columns and rows given,
+// named by its EXTNAME unless the name is none, with the extra cards
+// after the columns', as Card writes them: a TDIMn, an OVSMPX.
+func Table(name string, columns []Column, extra []string,
+	rows ...*Row) []byte {
 	var data bytes.Buffer
 	for _, row := range rows {
 		data.Write(row.written.Bytes())
 	}
 	header := cards(len(rows), columns)
-	table := hdu(header, data.Bytes())
-	return append(primary, table...)
+	if name != "" {
+		header = append(header, quotedCard("EXTNAME", name))
+	}
+	return hdu(append(header, extra...), data.Bytes())
+}
+
+// The BITPIX of the images a test writes. Each is defined by the FITS
+// Standard 4.0's table 8.
+const (
+	singles = -32 // defined: IEEE singles
+	ints    = 32  // defined: 32-bit integers
+)
+
+// Image is an IMAGE extension named, width by height singles row by
+// row from the bottom, with the extra cards after the axes: a WCS, a
+// BUNIT, an MJD-OBS.
+func Image(name string, width, height int, pixels []float32,
+	extra ...string) []byte {
+	return image(name, singles, width, height, pixels, extra)
+}
+
+// IntImage is an IMAGE extension of 32-bit integers, as SPHEREx writes
+// its FLAGS, laid out as Image's.
+func IntImage(name string, width, height int, pixels []int32,
+	extra ...string) []byte {
+	return image(name, ints, width, height, pixels, extra)
+}
+
+// image is an IMAGE extension of a BITPIX, its pixels big-endian.
+func image(name string, bitpix, width, height int, pixels any,
+	extra []string) []byte {
+	header := []string{card("XTENSION", "'IMAGE'"),
+		card("BITPIX", fmt.Sprint(bitpix)), card("NAXIS", "2"),
+		card("NAXIS1", fmt.Sprint(width)),
+		card("NAXIS2", fmt.Sprint(height)), card("PCOUNT", "0"),
+		card("GCOUNT", "1"), quotedCard("EXTNAME", name)}
+	var data bytes.Buffer
+	binary.Write(&data, binary.BigEndian, pixels)
+	return hdu(append(header, extra...), data.Bytes())
+}
+
+// Join is HDUs one after another: a file of them.
+func Join(hdus ...[]byte) []byte {
+	var file bytes.Buffer
+	for _, each := range hdus {
+		file.Write(each)
+	}
+	return file.Bytes()
+}
+
+// Card is a header card of a keyword and its value, the value written
+// as the standard writes it: a number bare, a string in its quotes.
+func Card(key, value string) string { return card(key, value) }
+
+// Text is a header card of a keyword and a string, quoted.
+func Text(key, value string) string { return quotedCard(key, value) }
+
+// quotedCard is a card whose value is a string.
+func quotedCard(key, value string) string {
+	return card(key, fmt.Sprintf("'%s'", value))
 }
 
 // cards are the table's header cards for so many rows of the columns.
@@ -111,11 +182,13 @@ func cards(rows int, columns []Column) []string {
 		written = append(written, quoted("TTYPE", number, each.name),
 			quoted("TFORM", number, each.form))
 		if each.null != nil {
-			key, null := fmt.Sprintf("TNULL%d", number), fmt.Sprint(*each.null)
+			key, null := fmt.Sprintf("TNULL%d", number),
+				fmt.Sprint(*each.null)
 			written = append(written, card(key, null))
 		}
 		if each.unit != "" {
-			written = append(written, quoted("TUNIT", number, each.unit))
+			written = append(written,
+				quoted("TUNIT", number, each.unit))
 		}
 	}
 	return written
@@ -128,7 +201,8 @@ func card(key, value string) string {
 
 // quoted is a card of a numbered keyword with a string value.
 func quoted(prefix string, number int, value string) string {
-	return card(fmt.Sprintf("%s%d", prefix, number), fmt.Sprintf("'%s'", value))
+	return card(fmt.Sprintf("%s%d", prefix, number),
+		fmt.Sprintf("'%s'", value))
 }
 
 // hdu is a header's cards and its data as the standard lays them: each
@@ -167,6 +241,15 @@ func (row *Row) Single(value float32) *Row { return row.put(value) }
 
 // Double writes a D value.
 func (row *Row) Double(value float64) *Row { return row.put(value) }
+
+// Doubles writes an nD value: a column of many doubles.
+func (row *Row) Doubles(values []float64) *Row { return row.put(values) }
+
+// Singles writes an nE value: a column of many singles.
+func (row *Row) Singles(values []float32) *Row { return row.put(values) }
+
+// Ints writes an nJ value: a column of many ints.
+func (row *Row) Ints(values []int32) *Row { return row.put(values) }
 
 // Text writes an nA value: the text, padded with spaces to its width.
 func (row *Row) Text(value string, width int) *Row {

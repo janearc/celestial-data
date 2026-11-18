@@ -1,0 +1,9 @@
+# mocks
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/web.go -package mocks github.com/janearc/celestial-data/web Web
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/normal.go -package mocks github.com/janearc/celestial-data/gaia Normal
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/searcher.go -package mocks github.com/janearc/celestial-data/arxiv Searcher
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/clock.go -package mocks github.com/janearc/celestial-data/web Clock
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/reader.go -package mocks github.com/janearc/celestial-data/secrets Reader
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/doer.go -package mocks github.com/janearc/celestial-data/ads Doer
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/random.go -package mocks github.com/janearc/celestial-data/web Random
+mocks . :: go tool mockgen -write_package_comment=false -destination mocks/context.go -package mocks context Context

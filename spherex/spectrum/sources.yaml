@@ -1,0 +1,13 @@
+# sources.yaml: where the numbers in numbers.yaml, the flags the fit
+# leaves out and the layout of a cutout were read for the spherex package
+# and its spectrum step on 2026-11-06.
+
+sources:
+  - key: spherex-explanatory-supplement
+    title: "SPHEREx Explanatory Supplement, version 2.0, 2026-08-25: forced photometry (section 3.3, equation 19), the flags (Table 16), the effective PSF (sections 4.1 and 4.2)"
+    from: https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp_QR.pdf
+    fetched: 2026-11-06
+  - key: spherex-user-guide-products
+    title: "SPHEREx Archive at IRSA User Guide: Data Products (the IMAGE, FLAGS, VARIANCE, EPSF and WCS-WAVE extensions, and a cutout's pixels in its parent's)"
+    from: https://caltech-ipac.github.io/spherex-archive-documentation/spherex-data-products
+    fetched: 2026-11-06

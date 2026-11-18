@@ -1,0 +1,32 @@
+# numbers.yaml: the numbers the spectrum package measures SPHEREx cutouts
+# by. The sources are spherex's sources.yaml; the measurement design
+# records their reading on 2026-11-06.
+
+numbers:
+  - name: systematic
+    value: 0.03
+    unit: share of the flux
+    says: the share of a star's flux added in quadrature to its statistical error, as the project's own photometry adds it; it rules the error of nearly every point of a bright star
+    kind: measured
+    source:
+      key: spherex-explanatory-supplement
+      where: section 3.3, equation 19
+      text: "a 3% systematic uncertainty added in quadrature to the statistical uncertainty and primarily affects high signal-to-noise measurements"
+  - name: quality-radius
+    value: 2.5
+    unit: pixels
+    says: the radius about the star over which the fit's quality is the mean of each pixel's miss over its sigma, near one for a good fit; the Help page's fit_ql, as the measurement design reads it
+    kind: picked
+    by: celestial-data's spherex/spectrum package, 2026-11-07
+  - name: peak-sigma
+    value: 5
+    unit: sigma
+    says: how far over the cutout's median a pixel must stand, in its own sigma, and over the eight about it, to be fitted as a neighbour; neighbours from Gaia would place them better, and are not yet asked
+    kind: picked
+    by: celestial-data's spherex/spectrum package, 2026-11-07
+  - name: own-peak
+    value: 1.5
+    unit: pixels
+    says: how near the star a peak is taken for the star's own and not fitted as a neighbour; a SPHEREx PSF is about one pixel wide, so a neighbour nearer than this cannot be told from the star
+    kind: picked
+    by: celestial-data's spherex/spectrum package, 2026-11-07

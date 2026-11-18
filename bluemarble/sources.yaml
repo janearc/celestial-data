@@ -1,13 +1,18 @@
-# sources.yaml: where the numbers in numbers.yaml were read. Each file was
-# fetched once to a machine outside the repository, and its length counted
-# with wc -c. No sha256 is held, and the images are not kept here.
+# sources.yaml records where the byte lengths in numbers.yaml came from.
+# The lengths were counted with wc -c. These SHA256 values were recorded
+# for the 2026-11-02 downloads; earlier checksum records are not included.
+#
+# The downloader checks lengths, not these hashes. They are manual reference
+# values, and do not independently establish a match to earlier local files.
 
 sources:
   - key: visible-earth-july
     title: "NASA Visible Earth, Blue Marble Next Generation, July 2004, 5400 by 2700"
-    from: https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74092/world.200407.3x5400x2700.jpg
+    from: https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-base/july/world.200407.3x5400x2700.jpg
     fetched: 2026-11-02
+    sha256: f55226d46d27e05511f2118dc6aa24f5dbf9b6b2cddc87cc6e0e7dd067c00b11
   - key: visible-earth-night
     title: "NASA Visible Earth, Black Marble 2016, a tenth of a degree a pixel"
-    from: https://eoimages.gsfc.nasa.gov/images/imagerecords/144000/144898/BlackMarble_2016_01deg.jpg
+    from: https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/144000/144898/BlackMarble_2016_01deg.jpg
     fetched: 2026-11-02
+    sha256: d87de751a264e4f8ff69c68de5dab9606daee87a6f15ae743c93200743bd7ec1

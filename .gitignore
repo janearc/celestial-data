@@ -1,2 +1,4 @@
 bin/
 **/testdata/rapid
+# Owner-authorized archive outputs and their contemporary provenance.
+retained/

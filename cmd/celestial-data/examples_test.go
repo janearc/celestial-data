@@ -50,39 +50,42 @@ func (stopping) Fatalf(format string, args ...any) {
 func Example_archives() {
 	fmt.Print(said("archives"))
 	// Output:
-	// chandra        Chandra's primary products: events, field of view, aspect
-	// nustar         NuSTAR's cleaned events, for both focal plane modules
-	// glimpse        Spitzer GLIMPSE II mosaics, in IRAC's four bands
-	// galcen_psc     IRSA's Galactic Center IRAC catalog, as CSV
-	// hpsgc          the HST/NICMOS Paschen-alpha survey of the Galactic Centre
-	// meerkat        MeerKAT's Galactic Centre mosaic at 1.28 GHz
-	// ppmap          Hi-GAL PPMAP maps of dust column density and temperature
-	// hips           a hips2fits cutout of any HiPS survey
-	// bluemarble     NASA's Blue Marble, July 2004, and Black Marble 2016
-	// usgs           the USGS Spectral Library Version 7, as one archive
-	// naturalearth   Natural Earth's land outlines at 1:50m, as GeoJSON
-	// chroma         the colourways in janearc/chroma, listed by GitHub
-	// gaia           Gaia DR3's stars with a radial velocity, as a job
-	// gaia-near      Gaia DR3's every source in a circle, as a job
-	// gaia-rv        Gaia DR3's radial velocities in a circle, judged
-	// gaia-distance  Bailer-Jones' distances for Gaia's sources in a circle
-	// apogee         APOGEE DR17's allStar: each star's parameters and abundances
-	// galah          GALAH DR4's allstar: each star's parameters and abundances
-	// bsc5           the Yale Bright Star Catalogue, naked-eye stars
-	// sdssv          SDSS-V DR19's BOSS spectra, as SkyServer lists them
-	// lamost         LAMOST DR10's low and medium resolution spectra, by TAP
-	// keck           the Keck Observatory Archive's HIRES frames and spectra
-	// astronn        astroNN's APOGEE DR17 ages, distances and orbits
-	// starhorse      StarHorse's APOGEE DR17 masses, distances and ages
-	// tess           TESS's light curves at MAST, QLP's among them
-	// spherex        SPHEREx's spectral images at IRSA, cut round a place
-	// plates         the Digitized Sky Survey's Palomar and UK Schmidt plates
-	// k2             K2's light curves and full-frame images at MAST
-	// dasch          DASCH DR7's plate light curves, from Starglass
-	// dasch-pages    DASCH DR7's own pages the dasch adapter was read from
-	// usno           the US Naval Observatory's pages celestial reads
-	// soniakeys      Sonia Keys's Meeus tests, to check against, not derive
-	// horizons       JPL Horizons: the sun, earth and moon as Webb sees them
+	// chandra          Chandra's primary products: events, field of view, aspect
+	// nustar           NuSTAR's cleaned events, for both focal plane modules
+	// glimpse          Spitzer GLIMPSE II mosaics, in IRAC's four bands
+	// galcen_psc       IRSA's Galactic Center IRAC catalog, as CSV
+	// hpsgc            the HST/NICMOS Paschen-alpha survey of the Galactic Centre
+	// meerkat          MeerKAT's Galactic Centre mosaic at 1.28 GHz
+	// ppmap            Hi-GAL PPMAP maps of dust column density and temperature
+	// hips             a hips2fits cutout of any HiPS survey
+	// bluemarble       NASA's Blue Marble, July 2004, and Black Marble 2016
+	// usgs             the USGS Spectral Library Version 7, as one archive
+	// naturalearth     Natural Earth's land outlines at 1:50m, as GeoJSON
+	// chroma           the colourways in janearc/chroma, listed by GitHub
+	// gaia             Gaia DR3's stars with a radial velocity, as a job
+	// gaia-near        Gaia DR3's every source in a circle, as a job
+	// gaia-rv          Gaia DR3's radial velocities in a circle, judged
+	// gaia-distance    Bailer-Jones' distances for Gaia's sources in a circle
+	// apogee           APOGEE DR17's allStar: each star's parameters and abundances
+	// galah            GALAH DR4's allstar: each star's parameters and abundances
+	// bsc5             the Yale Bright Star Catalogue, naked-eye stars
+	// sdssv            SDSS-V DR19's BOSS spectra, as SkyServer lists them
+	// lamost           LAMOST DR10's low and medium resolution spectra, by TAP
+	// keck             the Keck Observatory Archive's HIRES frames and spectra
+	// astronn          astroNN's APOGEE DR17 ages, distances and orbits
+	// starhorse        StarHorse's APOGEE DR17 masses, distances and ages
+	// tess             TESS's light curves at MAST, QLP's among them
+	// spherex          SPHEREx's spectral images at IRSA, cut round a place
+	// plates           the Digitized Sky Survey's Palomar and UK Schmidt plates
+	// k2               K2's light curves and full-frame images at MAST
+	// dasch            DASCH DR7's plate light curves, from Starglass
+	// dasch-pages      DASCH DR7's own pages the dasch adapter was read from
+	// usno             the US Naval Observatory's pages celestial reads
+	// soniakeys        Sonia Keys's Meeus tests, to check against, not derive
+	// horizons         JPL Horizons: the sun, earth and moon as Webb sees them
+	// ntrs             NASA's Technical Reports Server, by words
+	// refractiveindex  the refractiveindex.info database, optical constants by wavelength
+	// nistxray         NIST's X-Ray Mass Attenuation Coefficients (SRD 126), by page
 }
 
 // The catalogue asks nothing until its rows are fetched, so the example

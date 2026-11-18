@@ -1,0 +1,25 @@
+# numbers.yaml: how the dasch adapter asks Harvard's Starglass API, which
+# gives its public tier no numbers of its own. The web package asks
+# gently by these. A number this file does not name, the tries, the
+# opens and the backoff, is the web package's own, in its numbers.yaml.
+# The sources are in sources.yaml.
+
+numbers:
+  - name: dasch-pace
+    value: 1
+    unit: seconds
+    says: the least time from the start of one request to Starglass to the start of the next. Starglass says its public tier has a "lower" rate limit than its full one, and gives no number for either, so one a second was picked for review 018 and is kept
+    kind: picked
+    by: celestial-data's dasch package, 2026-11-09, review 018
+  - name: dasch-rest-unsaid
+    value: 300
+    unit: seconds
+    says: how long Starglass is left alone after it asked us to stop without a Retry-After that says how long. Its pages give no number for this, and five minutes is what arXiv's adapter picked
+    kind: picked
+    by: celestial-data's dasch package, 2026-11-09, as arXiv's adapter picked it
+  - name: dasch-repeats-posts
+    value: 1
+    unit: 1 for yes, 0 for no
+    says: whether a request to Starglass that carries a body may be sent again after a failure with no word from it, such as a timeout. Yes. Every request this adapter sends is a POST only because it carries a JSON body, and only asks a question; the two endpoints it uses are described on DASCH's DR7 web APIs page as "Given a sky position ... obtain a table of DASCH sources" (querycat) and "Obtain the lightcurve of the specified source" (lightcurve). Nothing is written or started by either, so asking one twice costs a second answer and no more. The page does not say in so many words that the endpoints are safe to repeat; that is read from what they are said to do, and a reader who knows better should set this to 0
+    kind: picked
+    by: celestial-data's dasch package, 2026-11-11, from the DR7 web APIs page kept in cited-sources

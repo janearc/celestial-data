@@ -314,7 +314,8 @@ var widths = map[int]int64{8: 1, 16: 2, 32: 4, 64: 8, -32: 4, -64: 8}
 // The axes a primary array may have, and the cards that say them, each
 // defined by the FITS standard, section 4.4.1.1.
 const (
-	mostAxes = 999 // defined by the FITS standard: NAXIS is 999 at most
+	// mostAxes is defined by the FITS standard: at most 999 axes.
+	mostAxes = 999
 	naxis    = "NAXIS"
 )
 
@@ -411,8 +412,9 @@ func header(body io.Reader, most int) (map[string]string, int, error) {
 		if bytes.Contains(block, []byte(noPlate)) {
 			return nil, nothing, errNoPlate
 		}
-		return nil, nothing, errors.New("the answer is neither a FITS " +
-			"file nor the page that says there is no plate")
+		return nil, nothing, errors.New(
+			"the answer is neither a FITS " +
+				"file nor the page that says there is no plate")
 	}
 	cards := map[string]string{}
 	for read := firstBlock; ; read++ {
@@ -424,15 +426,17 @@ func header(body io.Reader, most int) (map[string]string, int, error) {
 			return cards, read, nil
 		}
 		if read == most {
-			return nil, nothing, fmt.Errorf("no END card in %d blocks",
+			return nil, nothing, fmt.Errorf(
+				"no END card in %d blocks",
 				most)
 		}
 		if block, err = next(body); err != nil {
 			return nil, nothing, err
 		}
 		if len(block) < blockSize {
-			return nil, nothing, errors.New("the header ends before " +
-				"its END card")
+			return nil, nothing, errors.New(
+				"the header ends before " +
+					"its END card")
 		}
 	}
 }
@@ -461,7 +465,8 @@ func ended(block []byte, cards map[string]string) (bool, error) {
 		if card[keyEnd:valueAt] == equals {
 			said, err := value(card[valueAt:])
 			if err != nil {
-				return false, fmt.Errorf("card %s: %w", key, err)
+				return false, fmt.Errorf("card %s: %w",
+					key, err)
 			}
 			cards[key] = said
 		}

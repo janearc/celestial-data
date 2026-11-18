@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -33,7 +34,10 @@ const adsPage = "Searches NASA's Astrophysics Data System for the words " +
 	"secrets' config, or from the file ADS_SESSION names: where " +
 	"celestial-data-secrets ads-login keeps it, so a search asks no " +
 	"one. A run sends one request, and none more once ADS asks us to " +
-	"stop."
+	"stop: it says until when, and no run asks again until then. " +
+	"The wait and the pace are kept in the user's cache folder, in " +
+	"celestial-data/ads-gate. --i-mean-it asks ADS anyway, and says " +
+	"first what ADS asked for."
 
 // fewestPapers is the fewest papers a search may ask for. It's defined:
 // a search of none asks nothing.
@@ -94,15 +98,92 @@ const noHome = "ads finds the token under the home HOME names, or " +
 const noTokenKept = "no ads token is kept in %s: run " +
 	"celestial-data-secrets ads-login once to keep it"
 
-// searchADS asks ADS once with the token, and says what it found.
+// searchADS asks ADS once with the token, through ADS's gentle, and says
+// what it found. The gentle's record is put away when the search is done,
+// however it went.
 func (tool command) searchADS(call pzm.Call, token, query string,
 	most int) error {
 	asker, err := tool.adsAsker()
 	if err != nil {
 		return err
 	}
+	gentle, asker, err := tool.adsGentle(call, asker)
+	if err != nil {
+		return err
+	}
 	found, err := ads.Search(context.Background(), asker, token, query,
 		most, agent)
+	return errors.Join(tool.adsSaid(call, found, err), adsLetGo(gentle))
+}
+
+// adsRecordName is what ADS's record is named by, so its file is
+// ads-gate beside arxiv-gate. It's defined: the record's host name.
+const adsRecordName = "ads"
+
+// adsGentle wraps the asker in ADS's gentle: paced, and left alone when
+// ADS asks. Its shared record keeps one pace and any stop across runs.
+// adsLetGo puts the record away.
+//
+// A command with no hosts, as in a test, asks as it is, and there is no
+// gentle to let go.
+func (tool command) adsGentle(call pzm.Call, asker ads.Doer) (*web.Gentle,
+	ads.Doer, error) {
+	if tool.hosts == nil {
+		return nil, asker, nil
+	}
+	// the clock and the source of randomness are here, which is all it
+	// refuses; the numbers are the package's own, and its tests read them
+	clock := tool.clockOf()
+	gentle, _ := ads.NewGentle(clock, web.Unix())
+	gentle.Say(tool.errs)
+	if call.On(insistFlag) {
+		if err := gentle.Insist(tool.errs); err != nil {
+			return nil, nil, err
+		}
+	}
+	if err := tool.adsHold(gentle); err != nil {
+		return nil, nil, err
+	}
+	// the doer and the gentle are here, which is all it refuses; the
+	// reset ADS gives is read first, so a stop is kept until it
+	through, _ := web.Through(ads.Resetting(asker, clock), gentle)
+	return gentle, through, nil
+}
+
+// adsHold has ADS's gentle keep its record in ADS's folder, shared with
+// any other run. With no folder, nothing is kept.
+func (tool command) adsHold(gentle *web.Gentle) error {
+	folder := tool.adsFolder()
+	if folder == "" {
+		return nil
+	}
+	return gentle.Hold(web.RecordPath(folder, adsRecordName))
+}
+
+// adsFolder is where ADS's record is kept: beside the record a test
+// gives, or celestial-data's folder of the user's cache. It is nothing
+// when the user has no cache folder, and then none is kept.
+func (tool command) adsFolder() string {
+	if tool.record != "" {
+		return filepath.Dir(tool.record)
+	}
+	return cacheFolder()
+}
+
+// adsLetGo puts a gentle's record away, so the next run keeps its pace
+// and its waits. A search with no gentle has none.
+func adsLetGo(gentle *web.Gentle) error {
+	if gentle == nil {
+		return nil
+	}
+	return gentle.Release()
+}
+
+// adsSaid says what a search found, or why it did not. A stop of ADS's
+// own, as a bare client gives one, says nothing more was asked; a stop of
+// the gentle's names --i-mean-it.
+func (tool command) adsSaid(call pzm.Call, found *ads.Found,
+	err error) error {
 	var asked *ads.Stopped
 	if errors.As(err, &asked) {
 		when := until(asked.Reset())
@@ -110,7 +191,7 @@ func (tool command) searchADS(call pzm.Call, token, query string,
 			"was asked", when)
 	}
 	if err != nil {
-		return err
+		return nameFlag(err)
 	}
 	out, papers := call.Out(), found.Papers()
 	fmt.Fprintf(out, "%d papers match; the newest %d:\n", found.Count(),

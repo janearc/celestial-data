@@ -146,19 +146,29 @@ func (flags Flags) Has(bit uint) bool { return flags&(set<<bit) != none }
 
 // The bits of ASPCAPFLAG a star's fit is judged by.
 const (
-	MetalsWarn      = 3  // defined: M_H_WARN
-	StarWarn        = 7  // defined: STAR_WARN, set with any warning
-	MetalsBad       = 19 // defined: M_H_BAD
-	StarBad         = 23 // defined: STAR_BAD, set with any bad, a grid edge's among them
-	MultipleSuspect = 41 // defined: MULTIPLE_SUSPECT, likely a composite spectrum
+	MetalsWarn = 3  // defined: M_H_WARN
+	StarWarn   = 7  // defined: STAR_WARN, set with any warning
+	MetalsBad  = 19 // defined: M_H_BAD
+	StarBad    = 23 // defined: STAR_BAD, set with any bad, a grid edge
+	// among them.
+	// MultipleSuspect is defined: MULTIPLE_SUSPECT, likely a composite
+	// spectrum.
+	MultipleSuspect = 41
 )
 
 // The bits of an element's flag, ELEMFLAG's.
 const (
-	GridEdgeBad     = 0 // defined: GRIDEDGE_BAD, within an eighth of a grid step of its edge
-	CalibrationBad  = 1 // defined: CALRANGE_BAD, outside the calibrated range
-	GridEdgeWarn    = 8 // defined: GRIDEDGE_WARN, within a grid step of its edge
-	CalibrationWarn = 9 // defined: CALRANGE_WARN, where the calibration may not hold
+	// GridEdgeBad is defined: GRIDEDGE_BAD, within an eighth of a grid
+	// step of its edge.
+	GridEdgeBad = 0
+	// CalibrationBad is defined: CALRANGE_BAD, outside the calibrated
+	// range.
+	CalibrationBad = 1
+	// GridEdgeWarn is defined: GRIDEDGE_WARN, within a grid step of
+	// its edge.
+	GridEdgeWarn    = 8
+	CalibrationWarn = 9 // defined: CALRANGE_WARN, where the calibration
+	// may not hold.
 )
 
 // Duplicate is the bit of EXTRATARG set on a row that is not its

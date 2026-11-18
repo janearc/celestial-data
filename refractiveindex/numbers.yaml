@@ -1,0 +1,14 @@
+# numbers.yaml: the one number the refractiveindex package reads from the
+# database's own release, not from our own choosing. The sources are in
+# sources.yaml.
+
+numbers:
+  - name: archive-size
+    value: 13440092
+    unit: bytes
+    says: the length of the database's release zip, rii-database-2026-05-24.zip, as GitHub served it
+    kind: measured
+    source:
+      key: rii-release-archive
+      where: the length of the file as fetched
+      text: "13440092 bytes"

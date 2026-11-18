@@ -31,7 +31,7 @@ func (tool command) declareEarth(declared *pzm.Tool) {
 		pzm.Value("point", verb.NoShort,
 			"latitude,longitude in degrees"),
 		pzm.Value("text", verb.NoShort,
-			"search NASA GIBS layers by name"),
+			"filter GIBS layers or choose a water parameter"),
 		pzm.Value("most", verb.NoShort,
 			"maximum catalog results, 1 to 50"),
 	}

@@ -71,7 +71,8 @@ func New(get web.Web, most int) (*Archive, error) {
 		return nil, err
 	}
 	if most < least {
-		return nil, base.Refuse("needs at least one spectrum a search, "+
+		return nil, base.Refuse("needs at least one spectrum a "+
+			"search, "+
 			"not %d", most)
 	}
 	return &Archive{base: base, most: most}, nil
@@ -114,10 +115,12 @@ func (archive *Archive) low(near *celestialdata.Near) (
 		class, classErr := table.Text(at, "class")
 		subclass, subclassErr := table.Text(at, "subclass")
 		snr, snrErr := table.Number(at, "snrr")
-		if err := errors.Join(classErr, subclassErr, snrErr); err != nil {
+		if err := errors.Join(classErr, subclassErr,
+			snrErr); err != nil {
 			return nil, archive.base.Wrap(err)
 		}
-		about := fmt.Sprintf("a LAMOST low-resolution spectrum, %s %s, "+
+		about := fmt.Sprintf("a LAMOST low-resolution "+
+			"spectrum, %s %s, "+
 			"S/N %.1f in r", class, subclass, snr)
 		product, err := archive.spectrum(table, at, lowFiles, about)
 		if err != nil {
@@ -143,7 +146,8 @@ func (archive *Archive) medium(near *celestialdata.Near) (
 		if err != nil {
 			return nil, archive.base.Wrap(err)
 		}
-		about := fmt.Sprintf("a LAMOST medium-resolution spectrum, both "+
+		about := fmt.Sprintf("a LAMOST medium-resolution "+
+			"spectrum, both "+
 			"arms, S/N %.1f in the red", snr)
 		product, err := archive.spectrum(table, at, mediumFiles, about)
 		if err != nil {

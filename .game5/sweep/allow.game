@@ -1,0 +1,11 @@
+allow chroma/chroma.go author
+allow chroma/chroma_test.go author
+
+# the SPHEREx pipeline's own ids for the calibration files it used, in
+# HISTORY cards of a cutout recorded as it came
+allow spherex/testdata/cutout-qr3-D2-image.fits uuids
+
+# STScI's own help address, in the pages its cutout service answers
+# when a survey has no plate, recorded as they came
+allow plates/testdata/noplate-quickv.html emails
+allow plates/testdata/noplate-poss2ukstu_blue.html emails

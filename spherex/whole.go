@@ -72,7 +72,7 @@ const (
 	psfQR3 = "EPSF"
 	// wavelengths is the wavelength table, last.
 	wavelengths = "WCS-WAVE"
-	// imageKind and tableKind are the XTENSION of an image and of a
+	// imageKind and tableKind are the extension type of an image and of a
 	// binary table. They're defined by the FITS standard, section 7.
 	imageKind = "IMAGE"
 	tableKind = "BINTABLE"
@@ -207,9 +207,9 @@ const (
 	// twoMore is the units after the four planes: the PSF and the
 	// wavelengths. Defined.
 	twoMore = 2
-	// noAxes is a cutout's primary's NAXIS: it holds no array.
+	// noAxes is a cutout's primary's axis count: it holds no array.
 	noAxes = "0"
-	// psfAxes is QR2's PSF's NAXIS: a stack of images, three axes.
+	// psfAxes is QR2's PSF's axis count: a stack of images, three axes.
 	psfAxes = "3"
 )
 

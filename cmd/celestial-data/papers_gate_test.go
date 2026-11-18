@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"os"
@@ -150,32 +151,38 @@ func TestPapersKeepsTheRecordInTheUsersCache(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", "")
 	var tool command
-	path, err := tool.recordPath()
+	path := tool.recordPath()
 	cache, cacheErr := os.UserCacheDir()
 	want := filepath.Join(cache, "celestial-data", "arxiv-gate")
-	if err != nil || cacheErr != nil || path != want {
-		t.Errorf("%q, %v, %v", path, err, cacheErr)
+	if cacheErr != nil || path != want {
+		t.Errorf("%q, %v", path, cacheErr)
 	}
 }
 
-// Anti-test: with no cache folder for the user, papers says it has
-// nowhere to keep arXiv's pace. (pzm itself refuses to run without a
-// home, so this is asked of the command directly.)
-func TestPapersRefusesWithNowhereToKeepThePace(t *testing.T) {
+// With no cache folder, papers says no wait will carry over and still
+// asks through its gate in memory. pzm requires HOME, so its components
+// are called directly here, including the fetching announcement.
+func TestPapersWithNoCacheAsksWithAnAnnouncement(t *testing.T) {
 	t.Setenv("HOME", "")
 	t.Setenv("XDG_CACHE_HOME", "")
-	says := "keeps arXiv's pace between runs in the user's cache " +
-		"folder, and finds none"
 	var bare command
-	path, err := bare.recordPath()
-	if path != "" || err == nil || !strings.Contains(err.Error(), says) {
-		t.Errorf("%q, %v", path, err)
+	path := bare.recordPath()
+	if path != "" {
+		t.Errorf("%q", path)
 	}
 	tool := arxivOver(t, "", numbersRaw)
+	var says bytes.Buffer
+	tool.errs, tool.noCache = &says, true
+	tool.saysNoCache()
+	tool.search.EXPECT().RawSearch(gomock.Any(), query("1809.03507")).
+		Return(reply(http.StatusOK, "two-papers.xml", ""), nil)
+	tool.get.EXPECT().Get(bennettPDF).DoAndReturn(served)
 	run := &papersRun{out: io.Discard, into: t.TempDir()}
-	err = tool.fetchPapers(run, []arxiv.ID{parsedID(t, "1809.03507")})
-	if err == nil || !strings.Contains(err.Error(), says) {
-		t.Errorf("%v", err)
+	err := tool.fetchPapers(run, []arxiv.ID{parsedID(t, "1809.03507")})
+	if err != nil || !strings.Contains(says.String(),
+		"no cache folder was found, so waits will not be kept between runs") ||
+		run.fetched != 1 {
+		t.Errorf("%v, fetched %d, said %q", err, run.fetched, says.String())
 	}
 }
 

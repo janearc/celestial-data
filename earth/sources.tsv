@@ -62,3 +62,7 @@ si_arso	Slovenia: Arso lidar (open data)	http://gis.arso.gov.si/evode/
 us_3dep	United States: 3Dep lidar (open data)	https://opentopography.org/news/api-access-usgs-3dep-rasters-now-available
 us_cnmi	United States: Cnmi lidar (open data)	https://www.fisheries.noaa.gov/inport/item/66821
 usgs-3dep	USGS 3DEP lidar point clouds (The National Map)	https://tnmaccess.nationalmap.gov/api/v1/products
+terrain-tiles	Mapzen Terrain Tiles	https://registry.opendata.aws/terrain-tiles/
+noaa-etopo	NOAA ETOPO 2022 global relief	https://www.ncei.noaa.gov/products/etopo-global-relief-model
+terrain-tiles-offshore	Mapzen offshore relief tiles	https://www.mapzen.com/blog/terrain-tile-service/
+usgs-water-quality	USGS latest continuous water observations	https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous

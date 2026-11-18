@@ -1,0 +1,6 @@
+# Authored search rectangle around Hawaii island, not a coastline measurement.
+bbox: "-156.2,18.8,-154.7,20.4"
+datasets: "National Elevation Dataset (NED) 1/3 arc-second"
+prodFormats: GeoTIFF
+max: "100"
+outputFormat: JSON

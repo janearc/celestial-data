@@ -34,11 +34,16 @@ numbers:
     kind: picked
     by: celestial-data's command, 2026-11-02, as the map fetched for the grissom viewer was
   - name: wait
-    value: 30
+    value: 120
     unit: seconds
-    says: how long an archive is given to connect and begin its answer; HEASARC took several seconds to begin on 2026-11-01, and the Chandra archive seventeen to answer a HEAD
+    says: >-
+      how long an archive is given to connect and begin its answer;
+      HEASARC took several seconds to begin on 2026-11-01, and Chandra
+      seventeen seconds to answer a HEAD. SkyView's whole-sky IRIS 100
+      query took 74 seconds to send its first byte on 2026-11-02,
+      exceeding the earlier 30-second limit
     kind: picked
-    by: celestial-data's command, 2026-11-02
+    by: celestial-data's command, 2026-11-02, from the live Grissom download check
   - name: dasch-whole
     value: 60
     unit: seconds
@@ -81,3 +86,27 @@ numbers:
     says: how long the ads verb gives ADS for its whole answer, from asking to the last byte; a page of a few dozen papers is a few kilobytes of JSON, so half a minute is generous, and a search that hangs is let go
     kind: picked
     by: celestial-data's command, 2026-11-06
+  - name: ntrs-most
+    value: 20
+    unit: citations
+    says: how many citations the ntrs verb shows of a search, in NTRS's order; a page to read at once, from one request however many match. NTRS gives at most a hundred
+    kind: picked
+    by: celestial-data's command, 2026-11-11
+  - name: ntrs-whole
+    value: 30
+    unit: seconds
+    says: how long the ntrs and ntrs-fetch verbs give NTRS for the whole of an answer to a search or a citation, from asking to the last byte; a page of citations is some tens of kilobytes of JSON, so half a minute is generous, and a request that hangs is let go. A PDF is not held to it, but to ntrs-pdf-whole
+    kind: picked
+    by: celestial-data's command, 2026-11-11
+  - name: ntrs-pdf-whole
+    value: 1800
+    unit: seconds
+    says: how long ntrs-fetch gives NTRS for the whole of one PDF, from asking to the last byte, half an hour; a large scanned report may be some hundreds of megabytes, a guess not yet measured, and at that size half an hour allows a slow link, while a download that stalls for ever is let go
+    kind: picked
+    by: celestial-data's command, 2026-11-11
+  - name: ntrs-pdf-most
+    value: 2147483648
+    unit: bytes
+    says: the most bytes one PDF fetched by ntrs-fetch may hold, 2 GiB. A file that says it is longer is refused unread, and one that comes longer is cut off and not kept, so a server that never stops cannot fill the disk. Picked well above a large scanned report, a guess not yet measured
+    kind: picked
+    by: celestial-data's command, 2026-11-11

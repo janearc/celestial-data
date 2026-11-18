@@ -1,0 +1,2 @@
+# Bounded native-grid NOAA Hawaii CRM WCS retention, no renderer/GPU checks.
+check-noaacrm . :: go test -p=1 ./noaacrm

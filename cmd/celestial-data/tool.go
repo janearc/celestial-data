@@ -2,14 +2,16 @@ package main
 
 import (
 	_ "embed"
+	"fmt"
 	"io"
 	"os"
 
-	"github.com/janearc/celestial-data"
+	celestialdata "github.com/janearc/celestial-data"
 	"github.com/janearc/celestial-data/ads"
 	"github.com/janearc/celestial-data/arxiv"
 	"github.com/janearc/celestial-data/dasch"
 	"github.com/janearc/celestial-data/gaia"
+	"github.com/janearc/celestial-data/ntrs"
 	"github.com/janearc/celestial-data/web"
 	"github.com/janearc/puzzlemouth/pzm"
 	"github.com/janearc/puzzlemouth/verb"
@@ -39,42 +41,90 @@ const agent = "celestial-data"
 // ask is what ads asks ADS through. A test gives it; run gives the
 // network.
 //
-// curves is what dasch asks DASCH's API through, to find a place's
+// curves is what dasch asks the archive's API through, to find a place's
 // sources and to fetch their light curves. A test gives it; run gives
 // the network.
+//
+// reports is what ntrs and ntrs-fetch ask NTRS through, for its
+// searches and its citations. A test gives it; run gives the network.
+//
+// hosts are the gentles of the hosts the web asks, which keep their
+// records in the cache folder; run gives them, and a command with none
+// asks its web as it is.
+//
+// errs is the tool's standard error, where an override says what a host
+// asked for, and where a host says what it cannot keep; run gives it.
+// insistent is whether papers was given the override, set by the verb for
+// its own run.
+//
+// noCache is whether the user has no cache folder, so no record of waits
+// is kept between runs; run sets it.
 type command struct {
-	get    web.Web
-	picked *celestialdata.Measured
-	lookup func(name string) string
-	sets   map[string]maker
-	signed session
-	search arxiv.Searcher
-	clock  arxiv.Clock
-	record string
-	ask    ads.Doer
-	curves dasch.Doer
+	get     web.Web
+	picked  *celestialdata.Measured
+	lookup  func(name string) string
+	sets    map[string]maker
+	signed  session
+	search  arxiv.Searcher
+	clock   arxiv.Clock
+	record  string
+	ask     ads.Doer
+	curves  dasch.Doer
+	reports ntrs.Doer
+	hosts   *web.Hosts
+	errs    io.Writer
+	noCache bool
+
+	insistent bool
 }
 
 // run runs celestial-data with its words, input and output given. Its archives
-// are asked through the network, with the waits it picks. It reads the
-// process's environment.
+// are asked through the network, with the waits it picks, each host one
+// request at a time at a pace. It reads the process's environment. It
+// refuses to start when a host's numbers cannot be read.
 func run(args []string, in io.Reader, out, errs io.Writer) int {
 	picked := celestialdata.NewMeasured(numbersFile, numbersRaw)
-	tool := command{picked: picked, lookup: os.Getenv,
-		sets: standardSets()}
+	folder := cacheFolder()
+	hosts, err := hostsOf(folder)
+	if err != nil {
+		fmt.Fprintf(errs, "celestial-data: %v\n", err)
+		return exitFailed
+	}
+	tool := command{
+		picked: picked, lookup: os.Getenv,
+		sets: standardSets(), hosts: hosts, noCache: folder == "",
+	}
 	return tool.run(args, in, out, errs)
 }
 
-// run runs the command through pzm.
+// run runs the command through pzm, and puts away the hosts' records
+// when it is done. The hosts say on errs what they cannot keep.
 func (tool command) run(args []string, in io.Reader, out,
-	errs io.Writer) int {
-	return tool.declared().RunWith(args, in, out, errs)
+	errs io.Writer,
+) int {
+	tool.errs = errs
+	if tool.hosts != nil {
+		tool.hosts.Say(errs)
+	}
+	code := tool.declared().RunWith(args, in, out, errs)
+	return tool.finish(code, errs)
 }
 
-// web is the web the archives are asked through. Commands given none
-// ask the network and wait as long as the numbers say, with the gaia
-// archive's session when GAIA_SESSION names one.
+// web is the web the archives are asked through: the one bare gives, asked
+// through the gentles of its hosts.
 func (tool command) web() (web.Web, error) {
+	bare, err := tool.bare()
+	if err != nil {
+		return nil, err
+	}
+	return tool.gentle(bare), nil
+}
+
+// bare is the web with no pace of its own. Commands given none ask the
+// network and wait as long as the numbers say, with the gaia archive's
+// session when GAIA_SESSION names one. papers asks through this one, since
+// arXiv has a gate of its own.
+func (tool command) bare() (web.Web, error) {
 	if tool.get != nil {
 		return tool.get, nil
 	}
@@ -132,6 +182,9 @@ var (
 	// and keeps the gate's record in the user's cache folder.
 	fetchingPapers = bringing("the folder --into names, and the " +
 		"gate's record in the user's cache folder")
+	// fetchingNTRS is a verb that brings PDFs home from NTRS and
+	// replaces none.
+	fetchingNTRS = bringing("the folder --into names")
 )
 
 // bringing is the facts of a verb that brings files home from the
@@ -155,28 +208,74 @@ func (tool command) declared() *pzm.Tool {
 		tool.archivesVerb)
 	declared.Verb("find", verb.NoShort, "names what archives hold near a "+
 		"place", findPage, "Example_find", asking, tool.findVerb,
-		searching()...)
+		append(searching(), insisting()...)...)
 	into := pzm.Value("into", verb.NoShort, "the folder to bring files "+
 		"into")
+	declared.Verb("terrain-index", verb.NoShort, "keeps the USGS Hawaii "+
+		"elevation catalogue",
+		"Fetch the USGS 1/3 arc-second elevation "+
+			"index for Hawaii island.",
+		"Example_terrainIndex", fetching,
+		tool.fetchingWithOverride(tool.terrainIndex),
+		append([]pzm.Flag{into}, insisting()...)...)
+	declared.Verb("terrain-fetch", verb.NoShort, "brings retained USGS "+
+		"terrain products home",
+		"Fetch terrain and metadata from a "+
+			"retained National Map index.",
+		"Example_terrainFetch", fetching,
+		tool.fetchingWithOverride(tool.terrainFetch),
+		append([]pzm.Flag{into, pzm.Value("index", verb.NoShort,
+			"the retained National Map JSON catalogue")},
+			insisting()...)...)
 	fetchFlags := append(searching(), into,
 		pzm.Value("match", verb.NoShort, "only files whose name holds "+
 			"this"))
 	declared.Verb("fetch", verb.NoShort, "brings what archives hold near "+
 		"a place home", fetchPage, "Example_fetch", fetching,
-		tool.fetchVerb, fetchFlags...)
+		tool.announcing(tool.fetchVerb),
+		append(fetchFlags, insisting()...)...)
 	declared.Verb("fetch-set", verb.NoShort, "brings the files of a "+
 		"named set home", fetchSetPage, "Example_fetchSet", fetchingSet,
-		tool.setVerb, into)
+		tool.announcing(tool.setVerb),
+		append([]pzm.Flag{into}, insisting()...)...)
 	declared.Verb("papers", verb.NoShort, "brings papers home from "+
 		"arXiv, gently", papersPage, "Example_papers", fetchingPapers,
-		tool.papersVerb, pzm.Value("into", verb.NoShort, "the folder "+
-			"to bring papers into"), pzm.Value("list", verb.NoShort,
-			"a file of ids, one a line; what follows a # is not "+
-				"read"))
+		tool.announcing(tool.papersVerb),
+		append([]pzm.Flag{
+			pzm.Value("into",
+				verb.NoShort, "the folder to bring papers into"),
+			pzm.Value("list", verb.NoShort, "a file of ids, one a "+
+				"line; what follows a # is not read"),
+		},
+			insisting()...)...)
 	declared.Verb("ads", verb.NoShort, "searches NASA's Astrophysics "+
 		"Data System for papers", adsPage, "Example_ads", searchingADS,
-		tool.adsVerb, pzm.Value("most", verb.NoShort, "how many papers "+
-			"to show, the newest first; ads-most when none"))
+		tool.adsVerb, append([]pzm.Flag{pzm.Value("most", verb.NoShort,
+			"how many papers to show, the newest first; ads-most "+
+				"when none")}, insisting()...)...)
+	declared.Verb("ntrs", verb.NoShort, "searches NASA's Technical "+
+		"Reports Server for citations", ntrsPage, "Example_ntrs",
+		asking, tool.ntrsVerb, ntrsFlags()...)
+	declared.Verb("ntrs-fetch", verb.NoShort, "brings the PDFs of "+
+		"NTRS citations home, gently", ntrsFetchPage,
+		"Example_ntrsFetch", fetchingNTRS,
+		tool.announcing(tool.ntrsFetchVerb),
+		ntrsFetchFlags()...)
+	declared.Verb("noaa-crm", verb.NoShort, "brings one bounded piece of "+
+		"NOAA's Hawaii Coastal Relief Model home", crmPage,
+		"Example_crm",
+		fetching, tool.fetchingWithOverride(tool.crmVerb),
+		append(crmFlags(), insisting()...)...)
+	declared.Verb("tiff", verb.NoShort, "reads a TIFF's first directory "+
+		"back", tiffPage, "Example_tiff", listing, tool.tiffVerb,
+		pzm.Value("file", verb.NoShort, "local TIFF file"))
+	declared.Verb("documents", verb.NoShort, "brings a catalogue's named "+
+		"primary documents home", documentsPage, "Example_documents",
+		fetching, tool.fetchingWithOverride(tool.documentsVerb),
+		append(documentsFlags(), insisting()...)...)
+	declared.Verb("spectrum", verb.NoShort, "measures a star in the "+
+		"SPHEREx cutouts fetched", spectrumPage, "Example_spectrum",
+		measuring, tool.spectrumVerb, spectrumFlags()...)
 	tool.declareEarth(declared)
 	declared.Bare("archives")
 	return declared
