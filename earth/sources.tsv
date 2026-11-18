@@ -1,0 +1,64 @@
+asf	ASF UAVSAR interferograms	https://api.daac.asf.alaska.edu/services/search/param
+at_bev	Austria: Bev lidar (open data)	https://data.bev.gv.at/geonetwork/srv/atom/describe/service
+at_osttirol	Austria: Osttirol lidar (open data)	https://www.tirol.gv.at/sicherheit/geoinformation/geodaten-tiris/laserscandaten/
+at_tirol	Austria: Tirol lidar (open data)	https://www.tirol.gv.at/sicherheit/geoinformation/geodaten-tiris/laserscandaten/
+au_ga	Australia: Ga lidar (open data)	https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/22be4b55-2466-4320-e053-10a3070a5236
+au_nsw	Australia: Nsw lidar (open data)	https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer
+au_qld	Australia: Qld lidar (open data)	https://spatial-img.information.qld.gov.au/arcgis/rest/services/Elevation/QldDem/ImageServer
+be_flanders	Belgium: Flanders lidar (open data)	https://geo.api.vlaanderen.be/dhmv/wcs
+ca_nrcan	Canada: Nrcan lidar (open data)	https://datacube.services.geo.ca/stac/api/search
+ca_quebec	Canada: Quebec lidar (open data)	https://www.donneesquebec.ca/recherche/dataset/produits-derives-de-base-du-lidar
+carto	Carto basemap	https://carto.com/basemaps/
+ch_swisstopo	Switzerland: Swisstopo lidar (open data)	https://www.swisstopo.admin.ch/en/height-model-swissalti3d
+cz_cuzk	Czechia: Cuzk lidar (open data)	https://ags.cuzk.cz/geoprohlizec/?atom=dm5g
+data_gov	data.gov (US federal open data, CKAN)	https://catalog.data.gov/api/3/action/package_search
+de_bayern	Germany: Bayern lidar (open data)	https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=dgm1
+de_berlin	Germany: Berlin lidar (open data)	https://gdi.berlin.de/data/dgm1/atom
+de_brandenburg	Germany: Brandenburg lidar (open data)	https://inspire.brandenburg.de/services/el_dgm1_wcs?SERVICE=WCS&VERSION=2.0.1&REQUEST=GetCapabilities
+de_bw	Germany: Bw lidar (open data)	https://owsproxy.lgl-bw.de/owsproxy/wcs/WCS_INSP_BW_Hoehe_Coverage_DGM1?REQUEST=GetCapabilities&SERVICE=WCS&version=2.0.1
+de_hessen	Germany: Hessen lidar (open data)	https://inspire-hessen.de/raster/dgm1/ows?REQUEST=GetCapabilities&SERVICE=WCS&VERSION=2.0.1
+de_mv	Germany: Mv lidar (open data)	https://www.geodaten-mv.de/dienste/inspire_el_dgm_wcs?REQUEST=GetCapabilities&SERVICE=WCS&VERSION=2.0.1
+de_niedersachsen	Germany: Niedersachsen lidar (open data)	https://opengeodata.lgln.niedersachsen.de/
+de_nrw	Germany: Nrw lidar (open data)	https://www.opengeodata.nrw.de/produkte/geobasis/hm/dgm1_tiff/dgm1_tiff/
+de_rlp	Germany: Rlp lidar (open data)	https://geoshop.rlp.de/opendata-dgm1.html
+de_sh	Germany: Sh lidar (open data)	https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH/Service/serviceGeobasisdaten/geodatenService_Geobasisdaten_DGM
+de_st	Germany: St lidar (open data)	https://geodatenportal.sachsen-anhalt.de/ows_INSPIRE_LVermGeo_ATKIS_EL_DGM_WCS?REQUEST=GetCapabilities&SERVICE=WCS&VERSION=2.0.1
+de_thueringen	Germany: Thueringen lidar (open data)	https://geoportal.geoportal-th.de/dienste/atom_th_hoehendaten_dgm
+dk_datafordeler	Denmark: Datafordeler lidar (open data)	https://dataforsyningen.dk/data/4462
+ee_maaamet	Estonia: Maaamet lidar (open data)	https://geoportaal.maaamet.ee/
+es_cnig	Spain: Cnig lidar (open data)	https://servicios.idee.es/wcs-inspire/mdt?request=GetCapabilities&service=WCS
+es_euskadi	Spain: Euskadi lidar (open data)	https://www.geo.euskadi.eus/geoeuskadi/services/U11/WCS_KARTOGRAFIA/MapServer/WCSServer?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCapabilities
+es_icgc	Spain: Icgc lidar (open data)	https://www.icgc.cat/en/Geoinformation-and-Maps/Data-and-products/Digital-twins-Elevations
+es_navarra	Spain: Navarra lidar (open data)	https://www.navarra.es/es/web/geoportal/idena/servicios
+fi_maanmittauslaitos	Finland: Maanmittauslaitos lidar (open data)	https://www.maanmittauslaitos.fi/rajapinnat/api-avaimen-ohje
+fr_craig	France: Craig lidar (open data)	https://www.craig.fr/contenu/nuages-de-points-lidar
+fr_guadeloupe	France: Guadeloupe lidar (open data)	https://geoservices.ign.fr/lidarhd
+fr_ign	France: Ign lidar (open data)	https://data.geopf.fr/wfs/ows
+fr_reunion	France: Reunion lidar (open data)	https://geoservices.ign.fr/lidarhd
+gb_england	Great Britain: England lidar (open data)	https://environment.data.gov.uk/dataset/13787b9a-26a4-4775-8523-806d13af58fc
+gb_scotland	Great Britain: Scotland lidar (open data)	https://registry.opendata.aws/scottish-lidar/
+gb_wales	Great Britain: Wales lidar (open data)	https://datamap.gov.wales/maps/lidar-data-download/
+ie_gsi	Ireland: Gsi lidar (open data)	https://gsi.geodata.gov.ie/server/rest/services/Lidar
+it_emilia_romagna	Italy: Emilia Romagna lidar (open data)	https://geoportale.regione.emilia-romagna.it/catalogo/dati-cartografici/altimetria/layer-2
+it_piemonte	Italy: Piemonte lidar (open data)	https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:224de2ac-023e-441c-9ae0-ea493b217a8e
+it_sardegna	Italy: Sardegna lidar (open data)	https://www.sardegnageoportale.it/webgis/
+jp_gsi	Japan: Gsi lidar (open data)	https://maps.gsi.go.jp/development/ichiran.html#dem
+lu_act	Luxembourg: Act lidar (open data)	https://download.data.public.lu/resources/
+lv_lgia	Latvia: Lgia lidar (open data)	https://s3.storage.pub.lvdc.gov.lv/lgia-opendata/las/LGIA_OpenData_las_saites.txt
+nasa-gibs	NASA GIBS Worldview imagery	https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/wmts.cgi?SERVICE=WMTS&REQUEST=GetCapabilities
+nl_ahn	Netherlands: AHN elevation and lidar	https://www.ahn.nl/
+no_kartverket	Norway: Kartverket lidar (open data)	https://hoydedata.no/
+noaa	NOAA InPort	https://www.fisheries.noaa.gov/inport/
+nws	National Weather Service latest station observations	https://www.weather.gov/documentation/services-web-api
+nz_linz	New Zealand: Linz lidar (open data)	https://registry.opendata.aws/nz-elevation/
+open-meteo	Open-Meteo current conditions	https://open-meteo.com/en/docs
+opensky	OpenSky Network (live ADS-B flight state)	https://opensky-network.org/api/states/all
+overture	Overture Maps (buildings, places)	https://overturemaps.org/download/
+ph_taal	Philippines: Taal lidar (open data)	https://phillidar-dad.github.io/taal-open-lidar.html
+pl_gugik	Poland: Gugik lidar (open data)	https://mapy.geoportal.gov.pl/wss/service/PZGIK/NMT/GRID1/WCS/DigitalTerrainModelFormatTIFF?request=GetCapabilities&service=WCS
+pt_dgt	Portugal: Dgt lidar (open data)	https://cdd.dgterritorio.gov.pt/dgt-fe/catalogos
+se_lantmateriet	Sweden: Lantmateriet lidar (open data)	https://www.lantmateriet.se/sv/geodata/vara-produkter/produktlista/markhojdmodell-nedladdning/
+si_arso	Slovenia: Arso lidar (open data)	http://gis.arso.gov.si/evode/
+us_3dep	United States: 3Dep lidar (open data)	https://opentopography.org/news/api-access-usgs-3dep-rasters-now-available
+us_cnmi	United States: Cnmi lidar (open data)	https://www.fisheries.noaa.gov/inport/item/66821
+usgs-3dep	USGS 3DEP lidar point clouds (The National Map)	https://tnmaccess.nationalmap.gov/api/v1/products

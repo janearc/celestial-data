@@ -177,6 +177,7 @@ func (tool command) declared() *pzm.Tool {
 		"Data System for papers", adsPage, "Example_ads", searchingADS,
 		tool.adsVerb, pzm.Value("most", verb.NoShort, "how many papers "+
 			"to show, the newest first; ads-most when none"))
+	tool.declareEarth(declared)
 	declared.Bare("archives")
 	return declared
 }

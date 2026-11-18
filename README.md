@@ -302,6 +302,39 @@ alone reads, `-r--------`, is read. a token kept again is written to a
 new file and put in the old one's place, so a write that fails leaves
 the old token as it was.
 
+## earth sources
+
+`earth-sources` lists the terrestrial catalog. `earth-find` lists products
+and `earth-fetch` saves them under `--into/<source>/`. Each query names
+one source. Bounds are west, south, east, north in WGS84 degrees. Split
+a box at the antimeridian before asking. Points are latitude, longitude.
+
+```sh
+celestial-data earth-sources
+celestial-data earth-find usgs-3dep --bounds=-123,37,-122,38 --most 3
+celestial-data earth-find nasa-gibs --bounds=-123,37,-122,38 --text "Black Marble"
+celestial-data earth-fetch nws --point 37.8,-122.4 --into earth-data
+```
+
+| Source | Input | Product |
+| --- | --- | --- |
+| `usgs-3dep` | bounds | The National Map lidar point cloud files |
+| `nasa-gibs` | bounds, optional text filter | dated Worldview JPEG snapshots |
+| `asf` | bounds | public radar interferogram browse images |
+| `opensky` | bounds | one current state-vector JSON response |
+| `open-meteo` | point | one current-conditions JSON response with units |
+| `nws` | point | the nearest listed station's latest observation JSON |
+
+The three catalog adapters default to 10 results. Use `--most` to
+set a limit between 1 and 50. A dry fetch lists destinations without
+writing files. Catalog and station lookups still make their requests.
+
+OpenSky, Open-Meteo and NWS are sampled once per fetch. To keep several
+samples from the same query, use separate destination folders. Other
+entries from Kingfisher are visible as catalog references. The fixed
+2016 Black Marble image is available through `bluemarble` and `usgs`
+serves USGS Spectral Library Version 7.
+
 ## the archives
 
 each has an adapter in its own package.
