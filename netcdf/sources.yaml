@@ -1,0 +1,11 @@
+# sources.yaml: where the number in numbers.yaml was read. The length is
+# that of the file as fetched. Its sha256 is
+# f5d5bb82811e74179894a87e439acbb952eb692181570b97bcfbc9f61aa18890.
+# The file is one of Unidata's example netCDF files: surface fields for
+# July 2002 from the ECMWF 40-year reanalysis (ERA-40).
+
+sources:
+  - key: unidata-era40
+    title: "Unidata example netCDF file, ECMWF ERA-40 subset, July 2002"
+    from: https://archive.unidata.ucar.edu/software/netcdf/examples/ECMWF_ERA-40_subset.nc
+    fetched: 2026-11-14

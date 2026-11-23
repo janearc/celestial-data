@@ -6,9 +6,9 @@ require (
 	github.com/Epistemic-Technology/arxiv v1.0.1
 	github.com/janearc/celestial v0.0.10
 	github.com/janearc/puzzlemouth v0.1.3
-	// scigolib/netcdf at pull request 1's branch head, until it merges and there is a
-	// version to require.
-	github.com/scigolib/netcdf v0.0.0-20261114213206-11163b050643
+	// scigolib/netcdf at upstream's commit 5be112aa81c3 of 20 November
+	// 2026. Upstream has no tags; a tag, when it cuts one, replaces this.
+	github.com/scigolib/netcdf v0.0.0-20261120113335-5be112aa81c3
 	go.uber.org/mock v0.6.0
 	pgregory.net/rapid v1.3.0
 )

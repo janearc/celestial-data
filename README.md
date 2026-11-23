@@ -54,7 +54,11 @@ grissom
   `sgra/glimpse/`, the MeerKAT 1284 MHz Stokes I mosaic into
   `sgra/meerkat/`, and `l000_cdens.fits` into `sgra/ppmap/`. all of
   bluemarble, usgs and naturalearth into `earth/`. four whole-sky maps
-  from SkyView into `sky/`. every colourway the chroma archive lists
+  from SkyView into `sky/`. `ECMWF_ERA-40_subset.nc` (22,165,040
+  bytes, sha256
+  `f5d5bb82811e74179894a87e439acbb952eb692181570b97bcfbc9f61aa18890`:
+  ERA-40 surface fields for July 2002, classic netCDF, from Unidata's
+  examples) into `weather/`. every colourway the chroma archive lists
   into `colourways/`.
 
 ## how celestial-data asks a server

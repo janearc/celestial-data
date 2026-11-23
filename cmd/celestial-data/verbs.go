@@ -31,6 +31,7 @@ import (
 	"github.com/janearc/celestial-data/lamost"
 	"github.com/janearc/celestial-data/mast"
 	"github.com/janearc/celestial-data/naturalearth"
+	"github.com/janearc/celestial-data/netcdf"
 	"github.com/janearc/celestial-data/nistxray"
 	"github.com/janearc/celestial-data/ntrs"
 	"github.com/janearc/celestial-data/nustar"
@@ -159,6 +160,7 @@ var holdsByName = map[string]string{
 	"bluemarble":   "NASA's Blue Marble, July 2004, and Black Marble 2016",
 	"usgs":         "the USGS Spectral Library Version 7, as one archive",
 	"naturalearth": "Natural Earth's land outlines at 1:50m, as GeoJSON",
+	"netcdf":       "ECMWF ERA-40 surface fields, July 2002, as netCDF",
 	"chroma":       "the colourways in janearc/chroma, listed by GitHub",
 	"gaia":         "Gaia DR3's stars with a radial velocity, as a job",
 	"gaia-near":    "Gaia DR3's every source in a circle, as a job",
@@ -321,6 +323,8 @@ func known(get web.Web, with *settings) ([]celestialdata.Archive, error) {
 	asked.keep(spectra, err)
 	land, err := naturalearth.New()
 	asked.keep(land, err)
+	weather, err := netcdf.New()
+	asked.keep(weather, err)
 	colours, err := chroma.New(get)
 	asked.keep(colours, err)
 	stars, err := gaia.New(gaiaColumns, gaiaWhere)

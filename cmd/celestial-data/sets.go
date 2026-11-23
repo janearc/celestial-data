@@ -12,6 +12,7 @@ import (
 	"github.com/janearc/celestial-data/chroma"
 	"github.com/janearc/celestial-data/irsa"
 	"github.com/janearc/celestial-data/naturalearth"
+	"github.com/janearc/celestial-data/netcdf"
 	"github.com/janearc/celestial-data/sarao"
 	"github.com/janearc/celestial-data/skyview"
 	"github.com/janearc/celestial-data/usgs"
@@ -59,8 +60,11 @@ const (
 
 // grissomSet is everything the grissom viewer reads: the Glimpse,
 // MeerKAT and dust map files round Sgr A*, the earth's images and
-// spectra, four whole-sky maps, and the viewer's colourways. It refuses
-// when an archive will not be made, all its reasons said together.
+// spectra, four whole-sky maps, one weather file and the viewer's
+// colourways.
+//
+// It refuses when an archive will not be made, all its reasons said
+// together.
 func grissomSet(tool command, get web.Web) (*set, error) {
 	radius, radiusErr := tool.picked.Get("grissom-radius")
 	wide, wideErr := tool.picked.Get("grissom-sky-width")
@@ -75,13 +79,14 @@ func grissomSet(tool command, get web.Web) (*set, error) {
 	blue, blueErr := bluemarble.New()
 	spectra, spectraErr := usgs.New()
 	land, landErr := naturalearth.New()
+	weather, weatherErr := netcdf.New()
 	radio, radioErr := skyview.New(int(wide), "Mellinger Green",
 		"H-Alpha Comp", "408MHz")
 	dust, dustErr := skyview.New(int(iris), "IRIS 100")
 	colours, coloursErr := chroma.New(get)
 	err := errors.Join(radiusErr, wideErr, irisErr, centreErr, nearErr,
 		glimpseErr, fieldErr, meerkatErr, tileErr, ppmapErr, blueErr,
-		spectraErr, landErr, radioErr, dustErr, coloursErr)
+		spectraErr, landErr, weatherErr, radioErr, dustErr, coloursErr)
 	if err != nil {
 		return nil, err
 	}
@@ -97,6 +102,7 @@ func grissomSet(tool command, get web.Web) (*set, error) {
 		{"earth", land, nil},
 		{"sky", radio, nil},
 		{"sky", dust, nil},
+		{"weather", weather, nil},
 		{"colourways", colours, nil},
 	}}, nil
 }

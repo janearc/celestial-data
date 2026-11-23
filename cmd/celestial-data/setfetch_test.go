@@ -45,12 +45,12 @@ const (
 	origin    = 0     // defined: a place on the sky for a set that asks none
 	degree    = 1     // defined: the radius of the circle round it
 	oneByte   = 1     // defined: a byte more than a file holds
-	keptLines = 14    // defined: twelve files, and the two colourways
+	keptLines = 15    // defined: thirteen files, and the two colourways
 )
 
 // allKept is what the grissom set says when every one of its files is
 // there.
-const allKept = "fetch-set grissom: 0 fetched, 14 kept, in "
+const allKept = "fetch-set grissom: 0 fetched, 15 kept, in "
 
 // chromaList is the listing of the chroma repository's folder, as the
 // fake archives hold it, with what is not a colourway in it. Of GitHub's

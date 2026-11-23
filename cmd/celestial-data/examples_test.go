@@ -61,6 +61,7 @@ func Example_archives() {
 	// bluemarble       NASA's Blue Marble, July 2004, and Black Marble 2016
 	// usgs             the USGS Spectral Library Version 7, as one archive
 	// naturalearth     Natural Earth's land outlines at 1:50m, as GeoJSON
+	// netcdf           ECMWF ERA-40 surface fields, July 2002, as netCDF
 	// chroma           the colourways in janearc/chroma, listed by GitHub
 	// gaia             Gaia DR3's stars with a radial velocity, as a job
 	// gaia-near        Gaia DR3's every source in a circle, as a job
@@ -131,9 +132,10 @@ func Example_fetchSet() {
 	// would fetch sky/skyview-H-Alpha-Comp-3600.fits
 	// would fetch sky/skyview-408MHz-3600.fits
 	// would fetch sky/skyview-IRIS-100-1800.fits
+	// would fetch weather/ECMWF_ERA-40_subset.nc
 	// would fetch colourways/aqua.css
 	// would fetch colourways/twilight.css
-	// fetch-set grissom: 14 to fetch, 0 kept, in grissom-data
+	// fetch-set grissom: 15 to fetch, 0 kept, in grissom-data
 }
 
 // Every verb has its example, and pzm holds each to what it prints.

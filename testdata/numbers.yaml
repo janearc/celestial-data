@@ -8,70 +8,70 @@ numbers:
     unit: degrees
     says: how far a converted place may land from where the definition puts it; float64 trigonometry errs near 1e-13 degrees, so this leaves room and still catches a wrong constant
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-crval1
     value: 10
     unit: degrees
     says: the made-up square's longitude at its reference pixel
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-crpix1
     value: 50.5
     unit: pixels
     says: the made-up square's reference pixel along its first axis, its middle
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-cdelt1
     value: -0.01
     unit: degrees
     says: the made-up square's step along its first axis, falling as FITS images of the sky do
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-naxis1
     value: 100
     unit: pixels
     says: the made-up square's length along its first axis
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-crval2
     value: 60
     unit: degrees
     says: the made-up square's latitude at its reference pixel, where a degree of longitude is half a degree on the sky
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-crpix2
     value: 50.5
     unit: pixels
     says: the made-up square's reference pixel along its second axis, its middle
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-cdelt2
     value: 0.01
     unit: degrees
     says: the made-up square's step along its second axis
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: square-naxis2
     value: 100
     unit: pixels
     says: the made-up square's length along its second axis
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: off-sky
     value: 400
     unit: degrees
     says: a right ascension past a full turn, for a circle that is not on the sky
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: past-one-ra
     value: 192.8594794
     unit: degrees
     says: a right ascension a hair from the north galactic pole where, with past-one-dec, float64 rounding pushes the latitude's sine to 1.0000000000000002; found by a search on 2026-11-02
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02
   - name: past-one-dec
     value: 27.12824999999879
     unit: degrees
     says: the declination that goes with past-one-ra
     kind: picked
-    by: porter, 2026-11-02
+    by: celestial-data's root package, 2026-11-02

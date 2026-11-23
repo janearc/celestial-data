@@ -1,0 +1,14 @@
+# numbers.yaml: the one number the netcdf package reads from a file
+# itself: the length of the example file it fetches. The source is in
+# sources.yaml.
+
+numbers:
+  - name: era40-size
+    value: 22165040
+    unit: bytes
+    says: the length of Unidata's ECMWF_ERA-40_subset.nc, as the archive served it
+    kind: measured
+    source:
+      key: unidata-era40
+      where: the length of the file as fetched
+      text: "22165040 bytes"

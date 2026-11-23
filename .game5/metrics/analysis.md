@@ -1,4 +1,4 @@
-written by `game signature` and committed. taken at 6f9488c-dirty.
+written by `game signature` and committed. taken at 34a41bd.
 
 # signature
 
@@ -6,7 +6,7 @@ written by `game signature` and committed. taken at 6f9488c-dirty.
 
 | directory | go | test | ratio | other | files |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| . | 979 | 1762 | 1.8 | 1253 | 19 |
+| . | 979 | 1762 | 1.8 | 1266 | 19 |
 | .game5 | 0 | 0 | - | 6 | 1 |
 | .game5/excludes | 0 | 0 | - | 5 | 1 |
 | .game5/lint | 0 | 0 | - | 21 | 3 |
@@ -31,7 +31,7 @@ written by `game signature` and committed. taken at 6f9488c-dirty.
 | chroma | 116 | 181 | 1.6 | 0 | 3 |
 | chroma/testdata | 0 | 0 | - | 381 | 4 |
 | cited-sources | 0 | 0 | - | 1938 | 3 |
-| cmd/celestial-data | 3630 | 5247 | 1.4 | 112 | 42 |
+| cmd/celestial-data | 3640 | 5294 | 1.5 | 112 | 43 |
 | cmd/celestial-data-secrets | 410 | 768 | 1.9 | 10 | 7 |
 | cmd/celestial-data/testdata | 0 | 0 | - | 43 | 1 |
 | dasch | 727 | 1459 | 2.0 | 65 | 12 |
@@ -61,7 +61,7 @@ written by `game signature` and committed. taken at 6f9488c-dirty.
 | mocks | 525 | 0 | 0.0 | 0 | 8 |
 | naturalearth | 229 | 457 | 2.0 | 23 | 5 |
 | naturalearth/testdata | 0 | 0 | - | 35 | 2 |
-| netcdf | 0 | 7786 | - | 0 | 25 |
+| netcdf | 2114 | 9143 | 4.3 | 25 | 46 |
 | nistxray | 761 | 752 | 1.0 | 1100 | 7 |
 | nistxray/testdata | 0 | 0 | - | 3456 | 8 |
 | noaacrm | 458 | 179 | 0.4 | 88 | 5 |
@@ -100,16 +100,16 @@ written by `game signature` and committed. taken at 6f9488c-dirty.
 | votable/testdata | 0 | 0 | - | 119 | 5 |
 | web | 2305 | 3290 | 1.4 | 65 | 23 |
 | web/testdata | 0 | 0 | - | 111 | 1 |
-| total | 22235 | 39806 | 1.8 | 31476 | 557 |
+| total | 24359 | 41210 | 1.7 | 31514 | 579 |
 
 ## by language
 
 | language | files | lines |
 | --- | ---: | ---: |
-| go | 130 | 22235 |
-| go test | 177 | 39806 |
-| markdown | 17 | 1631 |
-| yaml | 51 | 2779 |
+| go | 142 | 24359 |
+| go test | 185 | 41210 |
+| markdown | 17 | 1644 |
+| yaml | 53 | 2804 |
 | json | 43 | 2260 |
 | game | 12 | 67 |
 | other | 127 | 24739 |
@@ -122,12 +122,12 @@ packages by band.
 fewer            5  #####
 about as many   20  ####################
 twice           27  ###########################
-five times       0
-more             1  #
+five times       1  #
+more             0
 ```
 
 ## totals
 
-lines     go 22235, go test 39806, everything 93517
-files     557
+lines     go 24359, go test 41210, everything 97083
+files     579
 packages  53

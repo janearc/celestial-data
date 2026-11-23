@@ -1,6 +1,13 @@
 # changelog
 
-## unreleased
+## v0.0.5 23 november
+
+- `netcdf` is back, and the grissom set brings its ERA-40 weather file
+  into `weather/` again. netCDF is read through scigolib/netcdf at its
+  commit 5be112aa81c3 of 20 November; it has no tag yet, and a tag will
+  replace it.
+
+## v0.0.4 18 november
 
 2026-11-18
 
@@ -18,8 +25,6 @@
   observations of turbidity, salinity and suspended sediment within
   bounds, one GeoJSON snapshot for each, or for any five-digit USGS
   parameter code `--text` names. the first page of each is saved.
-- netCDF is read through scigolib/netcdf at its pull request on GitHub
-  until that is released.
 
 2026-11-14
 
@@ -33,6 +38,8 @@
   Celestial's forced photometry. it reads local files only.
 - terrain and primary-document fetching use the shared host pacing
   and accept `--i-mean-it`, including the NOAA relief fetcher.
+
+## v0.0.3 13 november
 
 2026-11-11
 
