@@ -99,7 +99,7 @@ again, and the stop says so. every override is kept in the host's
 record, beside the wait it overrode; the newest twenty are kept.
 `find`, `fetch`, `fetch-set`, `papers`, `ads`, `ntrs`, `ntrs-fetch`,
 `terrain-index`, `terrain-fetch`, `noaa-crm` and `documents` take the
-switch.
+switch, as does `caltech`.
 
 a stop in a later run reads like this, on one line:
 
@@ -149,6 +149,27 @@ given by a host:
 
 a host's own numbers take the place of these, and are in its package's
 `numbers.yaml`, each with its reason.
+
+## caltech documents
+
+`caltech` retains explicitly named public documents from HTTPS hosts under
+`caltech.edu`. it uses a local catalogue in the same format and the same
+provenance options as `documents`, and goes through the shared per-host gate.
+it refuses foreign hosts and existing destination files. a dry run validates
+the catalogue without making requests or writing files.
+
+```sh
+celestial-data caltech --dry-run --catalog catalogue.yaml --into sources \
+  --adapter-commit FULL_COMMIT --command "the intended command" \
+  --purpose "verify a measurement" --consumer "research data" solar
+```
+
+the catalogue supplies the document's `ID`, `Name`, `URL`, `Title` and
+`Kind` (`html`, `pdf`, or `text`). omit `--dry-run` to fetch. the command
+records the retained bytes and their SHA-256 in `FETCHED.md`. HTML is kept
+as received: it may include ephemeral session tokens, and its hash can
+change even when the published facts have not. inspect the content and the
+publisher's reuse terms before using it or sharing it.
 
 ## dasch
 
@@ -512,7 +533,6 @@ is not a PDF, is not kept.
 the shape of NTRS's answers is the one its own OpenAPI description
 gives, at <https://ntrs.nasa.gov/api/openapi-yaml>. the replies the
 tests read are crafted, in that shape; see `ntrs/testdata/README.md`.
->>>>>>> vorrh/rc-v0.0.4
 
 ## the archives
 

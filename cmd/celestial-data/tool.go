@@ -273,6 +273,12 @@ func (tool command) declared() *pzm.Tool {
 		"primary documents home", documentsPage, "Example_documents",
 		fetching, tool.fetchingWithOverride(tool.documentsVerb),
 		append(documentsFlags(), insisting()...)...)
+	declared.Verb("caltech", verb.NoShort, "brings named Caltech documents home",
+		"Fetches named Caltech HTTPS documents from a local catalogue, "+
+			"keeping their bytes and provenance. Uses the shared per-host "+
+			"request gate; a dry run sends no requests or writes.",
+		"Example_caltech", fetching, tool.fetchingWithOverride(tool.caltechVerb),
+		append(documentsFlags(), insisting()...)...)
 	declared.Verb("spectrum", verb.NoShort, "measures a star in the "+
 		"SPHEREx cutouts fetched", spectrumPage, "Example_spectrum",
 		measuring, tool.spectrumVerb, spectrumFlags()...)

@@ -69,6 +69,14 @@ func New(wait, whole time.Duration, agent string) Client {
 		agent: agent}
 }
 
+// Direct makes a client that refuses redirects instead of asking another
+// address without passing it through the caller's host gate.
+func Direct(wait, whole time.Duration, agent string) Client {
+	client := New(wait, whole, agent)
+	client.http.CheckRedirect = stay
+	return client
+}
+
 // stay answers a redirect by going no further, so Post can say where it
 // pointed.
 func stay(*http.Request, []*http.Request) error {

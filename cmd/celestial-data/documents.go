@@ -13,7 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/janearc/celestial-data/caltech"
 	"github.com/janearc/celestial-data/primarydocs"
+	"github.com/janearc/celestial-data/web"
 	"github.com/janearc/puzzlemouth/pzm"
 	"github.com/janearc/puzzlemouth/verb"
 	"github.com/janearc/puzzlemouth/yamlfile"
@@ -48,6 +50,22 @@ func documentsFlags() []pzm.Flag {
 
 // documentsVerb brings the catalogue's named documents home.
 func (tool command) documentsVerb(call pzm.Call) error {
+	return tool.documents(call, "primarydocs", func(doc primarydocs.Document) error {
+		_, err := doc.Product()
+		return err
+	}, primarydocs.Fetch)
+}
+
+// caltechVerb retains a catalogue's Caltech documents through the same gate.
+func (tool command) caltechVerb(call pzm.Call) error {
+	return tool.documents(call, "caltech", caltech.Check, caltech.Fetch)
+}
+
+// documents validates the catalogue and records each selected request.
+func (tool command) documents(call pzm.Call, adapter string,
+	check func(primarydocs.Document) error,
+	fetch func(web.Web, primarydocs.Document, string) (string, error),
+) error {
 	catalog, into := call.Value("catalog"), call.Value("into")
 	commit, command := call.Value("adapter-commit"), call.Value("command")
 	commandFile := call.Value("command-file")
@@ -85,7 +103,7 @@ func (tool command) documentsVerb(call pzm.Call) error {
 		if _, exists := byID[d.ID]; exists {
 			return fmt.Errorf("duplicate catalogue ID %q", d.ID)
 		}
-		if _, err := d.Product(); err != nil {
+		if err := check(d); err != nil {
 			return err
 		}
 		byID[d.ID] = d
@@ -108,7 +126,7 @@ func (tool command) documentsVerb(call pzm.Call) error {
 	if err := os.MkdirAll(into, 0755); err != nil {
 		return err
 	}
-	client, err := tool.within(documentsWhole)
+	client, err := tool.documentWeb(adapter)
 	if err != nil {
 		return err
 	}
@@ -117,20 +135,20 @@ func (tool command) documentsVerb(call pzm.Call) error {
 		intent := fmt.Sprintf(
 			"\n## %s — %s\n\n- Started UTC: %s\n- "+
 				"Exact command: `%s`\n- Adapter: "+
-				"celestial-data/primarydocs at `%s`\n- "+
+				"celestial-data/%s at `%s`\n- "+
 				"Catalogue: `%s`\n- Archive query: "+
 				"direct document GET `%s` (no search "+
 				"query or archive job)\n- Purpose: %s\n- "+
 				"Consumer: %s\n- Retained path: `%s`\n- "+
 				"Status: fetch started; completion "+
 				"follows\n", d.ID, d.Title,
-			time.Now().UTC().Format(time.RFC3339), command, commit,
+			time.Now().UTC().Format(time.RFC3339), command, adapter, commit,
 			catalog, d.URL, purpose, consumer,
 			filepath.Join(into, d.Name))
 		if err := appendLog(into, intent); err != nil {
 			return err
 		}
-		path, err := primarydocs.Fetch(client, d, into)
+		path, err := fetch(client, d, into)
 		if err != nil {
 			failed = true
 			if logErr := appendLog(into, fmt.Sprintf(
@@ -170,4 +188,17 @@ func (tool command) documentsVerb(call pzm.Call) error {
 			"see FETCHED.md")
 	}
 	return nil
+}
+
+// documentWeb refuses automatic redirects for Caltech, so a redirected
+// request cannot bypass the per-host gate or the catalogue's host check.
+func (tool command) documentWeb(adapter string) (web.Web, error) {
+	if adapter != "caltech" || tool.get != nil {
+		return tool.within(documentsWhole)
+	}
+	wait, err := tool.picked.Get("wait")
+	if err != nil {
+		return nil, err
+	}
+	return tool.gentle(web.Direct(web.Seconds(wait), documentsWhole, agent)), nil
 }

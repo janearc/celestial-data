@@ -1,4 +1,4 @@
-written by `game signature` and committed. taken at 34a41bd.
+written by `game signature` and committed. taken at cf8ef80.
 
 # signature
 
@@ -6,7 +6,7 @@ written by `game signature` and committed. taken at 34a41bd.
 
 | directory | go | test | ratio | other | files |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| . | 979 | 1762 | 1.8 | 1266 | 19 |
+| . | 979 | 1762 | 1.8 | 1284 | 19 |
 | .game5 | 0 | 0 | - | 6 | 1 |
 | .game5/excludes | 0 | 0 | - | 5 | 1 |
 | .game5/lint | 0 | 0 | - | 21 | 3 |
@@ -23,6 +23,7 @@ written by `game signature` and committed. taken at 34a41bd.
 | bluemarble | 77 | 163 | 2.1 | 40 | 4 |
 | bsc5 | 389 | 413 | 1.1 | 277 | 10 |
 | bsc5/testdata | 0 | 0 | - | 6 | 1 |
+| caltech | 37 | 63 | 1.7 | 15 | 3 |
 | cardiff | 105 | 227 | 2.2 | 86 | 5 |
 | cardiff/testdata | 0 | 0 | - | 276 | 9 |
 | cds | 90 | 161 | 1.8 | 0 | 3 |
@@ -31,7 +32,7 @@ written by `game signature` and committed. taken at 34a41bd.
 | chroma | 116 | 181 | 1.6 | 0 | 3 |
 | chroma/testdata | 0 | 0 | - | 381 | 4 |
 | cited-sources | 0 | 0 | - | 1938 | 3 |
-| cmd/celestial-data | 3640 | 5294 | 1.5 | 112 | 43 |
+| cmd/celestial-data | 3677 | 5364 | 1.5 | 112 | 44 |
 | cmd/celestial-data-secrets | 410 | 768 | 1.9 | 10 | 7 |
 | cmd/celestial-data/testdata | 0 | 0 | - | 43 | 1 |
 | dasch | 727 | 1459 | 2.0 | 65 | 12 |
@@ -98,17 +99,17 @@ written by `game signature` and committed. taken at 34a41bd.
 | usno | 38 | 68 | 1.8 | 0 | 2 |
 | votable | 485 | 595 | 1.2 | 0 | 2 |
 | votable/testdata | 0 | 0 | - | 119 | 5 |
-| web | 2305 | 3290 | 1.4 | 65 | 23 |
+| web | 2313 | 3318 | 1.4 | 65 | 24 |
 | web/testdata | 0 | 0 | - | 111 | 1 |
-| total | 24359 | 41210 | 1.7 | 31514 | 579 |
+| total | 24441 | 41371 | 1.7 | 31547 | 584 |
 
 ## by language
 
 | language | files | lines |
 | --- | ---: | ---: |
-| go | 142 | 24359 |
-| go test | 185 | 41210 |
-| markdown | 17 | 1644 |
+| go | 143 | 24441 |
+| go test | 188 | 41371 |
+| markdown | 18 | 1677 |
 | yaml | 53 | 2804 |
 | json | 43 | 2260 |
 | game | 12 | 67 |
@@ -121,13 +122,13 @@ packages by band.
 ```
 fewer            5  #####
 about as many   20  ####################
-twice           27  ###########################
+twice           28  ############################
 five times       1  #
 more             0
 ```
 
 ## totals
 
-lines     go 24359, go test 41210, everything 97083
-files     579
-packages  53
+lines     go 24441, go test 41371, everything 97359
+files     584
+packages  54

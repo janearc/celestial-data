@@ -13,7 +13,7 @@ import (
 // The retention verbs offer the same recovery their stop messages name:
 // an override asks once more, says so, and stops after a second refusal.
 func TestRetentionVerbsHonorTheHostOverride(t *testing.T) {
-	for _, verb := range []string{"noaa-crm", "documents"} {
+	for _, verb := range []string{"noaa-crm", "documents", "caltech"} {
 		t.Run(verb, func(t *testing.T) {
 			tool := askingHosts(t)
 			tool.get.EXPECT().Get(gomock.Any()).Return(nil, int64(0),
@@ -32,7 +32,7 @@ func TestRetentionVerbsHonorTheHostOverride(t *testing.T) {
 // With no override a refusal sends no second request. A dry run with the
 // override still sends none and makes no destination folder.
 func TestRetentionVerbsDoNotAskAgainWithoutTheOverride(t *testing.T) {
-	for _, verb := range []string{"noaa-crm", "documents"} {
+	for _, verb := range []string{"noaa-crm", "documents", "caltech"} {
 		t.Run(verb, func(t *testing.T) {
 			tool := askingHosts(t)
 			tool.get.EXPECT().Get(gomock.Any()).Return(nil, int64(0),
@@ -65,10 +65,14 @@ func retentionArgs(t *testing.T, verb string) ([]string, string) {
 	into := filepath.Join(folder, "absent")
 	args := []string{verb, "--into", into, "--adapter-commit",
 		strings.Repeat("a", 40), "--purpose", "test", "--consumer", "test"}
-	if verb == "documents" {
+	if verb == "documents" || verb == "caltech" {
 		catalog := filepath.Join(folder, "catalog.json")
+		host := "example.org"
+		if verb == "caltech" {
+			host = "www.spitzer.caltech.edu"
+		}
 		contents := `[{"ID":"guide","Name":"guide.html",` +
-			`"URL":"https://example.org/guide.html",` +
+			`"URL":"https://` + host + `/guide.html",` +
 			`"Title":"Guide","Kind":"html"}]`
 		if err := os.WriteFile(catalog, []byte(contents), 0600); err != nil {
 			t.Fatal(err)
